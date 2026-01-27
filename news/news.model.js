@@ -8,16 +8,20 @@ export const News = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     title: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING, 
+      allowNull: false
     },
     subtitle: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING     
     },
     body: {
-      type: DataTypes.TEXT
+      type: DataTypes.TEXT,
+       allowNull: false
     },
     date: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
     }
   }, {
     tableName: 'wm_news',

@@ -1,6 +1,6 @@
 import express from 'express';
-import { getAllNews, getOneNews, createNews, editNews, deleteNews } from '../controllers/news_controllers.js';
-//console.log('getAllNews:', getAllNews);
+import { getAllNews, getOneNews, createNews, editNews, deleteNews } from './news.controller.js';
+
 const router = express.Router();
 
 router.get('/', getAllNews);

@@ -1,4 +1,4 @@
-import { NewsModel } from '../models/dbSequelize.js';
+import { NewsModel } from '../config/dbSequelize.js';
 
 export const getAllNews = async (req, res) => {
     try {

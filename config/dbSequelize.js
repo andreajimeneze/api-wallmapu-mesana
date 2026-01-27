@@ -1,35 +1,33 @@
 import { Sequelize, DataTypes } from 'sequelize';
-import { Author } from './author.js';
-import { Category } from './category.js';
-import { Commun } from './commun.js';
-import { Editorial } from './editorial.js';
-import { Loan_status } from './loan_status.js';
-import { Loan } from './loan.js';
-import { Province } from './province.js';
-import { Region } from './region.js';
-import { Return_status } from './return_status.js';
-import { User_status } from './user_status.js';
-import { User_type } from './user_type.js';
-import { User } from './user.js';
-import { News } from './news.js';
-import { News_gallery } from './news_gallery.js';
-import { Book } from './book.js';
+import { env } from './env.js';
+import { Author } from '../authors/author.model.js';
+import { Category } from '../categories/category.model.js';
+import { Commun } from '../communs/commun.model.js';
+import { Editorial } from '../editorials/editorial.model.js';
+import { Loan_status } from '../loans-status/loan-status.model.js';
+import { Loan } from '../loans/loan.model.js';
+import { Province } from '../province/province.model.js';
+import { Region } from '../region/region.model.js';
+import { Return_status } from '../return-status/return-status.model.js';
+import { User_status } from '../user-status/user-status.model.js';
+import { User_type } from '../user-type/user-type.model.js';
+import { User } from '../users/user.model.js';
+import { News } from '../news/news.model.js';
+import { News_gallery } from '../news-gallery/news-gallery.model.js';
+import { Book } from '../books/book.model.js';
 
 let sequelize;
 
-const DB_USER = 'neondb_owner';
-const DB_PASS = 'npg_Npj9gA2bLcPX';
-const DB_NAME = 'neondb';
-const DB_HOST = 'ep-sweet-cloud-adeqpfbo-pooler.c-2.us-east-1.aws.neon.tech';
-const DB_ENGINE = 'postgres';
-const DB_PORT = 5432;
-
-sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
-    host : DB_HOST,
-    port : DB_PORT,
-    dialect : DB_ENGINE,
-    logging: false,
-    dialectOptions: {
+sequelize = new Sequelize(
+    env.database.name,
+    env.database.user,
+    env.database.password,
+    {
+        host : env.database.host,
+        port : env.database.port,
+        dialect : env.database.dialect,
+        logging: false,
+        dialectOptions: {
         ssl: {
             require: true,
             rejectUnauthorized: false
