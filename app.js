@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
-
+import news_routes from './routes/news_routes.js';
 import { sequelize } from './models/dbSequelize.js';
 
 const app = express();
@@ -31,12 +31,9 @@ async function initDatabase() {
     }
 }
 
-app.use(async (req, res, next ) => {
-    if(!dbInitialized) {
-        await initDatabase();
-    }
-    next();
-})
+await initDatabase();
+
+app.use('/api/news', news_routes);
 
 const PORT = process.env.PORT || 3000;
 

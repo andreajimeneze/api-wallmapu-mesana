@@ -17,17 +17,24 @@ import { Book } from './book.js';
 
 let sequelize;
 
-const DB_USER = 'root';
-const DB_PASS = '1234';
-const DB_NAME = 'wallmapu';
-const DB_HOST = 'localhost';
+const DB_USER = 'neondb_owner';
+const DB_PASS = 'npg_Npj9gA2bLcPX';
+const DB_NAME = 'neondb';
+const DB_HOST = 'ep-sweet-cloud-adeqpfbo-pooler.c-2.us-east-1.aws.neon.tech';
 const DB_ENGINE = 'postgres';
 const DB_PORT = 5432;
 
 sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
     host : DB_HOST,
     port : DB_PORT,
-    dialect : DB_ENGINE
+    dialect : DB_ENGINE,
+    logging: false,
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false
+        }
+    }
 })
 
 let initialized = false;
