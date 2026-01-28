@@ -1,20 +1,20 @@
 import { Sequelize, DataTypes } from 'sequelize';
 import { env } from './env.js';
-import { Author } from '../authors/author.model.js';
-import { Category } from '../categories/category.model.js';
-import { Commun } from '../communs/commun.model.js';
-import { Editorial } from '../editorials/editorial.model.js';
-import { Loan_status } from '../loans-status/loan-status.model.js';
-import { Loan } from '../loans/loan.model.js';
+import { Author } from '../modules/authors/author.model.js';
+import { Category } from '../modules/categories/category.model.js';
+import { Commun } from '../modules/communs/commun.model.js';
+import { Editorial } from '../modules/editorials/editorial.model.js';
+import { Loan_status } from '../modules/loans-status/loan-status.model.js';
+import { Loan } from '../modules/loans/loan.model.js';
 import { Province } from '../province/province.model.js';
 import { Region } from '../region/region.model.js';
 import { Return_status } from '../return-status/return-status.model.js';
 import { User_status } from '../user-status/user-status.model.js';
 import { User_type } from '../user-type/user-type.model.js';
 import { User } from '../users/user.model.js';
-import { News } from '../news/news.model.js';
+import { News } from '../modules/news/news.model.js';
 import { News_gallery } from '../news-gallery/news-gallery.model.js';
-import { Book } from '../books/book.model.js';
+import { Book } from '../modules/books/book.model.js';
 
 let sequelize;
 

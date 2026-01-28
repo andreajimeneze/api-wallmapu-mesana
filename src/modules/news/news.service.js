@@ -1,7 +1,7 @@
-import { NewsModel } from '../config/dbSequelize.js';
+import { NewsModel } from '../../config/dbSequelize.js';
 
 export const getAllNewsService = async () => {
-    return await NewsModel.countAndFindAll({
+    return await NewsModel.findAndCountAll({
         order: [['date', 'DESC']]
     });
 };

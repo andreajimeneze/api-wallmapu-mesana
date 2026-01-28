@@ -4,9 +4,9 @@ import { getAllNewsService, createNewsService } from "./news.service.js";
 
 export const getAllNews = async (req, res) => {
     try {
-        const allNews = await getAllNewsService();
+        const { count, rows } = await getAllNewsService();
         if(allNews.length > 0) {
-            return res.status(200).json(allNews);
+            return res.status(200).json({total: count, news: rows});
         } else {
             res.status(404).json({message: 'No hay noticias actualmente'});
         }
