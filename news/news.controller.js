@@ -1,8 +1,10 @@
-import { NewsModel } from '../config/dbSequelize.js';
+import { createNewsDTO, newsResponseDTO } from "./news.dto.js";
+import { getAllNewsService, createNewsService } from "./news.service.js";
+
 
 export const getAllNews = async (req, res) => {
     try {
-        const allNews = await NewsModel.findAll();
+        const allNews = await getAllNewsService();
         if(allNews.length > 0) {
             return res.status(200).json(allNews);
         } else {
@@ -28,20 +30,14 @@ export const getOneNews = async (req, res) => {
 };
 
 export const createNews = async (req, res) => {
-  const { title, subtitle, body } = req.body;
-  //const currentDate = new Date();
-
   try {
-    const newNews = await NewsModel.create({
-      title,
-      subtitle,
-      body,
-      date: new Date()
-    });
-
-    res.status(201).json({ message: "Noticia creada exitosamente", data: newNews });
-  } catch (error) {
-    res.status(500).json({ error: "Error al crear la noticia" });
+    const dto = createNewsDTO(req.body);
+    const createdNews = await createNewsService(dto);
+    // const { title, subtitle, body } = req.body;
+    //const currentDate = new Date();
+res.status(201).json(newsResponseDTO(createdNews), { message: "Noticia creada exitosamente" });
+  } catch (error) {    
+    res.status(400).json({ error: error.message });
   }
 };
 
