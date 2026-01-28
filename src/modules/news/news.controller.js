@@ -16,9 +16,9 @@ export const getAllNews = async (req, res) => {
     const { count, rows } = await getAllNewsService({ limit, offset });
 
     if (rows.length === 0) {
-      res.status(404).json({ message: "No hay noticias actualmente" });
+      return res.status(404).json({ message: "No hay noticias actualmente" });
     }
-    res
+    return res
       .status(200)
       .json({ total: count, page, news: rows.map(newsResponseDTO) });
   } catch (error) {

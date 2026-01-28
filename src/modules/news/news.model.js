@@ -28,5 +28,14 @@ export const News = (sequelize, DataTypes) => {
     timestamps: false   
   });
 
+  News.associate = (models) => {
+    News.hasMany(models.News_gallery, {
+        foreignKey: 'news_id',
+        sourceKey: 'id_news',
+        as: 'gallery'
+    });
+};
+
+
   return News;
 };
