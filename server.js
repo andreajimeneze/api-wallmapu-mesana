@@ -1,6 +1,6 @@
 import app from "./app.js";
-import { env } from './config/env.js';
-import { sequelize } from "./config/dbSequelize.js";
+import { env } from './src/config/env.js';
+import { sequelize } from "./src/config/dbSequelize.js";
 
 const PORT = env.port;
 
