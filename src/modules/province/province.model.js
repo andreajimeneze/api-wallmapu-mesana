@@ -21,5 +21,20 @@ export const Province = (sequelize, DataTypes) => {
       timestamps: false,
     },
   );
+
+  Province.associate = (models) => {
+    Province.belongsTo(models.Commun, {
+      foreignKey: "province_id",
+      targetKey: "id_province",
+      as: "commun",
+    });
+  
+    Province.hasMany(models.Region, {
+      foreignKey: "region_id",
+      sourceKey: "id_region",
+      as: "region",
+    });
+  };
+
   return Province;
 };

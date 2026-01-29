@@ -19,5 +19,14 @@ export const Return_status = (sequelize, DataTypes) => {
       timestamps: false,
     },
   );
+
+  Return_status.associate = (models) => {
+    Return_status.hasMany(models.Loan, {
+      foreignKey: "return_status_id",
+      sourceKey: "id_return_status",
+      as: "loan",
+    });
+  };
+
   return Return_status;
 };

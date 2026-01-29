@@ -18,5 +18,14 @@ export const Region = (sequelize, DataTypes) => {
       timestamps: false,
     },
   );
+
+  Region.associate = (models) => {
+    Region.hasMany(models.Province, {
+      foreignKey: "region_id",
+      sourceKey: "id_region",
+      as: "province",
+    });
+  };
+
   return Region;
 };

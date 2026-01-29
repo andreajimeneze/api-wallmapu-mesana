@@ -23,5 +23,14 @@ export const Commun = (sequelize, DataTypes) => {
       timestamps: false,
     },
   );
+
+  Commun.associate = (models) => {
+    Commun.belongsTo(models.Province, {
+        foreignKey: 'province_id',
+        targetKey: 'id_province',
+        as: 'province'
+    });
+  };
+  
   return Commun;
 };

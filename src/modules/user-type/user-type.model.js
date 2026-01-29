@@ -19,5 +19,14 @@ export const User_type = (sequelize, DataTypes) => {
       timestamps: false,
     },
   );
+
+  User_type.associate = (models) => {
+    User_type.hasMany(models.User, {
+      foreignKey: "user_type_id",
+      sourceKey: "id_user_type",
+      as: "user",
+    });
+  };
+
   return User_type;
 };

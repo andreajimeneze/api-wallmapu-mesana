@@ -11,40 +11,40 @@ export const Book = (sequelize, DataTypes) => {
       },
       title: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       category_id: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
       },
       author_id: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
       },
       summary: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
       },
       ubication: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       book_cover: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
       },
       isbn: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
       },
       number_page: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
       },
       year_publication: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
       },
       edition_number: {
-        type: DataTypes.STRING
-      }
+        type: DataTypes.STRING,
+      },
     },
     {
       tableName: "wm_books",
@@ -52,20 +52,18 @@ export const Book = (sequelize, DataTypes) => {
     },
   );
 
-    Book.associate = (models) => {
+  Book.associate = (models) => {
     Book.belongsTo(models.Category, {
-        foreignKey: 'category_id',
-        targetKey: 'id_category',
-        as: 'category'
+      foreignKey: "category_id",
+      targetKey: "id_category",
+      as: "category",
     });
-};
 
-    Book.associate = (models) => {
     Book.belongsTo(models.Author, {
-        foreignKey: 'author_id',
-        targetKey: 'id_author',
-        as: 'author'
+      foreignKey: "author_id",
+      targetKey: "id_author",
+      as: "author",
     });
-};
+  };
   return Book;
 };

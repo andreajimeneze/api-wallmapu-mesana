@@ -18,5 +18,14 @@ export const Editorial = (sequelize, DataTypes) => {
       timestamps: false,
     },
   );
+
+  Editorial.associate = (models) => {
+    Editorial.hasMany(models.Book, {
+      foreignKey: "editorial_id",
+      sourceKey: "id_editorial",
+      as: "book",
+    });
+  };
+
   return Editorial;
 };

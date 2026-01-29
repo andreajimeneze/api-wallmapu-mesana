@@ -19,11 +19,11 @@ export const Author = ( sequelize, DataTypes ) => {
         timestamps : false
     });
 
-     Author.associate = (models) => {
+    Author.associate = (models) => {
     Author.hasMany(models.Book, {
       foreignKey: 'author_id', 
       sourceKey: 'id_author',   
-      as: 'books'
+      as: 'book'
     });
   };
 

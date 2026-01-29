@@ -1,26 +1,27 @@
-'use strict';
+"use strict";
 
-export const Category = (sequelize, DataTypes ) => {
-    const Category = sequelize.define('Categories', {
-        id_category: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        category: {
-            type: DataTypes.STRING,
-            allowNull: false
+export const Category = (sequelize, DataTypes) => {
+  const Category = sequelize.define("Categories", {
+    id_category: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-        tableNames : 'wm_categories',
-        timestamps : false
-    });
+    category: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    tableNames: "wm_categories",
+    timestamps: false,
+  });
 
-     Category.associate = (models) => {
+  Category.associate = (models) => {
     Category.hasMany(models.Book, {
-      foreignKey: 'category_id',   
-      sourceKey: 'id_category',    
-      as: 'books'
+      foreignKey: "category_id",
+      sourceKey: "id_category",
+      as: "book",
     });
   };
-    return Category;
-}
+  
+  return Category;
+};
