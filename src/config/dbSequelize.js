@@ -25,7 +25,7 @@ sequelize = new Sequelize(
     {
         host : env.database.host,
         port : env.database.port,
-        dialect : env.database.dialect,
+        dialect : "postgres",
         logging: false,
         dialectOptions: {
         ssl: {
