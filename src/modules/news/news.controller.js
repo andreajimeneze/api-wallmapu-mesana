@@ -22,6 +22,7 @@ export const getAllNews = async (req, res) => {
       .status(200)
       .json({ total: count, page, news: rows.map(newsResponseDTO) });
   } catch (error) {
+     console.error(error); 
     res.status(500).json({ error: "Error al obtener las noticias" });
   }
 };
