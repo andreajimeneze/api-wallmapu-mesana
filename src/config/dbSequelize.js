@@ -1,4 +1,5 @@
 import { Sequelize, DataTypes } from 'sequelize';
+import pg from 'pg';
 import { env } from './env.js';
 import { Author } from '../modules/authors/author.model.js';
 import { Category } from '../modules/categories/category.model.js';
@@ -26,6 +27,7 @@ sequelize = new Sequelize(
         host : env.database.host,
         port : env.database.port,
         dialect : "postgres",
+        dialectModule: pg,
         logging: false,
         dialectOptions: {
         ssl: {
