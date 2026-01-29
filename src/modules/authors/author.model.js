@@ -18,5 +18,14 @@ export const Author = ( sequelize, DataTypes ) => {
         tableName : 'wm_author',
         timestamps : false
     });
+
+     Author.associate = (models) => {
+    Author.hasMany(models.Book, {
+      foreignKey: 'author_id', 
+      sourceKey: 'id_author',   
+      as: 'books'
+    });
+  };
+
     return Author
 } 

@@ -14,5 +14,13 @@ export const Category = (sequelize, DataTypes ) => {
         tableNames : 'wm_categories',
         timestamps : false
     });
+
+     Category.associate = (models) => {
+    Category.hasMany(models.Book, {
+      foreignKey: 'category_id',   
+      sourceKey: 'id_category',    
+      as: 'books'
+    });
+  };
     return Category;
 }

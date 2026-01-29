@@ -48,8 +48,24 @@ export const Book = (sequelize, DataTypes) => {
     },
     {
       tableName: "wm_books",
-      timestamp: false,
+      timestamps: false,
     },
   );
+
+    Book.associate = (models) => {
+    Book.belongsTo(models.Category, {
+        foreignKey: 'category_id',
+        targetKey: 'id_category',
+        as: 'category'
+    });
+};
+
+    Book.associate = (models) => {
+    Book.belongsTo(models.Author, {
+        foreignKey: 'author_id',
+        targetKey: 'id_author',
+        as: 'author'
+    });
+};
   return Book;
 };
