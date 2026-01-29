@@ -1,22 +1,22 @@
-import app from "./app.js";
-import { env } from './src/config/env.js';
-import { sequelize } from "./src/config/dbSequelize.js";
+// import app from "./app.js";
+// import { env } from './src/config/env.js';
+// import { sequelize } from "./src/config/dbSequelize.js";
 
-const PORT = env.port;
+// const PORT = env.port;
 
-async function startServer() {
-    try {
-      await sequelize.authenticate();
-      console.log("Conexión a la Db exitosa");
+// async function startServer() {
+//     try {
+//       await sequelize.authenticate();
+//       console.log("Conexión a la Db exitosa");
 
-      app.listen(PORT, () => {
-        console.log(`Servidor levantado en puerto ${PORT}`);
-      });
-    } catch (error) {
-      console.error("Error en la conexión a la DB", error.message);
-    }
-  }
+//       app.listen(PORT, () => {
+//         console.log(`Servidor levantado en puerto ${PORT}`);
+//       });
+//     } catch (error) {
+//       console.error("Error en la conexión a la DB", error.message);
+//     }
+//   }
 
-startServer();
+// startServer();
 
 
