@@ -1,9 +1,26 @@
+## DEPENDENCIAS
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.3",
+    "express": "^4.22.1",
+    "path": "^0.12.7",
+    "pg": "^8.17.2",
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.5",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  }
+
+## DOCUMENTACIÓN API
+    https://api-negociacion.vercel.app/docs
+
 ## ESTRUCTURA DE CARPETAS
 
 src
     ├───config
     │       dbSequelize.js
     │       env.js
+    |       swagger.js
     │
     ├───modules
     │   ├───authors
