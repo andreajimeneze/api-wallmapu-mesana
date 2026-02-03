@@ -34,7 +34,7 @@ export const getOneNews = async (req, res) => {
     if (!newsSelected) {
       return res.status(404).json({ message: "Noticia no encontrada" });
     }
-    res.status(200).json(newsResponseDTO(newsSelected));
+    res.status(200).json({message: "Noticia encontrada", data: newsResponseDTO(newsSelected)});
   } catch (error) {
     res.status(500).json({ error: "Error al obtener la noticia solicitada" });
   }
