@@ -34,9 +34,4 @@ app.use('/', (req, res, next) => {
     });
 });
 
-// Start the server local y base de datos
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-         console.log(`Servidor levantado en puerto ${PORT}`);
-       });
 export default app;
