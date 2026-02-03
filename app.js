@@ -22,13 +22,13 @@ app.use(routes);
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use((req, res, next) => {
+app.use((req, res) => {
     res.status(404).json({
         message : 'Endpoint not found'
     });
 });
 
-app.use('/', (req, res, next) => {
+app.use('/', (req, res) => {
     res.status(200).json({
         message : 'Welcome to the News API'
     });
