@@ -24,7 +24,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/', (req, res) => {
     res.status(200).json({
-        message : 'Welcome to the News API'
+        message : 'Bienvenido a la API de la Biblioteca Wallmapu Mesana'
     });
 });
 
