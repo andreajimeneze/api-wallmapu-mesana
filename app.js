@@ -13,22 +13,26 @@ app.use(
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Accept"],
-  })
+  }),
 );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Archivos públicos
 app.use("/public", express.static(path.join(process.cwd(), "public")));
 
-// 🔥 SWAGGER SIEMPRE ANTES DE LAS RUTAS
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(
+  "/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      url: "/docs/swagger.json",
+    },
+  }),
+);
 
-// Rutas API
 app.use(routes);
 
-// Ruta raíz
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "Bienvenido a la API de la Biblioteca Wallmapu Mesana",
@@ -36,7 +40,6 @@ app.get("/", (req, res) => {
   });
 });
 
-// 404 AL FINAL DE TODO
 app.use((req, res) => {
   res.status(404).json({
     message: "Endpoint not found",
