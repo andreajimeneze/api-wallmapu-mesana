@@ -21,11 +21,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/public", express.static(path.join(process.cwd(), "public")));
 
-app.use(
-  "/docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec) 
-);
+if (process.env.VERCEL !== '1') {
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
+
 
 console.log(
   'Swagger paths:',
