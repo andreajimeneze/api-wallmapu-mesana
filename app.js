@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
-import routes from "../routes.js";
+import routes from "./routes.js";
 import swaggerUi from "swagger-ui-express";
-import { swaggerSpec } from "../src/config/swagger.js";
+import { swaggerSpec } from "./src/config/swagger.js";
 
 const app = express();
 
@@ -54,5 +54,7 @@ app.get("/", (req, res) => {
 app.use((req, res) => {
   res.status(404).json({ message: "Endpoint not found" });
 });
+
+
 
 export default app;
