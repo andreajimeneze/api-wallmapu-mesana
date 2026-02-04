@@ -24,11 +24,7 @@ app.use("/public", express.static(path.join(process.cwd(), "public")));
 app.use(
   "/docs",
   swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    swaggerOptions: {
-      url: "/docs/swagger.json",
-    },
-  }),
+  swaggerUi.setup(swaggerSpec) 
 );
 
 console.log(
