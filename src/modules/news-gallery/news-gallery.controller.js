@@ -20,8 +20,8 @@ export const createGalleryNews = async (req, res) => {
     try {
         const { news_id } = req.params;
         const { alt } = req.body;
-        const url = req.imageFileName;
-        await createGalleryNewsService(news_id, { alt, url });
+        const {url} = req.imageFileName;
+        await createGalleryNewsService(news_id, alt, url );
        
         res.status(201).json({ message: "Imagen de galería creada exitosamente" });
     } catch(error) {
