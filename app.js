@@ -15,15 +15,14 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// Configuración robusta para Vercel
+const options = {
+  customCss: '.swagger-ui .topbar { display: none }', // CSS directo en string
+  customSiteTitle: "Wallmapu Mesana API Docs",
+};
 
-// Swagger UI - Configuración compatible con Vercel
-const CSS_URL = "https://cdnjs.cloudflare.com";
-
-// ELIMINA el condicional if (process.env.VERCEL !== '1') para que funcione en la nube
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { 
-  customCssUrl: CSS_URL,
-  customSiteTitle: "Wallmapu Mesana API Docs"
-}));
+app.use('/docs', swaggerUi.serve);
+app.get('/docs', swaggerUi.setup(swaggerSpec, options));
 
 app.use("/public", express.static(path.join(process.cwd(), "public")));
 
@@ -32,7 +31,7 @@ app.use(routes);
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "Bienvenido a la API de la Biblioteca Wallmapu Mesana",
-    docs: "/docs", // Ruta relativa es más segura
+    docs: "/docs"
   });
 });
 
