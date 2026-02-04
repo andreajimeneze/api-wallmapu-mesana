@@ -31,6 +31,12 @@ app.use(
   }),
 );
 
+console.log(
+  'Swagger paths:',
+  swaggerSpec?.paths
+);
+
+
 app.use(routes);
 
 app.get("/", (req, res) => {
