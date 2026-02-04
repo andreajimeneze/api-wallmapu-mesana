@@ -2,7 +2,7 @@ import sharp from "sharp";
 import fs from "fs";
 import path from "path";
 
-export const processImage = (folder, fixedName ) => {
+export const processImage = (folder ) => {
     return async (req, res, next) => {
         try {
             if(!req.file) return next();
@@ -11,7 +11,7 @@ export const processImage = (folder, fixedName ) => {
        
         fs.mkdirSync(outputDir, { recursive: true });
 
-        const fileName = `${fixedName}.webp`;
+        const fileName = `image-${Date.now()}.webp`;
         const outputPath = path.join(outputDir, fileName);
 
         await sharp(req.file.buffer)
@@ -21,7 +21,7 @@ export const processImage = (folder, fixedName ) => {
         .toFormat('webp', { quality: 90 })
         .toFile(outputPath);
 
-        req.imagePath = `/images/${folder}/${fileName}`;
+        req.imageFileName = fileName;
         next();
         } catch(error) {
             console.error("Error al procesar la imagen:", error);

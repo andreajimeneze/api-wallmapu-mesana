@@ -8,10 +8,12 @@ export const getGalleryByNewsService = async (news_id) => {
     });
 };
 
-export const createGalleryNewsService = async (news_id, {alt, url}) => {
+export const createGalleryNewsService = async (news_id, {
+    alt, 
+    url: imageFileName}) => {
     return await News_galleryModel.create({
         alt,
-        url,
+        url: imageFileName,
         news_id
     });
 };
