@@ -1,5 +1,6 @@
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
+import path from 'path';
 
 const options = {
   definition: {
@@ -14,8 +15,8 @@ const options = {
       { url: 'http://localhost:3000', description: 'Local' },
     ],
   },
-  // Usa un string directo para evitar problemas de resolución de path en Vercel
-  apis: ['./src/modules/**/*.routes.js', './src/routes/*.js'], 
+ 
+  apis: [ path.join(__dirname, '../modules/**/*.routes.js') ], 
 };
 
 export const swaggerSpec = swaggerJsdoc(options);
