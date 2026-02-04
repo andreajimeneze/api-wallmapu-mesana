@@ -1,8 +1,8 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/api-docs", "destination": "/app.js" },
-    { "source": "/api-docs/(.*)", "destination": "/app.js" },
+    { "source": "/docs", "destination": "/app.js" },
+    { "source": "/docs/(.*)", "destination": "/app.js" },
     { "source": "/(.*)", "destination": "/app.js" }
   ]
 }
