@@ -70,13 +70,10 @@ const router = express.Router();
  *               error: "Error al obtener las imágenes de la galería"
  */
 
-router.get("/news/:news_id/gallery", getGalleryByNews);
+router.get("/:news_id", getGalleryByNews);
 
 router.post(
-  "/gallery/:news_id",
-  upload.single("image"),
-  processImage("news-gallery", `news_image`),
-  createGalleryNews,
+  "/:news_id",  createGalleryNews
 );
 
 export default router;
