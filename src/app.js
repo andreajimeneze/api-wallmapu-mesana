@@ -1,9 +1,7 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
-import routes from "./routes.js";
-import swaggerUi from "swagger-ui-express";
-import { swaggerSpec } from "./src/config/swagger.js";
+import routes from "../routes.js";
 
 const app = express();
 
@@ -17,13 +15,6 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Swagger
-app.use(
-  "/docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec)
-);
-
 // Static
 app.use(
   "/public",
@@ -36,8 +27,7 @@ app.use(routes);
 // Root
 app.get("/", (req, res) => {
   res.status(200).json({
-    message: "Bienvenido a la API de la Biblioteca Wallmapu Mesana",
-    docs: "/docs",
+    message: "Bienvenido a la API de la Biblioteca Wallmapu Mesana"
   });
 });
 
