@@ -137,7 +137,7 @@ src
     ├───config
     │       dbSequelize.js
     │       env.js
-    |       swagger.js
+    |       multer.js
     │
     ├───modules
     │   ├───authors
@@ -196,6 +196,11 @@ src
     ├───public
     │   └───images
     │       └───books
+    ├───services
+    |       └───processImage.js
+    |
     └───sql
-            scriptswallmapu.sql
+    |        scriptswallmapu.sql
+    |
+    |───app.js
 ```

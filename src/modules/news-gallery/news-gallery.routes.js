@@ -4,7 +4,7 @@ import {
   createGalleryNews,
 } from "./news-gallery.controller.js";
 import { upload } from "../../config/multer.js";
-import { processImage } from "../../middlewares/processImage.js";
+import { processImage } from "../../services/processImage.js";
 
 const router = express.Router();
 
