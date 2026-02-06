@@ -41,27 +41,23 @@ export const Loan = (sequelize, DataTypes) => {
   );
 
   Loan.associate = (models) => {
-    Loan.belongsTo(models.User, {
-      foreignKey: "user_id",
-      targetKey: "id_user",
+    Loan.belongsTo(models.UserModel, {
+      foreignKey: "id_user",
       as: "user",
     });
 
-    Loan.belongsTo(models.Book, {
-      foreignKey: "book_id",
-      targetKey: "id_book",
+    Loan.belongsTo(models.BookModel, {
+      foreignKey: "id_book",
       as: "book",
     });
 
-    Loan.belongsTo(models.Loan_status, {
-      foreignKey: "loan_status_id",
-      targetKey: "id_loan_status",
+    Loan.belongsTo(models.Loan_statusModel, {
+      foreignKey: "id_loan_status",
       as: "loan_status",
     });
 
-    Loan.belongsTo(models.Return_status, {
-      foreignKey: "return_status_id",
-      targetKey: "id_return_status",
+    Loan.belongsTo(models.Return_statusModel, {
+      foreignKey: "id_return_status",
       as: "return_status",
     });
   };

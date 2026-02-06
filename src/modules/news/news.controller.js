@@ -1,3 +1,4 @@
+import { errorResponse, successResponse } from "../../shared/apiResponse.js";
 import { createNewsDTO, newsResponseDTO } from "./news.dto.js";
 import {
   getAllNewsService,
@@ -13,17 +14,21 @@ export const getAllNews = async (req, res) => {
     const limit = Number(req.query.limit) || 5;
     const offset = (page - 1) * limit;
 
-    const { count, rows } = await getAllNewsService({ limit, offset });
+    const { count, rows} = await getAllNewsService({ limit, offset });
 
-    if (rows.length === 0) {
-      return res.status(404).json({ message: "No hay noticias actualmente" });
+    if (!rows || rows.length === 0) {
+      return res.status(404).json(errorResponse({ message: "No hay noticias actualmente" }));
     }
+
+    const next = count > page * limit ? `/news?page=${page + 1}&limit=${limit}` : null;
+    const prev = page > 1 ? `/news?page=${page - 1}&limit=${limit}` : null;
+
     return res
       .status(200)
-      .json({ total: count, page, news: rows.map(newsResponseDTO) });
+      .json(successResponse({ data: { pagination: {total: count, page, limit, next, prev}, rows: rows.map(newsResponseDTO) } }));
   } catch (error) {
      console.error(error); 
-    res.status(500).json({ error: "Error al obtener las noticias" });
+    res.status(500).json(errorResponse({ error: "Error al obtener las noticias" }));
   }
 };
 

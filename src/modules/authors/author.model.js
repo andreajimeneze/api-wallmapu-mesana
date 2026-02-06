@@ -1,7 +1,7 @@
 'use strict';
 
 export const Author = ( sequelize, DataTypes ) => {
-    const Author = sequelize.define('Authors', {
+    const Author = sequelize.define('Author', {
         id_author: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -20,9 +20,8 @@ export const Author = ( sequelize, DataTypes ) => {
     });
 
     Author.associate = (models) => {
-    Author.hasMany(models.Book, {
-      foreignKey: 'author_id', 
-      sourceKey: 'id_author',   
+    Author.hasMany(models.BookModel, {
+      foreignKey: 'id_author',  
       as: 'book'
     });
   };

@@ -20,9 +20,8 @@ export const Editorial = (sequelize, DataTypes) => {
   );
 
   Editorial.associate = (models) => {
-    Editorial.hasMany(models.Book, {
-      foreignKey: "editorial_id",
-      sourceKey: "id_editorial",
+    Editorial.hasMany(models.BookModel, {
+      foreignKey: "id_editorial",
       as: "book",
     });
   };

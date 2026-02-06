@@ -18,9 +18,14 @@ export const News = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
        allowNull: false
     },
-    date: {
+    created_at: {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
       defaultValue: DataTypes.NOW
     }
   }, {
@@ -29,13 +34,11 @@ export const News = (sequelize, DataTypes) => {
   });
 
   News.associate = (models) => {
-    News.hasMany(models.News_gallery, {
-        foreignKey: 'news_id',
-        sourceKey: 'id_news',
+    News.hasMany(models.News_galleryModel, {
+        foreignKey: 'id_news',
         as: 'gallery'
     });
 };
-
 
   return News;
 };

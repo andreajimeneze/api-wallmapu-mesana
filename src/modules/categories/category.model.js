@@ -16,9 +16,8 @@ export const Category = (sequelize, DataTypes) => {
   });
 
   Category.associate = (models) => {
-    Category.hasMany(models.Book, {
-      foreignKey: "category_id",
-      sourceKey: "id_category",
+    Category.hasMany(models.BookModel, {
+      foreignKey: "id_category",
       as: "book",
     });
   };

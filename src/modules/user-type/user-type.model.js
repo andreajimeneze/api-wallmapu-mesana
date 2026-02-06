@@ -21,9 +21,8 @@ export const User_type = (sequelize, DataTypes) => {
   );
 
   User_type.associate = (models) => {
-    User_type.hasMany(models.User, {
-      foreignKey: "user_type_id",
-      sourceKey: "id_user_type",
+    User_type.hasMany(models.UserModel, {
+      foreignKey: "id_user_type",
       as: "user",
     });
   };

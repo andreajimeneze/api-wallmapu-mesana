@@ -21,9 +21,8 @@ export const User_status = (sequelize, DataTypes) => {
   );
 
     User_status.associate = (models) => {
-    User_status.hasMany(models.User, {
-      foreignKey: "user_status_id",
-      sourceKey: "id_user_status",
+    User_status.hasMany(models.UserModel, {
+      foreignKey: "id_user_status",
       as: "user",
     });
   };

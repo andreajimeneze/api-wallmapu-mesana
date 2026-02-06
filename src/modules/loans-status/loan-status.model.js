@@ -13,9 +13,8 @@ export const Loan_status = (sequelize, DataTypes) => {
   );
 
   Loan_status.associate = (models) => {
-    Loan_status.hasMany(models.Loan, {
-      foreignKey: "loan_status_id",
-      sourceKey: "id_loan_status",
+    Loan_status.hasMany(models.LoanModel, {
+      foreignKey: "id_loan_status",
       as: "loan",
     });
   };

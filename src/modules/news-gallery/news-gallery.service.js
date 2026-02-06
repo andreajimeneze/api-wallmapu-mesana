@@ -1,19 +1,19 @@
 import { News_galleryModel } from "../../config/dbSequelize.js";
 
-export const getGalleryByNewsService = async (news_id) => {
-    return await News_galleryModel.findAll({
-        where: { news_id},
-        attributes: ['id_news_gallery', 'alt', 'url'],
-        order: [['id_news_gallery', 'ASC']]
+export const createGalleryNewsService = async (id_news, {
+    alt, 
+    img }) => {
+    return await News_galleryModel.create({
+        alt,
+        img,
+        id_news
     });
 };
 
-export const createGalleryNewsService = async (news_id, {
-    alt, 
-    url: imageFileName}) => {
-    return await News_galleryModel.create({
-        alt,
-        url: imageFileName,
-        news_id
+export const getGalleryByNewsService = async (id_news) => {
+    return await News_galleryModel.findAll({
+        where: { id_news},
+        attributes: ['id_news_gallery', 'alt', 'img', 'id_news'],
+        order: [['id_news_gallery', 'ASC']]
     });
 };

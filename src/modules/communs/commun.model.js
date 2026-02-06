@@ -25,9 +25,8 @@ export const Commun = (sequelize, DataTypes) => {
   );
 
   Commun.associate = (models) => {
-    Commun.belongsTo(models.Province, {
-        foreignKey: 'province_id',
-        targetKey: 'id_province',
+    Commun.belongsTo(models.ProvinceModel, {
+        foreignKey: 'id_province',
         as: 'province'
     });
   };

@@ -2,7 +2,7 @@
 
 export const Book = (sequelize, DataTypes) => {
   const Book = sequelize.define(
-    "Books",
+    "Book",
     {
       id_book: {
         type: DataTypes.INTEGER,
@@ -53,15 +53,13 @@ export const Book = (sequelize, DataTypes) => {
   );
 
   Book.associate = (models) => {
-    Book.belongsTo(models.Category, {
-      foreignKey: "category_id",
-      targetKey: "id_category",
+    Book.belongsTo(models.CategoryModel, {
+      foreignKey: "id_category",
       as: "category",
     });
 
-    Book.belongsTo(models.Author, {
-      foreignKey: "author_id",
-      targetKey: "id_author",
+    Book.belongsTo(models.AuthorModel, {
+      foreignKey: "id_author",
       as: "author",
     });
   };

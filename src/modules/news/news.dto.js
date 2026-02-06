@@ -14,5 +14,12 @@ export const newsResponseDTO = (news) => ({
     title: news.title,
     subtitle: news.subtitle,
     body: news.body,
-    date: news.date
+    created_at: news.created_at,
+    updated_at: news.updated_at,
+    images: news.gallery ? news.gallery.map(g => ({
+      id_news_gallery: g.id_news_gallery,
+      img: g.img,
+      alt: g.alt,
+      id_news: g.id_news
+    })) : []
 });

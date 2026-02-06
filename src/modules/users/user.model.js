@@ -56,15 +56,13 @@ export const User = (sequelize, DataTypes) => {
   );
 
   User.associate = (models) => {
-    User.belongsTo(models.User_status, {
-      foreignKey: "user_status_id",
-      targetKey: "id_user_status",
+    User.belongsTo(models.User_statusModel, {
+      foreignKey: "id_user_status",
       as: "user_status",
     });
 
-    User.belongsTo(models.User_type, {
-      foreignKey: "user_type_id",
-      sourceKey: "id_user_type",
+    User.belongsTo(models.User_typeModel, {
+      foreignKey: "id_user_type",
       as: "user_type",
     });
   };
