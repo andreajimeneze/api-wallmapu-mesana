@@ -1,5 +1,5 @@
 export const successResponse = ({
-    statusCode = 0,
+    statusCode = 200 || 201,
     message = 'Operación exitosa',
     data = null
 }) => ({
@@ -12,7 +12,7 @@ export const successResponse = ({
 export const errorResponse = ({
     message = 'Ocurrió un error',
     data = null,
-    statusCode = -1
+    statusCode = 404
 }) => ({
     isSuccess: false,
     statusCode,

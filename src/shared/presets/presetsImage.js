@@ -1,8 +1,8 @@
 export const presetsImage = {
     newsGallery: {
-        with: 0,
-        height: 0,
-        ratio: 1,
+        width: 800,
+        height: 450,
+        ratio: 16/9,
         fit: 'cover',
         quality: 80,
 

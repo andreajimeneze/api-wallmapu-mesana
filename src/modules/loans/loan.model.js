@@ -9,11 +9,11 @@ export const Loan = (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true,
       },
-      user_id: {
+      id_user: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      book_id: {
+      id_book: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -25,11 +25,11 @@ export const Loan = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
       },
-      loan_status_id: {
+      id_loan_status: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      return_status_id: {
+      id_return_status: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

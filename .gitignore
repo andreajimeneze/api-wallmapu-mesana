@@ -1,4 +1,4 @@
-/images/*
+/public/*
 
 node_modules
 dist

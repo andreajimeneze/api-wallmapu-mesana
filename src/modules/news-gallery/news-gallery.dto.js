@@ -1,5 +1,5 @@
 export const createNewsGalleryDTO = ({ alt, img, id_news }) => {
-    if(!alt || !img || !id_news) {
+    if(!alt || !img ) {
         throw new Error('Campos de la galería son obligatorios');
     }
 

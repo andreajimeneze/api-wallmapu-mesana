@@ -34,14 +34,14 @@ export const getAllNews = async (req, res) => {
 
 export const getOneNews = async (req, res) => {
   try {
-    const { id } = req.params;
-    const newsSelected = await getOneNewsService(id);
+    const { id_news } = req.params;
+    const newsSelected = await getOneNewsService(id_news);
     if (!newsSelected) {
-      return res.status(404).json({ message: "Noticia no encontrada" });
+      return res.status(404).json(errorResponse({ message: "Noticia no encontrada" }));
     }
-    res.status(200).json({message: "Noticia encontrada", data: newsResponseDTO(newsSelected)});
+    res.status(200).json(successResponse({message: "Noticia encontrada", data: newsResponseDTO(newsSelected)}));
   } catch (error) {
-    res.status(500).json({ error: "Error al obtener la noticia solicitada" });
+    res.status(500).json(errorResponse({ error: "Error al obtener la noticia solicitada" }));
   }
 };
 
@@ -50,12 +50,12 @@ export const createNews = async (req, res) => {
     const dto = createNewsDTO(req.body);
     const createdNews = await createNewsService(dto);
 
-    res.status(201).json({
+    res.status(201).json(successResponse({
       data: newsResponseDTO(createdNews),
       message: "Noticia creada exitosamente",
-    });
+    }));
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json(errorResponse({ error: error.message }));
   }
 };
 
@@ -66,17 +66,17 @@ export const updateNews = async (req, res) => {
     const updatedNews = await updateNewsService(id, dto);
 
     if (!updatedNews) {
-      return res.status(404).json({ error: "Noticia no encontrada" });
+      return res.status(404).json(errorResponse({ error: "Noticia no encontrada" }));
     }
 
-    res.status(200).json({
+    res.status(200).json(successResponse({
       message: "Noticia editada correctamente",
       data: newsResponseDTO(updatedNews)
-    });
+    }));
   } catch (error) {
     return res
       .status(500)
-      .json({ error: "Error al intentar editar la noticia" });
+      .json(errorResponse({ error: "Error al intentar editar la noticia" }));
   }
 };
 
@@ -86,11 +86,11 @@ export const deleteNews = async (req, res) => {
     const newsSelected = await deleteNewsService(id);
 
     if (!newsSelected) {
-      return res.status(404).json({ error: "Noticia no encontrada" });
+      return res.status(404).json(errorResponse({ error: "Noticia no encontrada" }));
     }
 
-    res.status(200).json({ message: "Noticia eliminada correctamente" });
+    res.status(200).json(successResponse({ message: "Noticia eliminada correctamente" }));
   } catch (error) {
-    res.status(500).json({ error: "Error al eliminar la noticia" });
+    res.status(500).json(errorResponse({ error: "Error al eliminar la noticia" }));
   }
 };

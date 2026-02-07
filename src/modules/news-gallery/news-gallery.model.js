@@ -11,17 +11,17 @@ export const News_gallery = ( sequelize, DataTypes ) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        url: {
+        img: {
            type: DataTypes.STRING,
            allowNull: false
         },
-        news_id: {
+        id_news: {
             type: DataTypes.INTEGER,
             allowNull: false
         } 
     },{
         tableName : 'wm_news_gallery',
-        timestamp : false
+        timestamps : false
     });
 
     News_gallery.associate = (models) => {

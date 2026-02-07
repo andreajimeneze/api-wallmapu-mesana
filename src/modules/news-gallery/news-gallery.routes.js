@@ -3,18 +3,16 @@ import {
   getGalleryByNews,
   createGalleryNews,
 } from "./news-gallery.controller.js";
-//import { upload } from "../../config/multer.js";
-//import { processImage } from "../../services/processImage.js";
+import { upload } from "../../config/multer.js";
 
 const router = express.Router();
 
-router.get("/:news_id", getGalleryByNews);
+router.get("/:id_news", getGalleryByNews);
 
-// router.post(
-//   "/:news_id",
-//   upload.single("image"),
-//   processImage("news-gallery"),
-//   createGalleryNews,
-// );
+router.post(
+  "/news/:id_news",
+  upload.single("img"),
+  createGalleryNews,
+);
 
 export default router;

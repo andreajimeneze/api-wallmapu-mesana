@@ -1,7 +1,6 @@
 import { News_galleryModel } from "../../config/dbSequelize.js";
 
-export const createGalleryNewsService = async (id_news, {
-    alt, 
+export const createGalleryNewsService = async ({id_news, alt, 
     img }) => {
     return await News_galleryModel.create({
         alt,

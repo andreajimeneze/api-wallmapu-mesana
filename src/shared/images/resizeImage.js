@@ -1,4 +1,4 @@
-import sharp, { fit } from "sharp";
+import sharp from "sharp";
 
 export const resizeImage = async (
   buffer,

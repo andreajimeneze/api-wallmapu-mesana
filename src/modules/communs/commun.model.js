@@ -13,7 +13,7 @@ export const Commun = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      provincia_id: {
+      id_province: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

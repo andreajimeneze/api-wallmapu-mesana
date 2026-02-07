@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.get('/', getAllNews);
 
-router.get('/:id', getOneNews);
+router.get('/:id_news', getOneNews);
 
 router.post('/', createNews);
 

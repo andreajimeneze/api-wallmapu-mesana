@@ -22,7 +22,7 @@ export const getOneNewsService = async (id) => {
 export const createNewsService = async (newsData) => {
   return await NewsModel.create({
     ...newsData,
-    created_at: new Date(),
+    created_at: new Date()
   });
 };
 
@@ -30,7 +30,10 @@ export const updateNewsService = async (id, newsData) => {
   const newsSelected = await NewsModel.findByPk(id);
 
   if (!newsSelected) return null;
-  return await newsSelected.update(newsData);
+  return await newsSelected.update({
+    ...newsData,
+    updated_at: new Date()
+  });
 };
 
 export const deleteNewsService = async (id) => {

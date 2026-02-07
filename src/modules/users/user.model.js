@@ -25,7 +25,7 @@ export const User = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      commun_id: {
+      id_commun: {
         type: DataTypes.INTEGER,
       },
       phone_number: {
@@ -40,11 +40,11 @@ export const User = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      user_type_id: {
+      id_user_type: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      user_status_id: {
+      id_user_status: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

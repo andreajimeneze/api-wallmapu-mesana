@@ -13,11 +13,11 @@ export const Book = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      category_id: {
+      id_category: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      author_id: {
+      id_author: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

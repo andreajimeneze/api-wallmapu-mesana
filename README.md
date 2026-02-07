@@ -21,24 +21,38 @@ GET / https://api-wallmapu-mesana.vercel.app/api/news
 
 ```json
 {
-    "total": 2,
-    "page": 1,
-    "news": [
-        {
-            "id": 3,
-            "title": "Noticia 3",
-            "subtitle": null,
-            "body": "Esta es una noticia sin subtítulo.",
-            "date": "2026-01-28"
+    "isSuccess": true,
+    "statusCode": 200,
+    "message": "Operación exitosa",
+    "data": {
+        "pagination": {
+            "total": int,
+            "page": str,
+            "limit": int,
+            "next": null,
+            "prev": null
         },
-        {
-            "id": 4,
-            "title": "Noticia 4",
-            "subtitle": "Subtítulo 4",
-            "body": "Esta es una noticia con un subtítulo 4. Es correcto???",
-            "date": "2026-01-28"
-        }
-    ]
+        "rows": [
+            {
+                "id": 1,
+                "title": string,
+                "subtitle": string,
+                "body": string,
+                "created_at": datetime,
+                "updated_at": datetime,
+                "images": []
+            },
+            {
+                 "id": 1,
+                "title": string,
+                "subtitle": string,
+                "body": string,
+                "created_at": datetime,
+                "updated_at": datetime,
+                "images": []
+            }
+        ]
+    }
 }
 ```
 
@@ -47,17 +61,27 @@ GET / https://api-wallmapu-mesana.vercel.app/api/news/{id}
 RESPONSE 200
 ```json
 {
-  "id": 4,
-  "title": "Noticia 4",
-  "subtitle": "Subtítulo 4",
-  "body": "Esta es una noticia con un subtítulo 4. Es correcto???",
-  "date": "2026-01-28"
+    "isSuccess": true,
+    "statusCode": 200,
+    "message": "Noticia encontrada",
+    "data": {
+        "id": 1,
+        "title": string,
+        "subtitle": string,
+        "body": string,
+        "created_at": datetime,
+        "updated_at": datetime,
+        "images": []
+    }
 }
 ```
 RESPONSE 404
 ```json
 {
-    "message": "Noticia no encontrada"
+    "isSuccess": false,
+    "statusCode": 404,
+    "message": "Noticia no encontrada",
+    "data": null
 }
 ```
 
@@ -66,22 +90,26 @@ POST / https://api-wallmapu-mesana.vercel.app/api/news
 Datos de entrada:
 ```json 
 {
-  "title": "Noticia 5",
-  "subtitle": "Subtítulo 5",
-  "body": "Esta es una noticia con un subtítulo 5"
+  "title": string,
+  "subtitle": string,
+  "body": string
 }
 ```
 Datos de salida:
 ```json
 {
+    "isSuccess": true,
+    "statusCode": 200,
+    "message": "Noticia creada exitosamente",
     "data": {
-        "id": 5,
-        "title": "Noticia 5",
-        "subtitle": "Subtítulo 5",
-        "body": "Esta es una noticia con un subtítulo 5",
-        "date": "2026-02-05"
-    },
-    "message": "Noticia creada exitosamente"
+        "id": 0,
+        "title": string,
+        "subtitle": string,
+        "body": string,
+        "created_at": datetime,
+        "updated_at": datetime,
+        "images": []
+    }
 }
 ```
 PUT / https://api-wallmapu-mesana.vercel.app/api/news/{id}
@@ -89,22 +117,26 @@ PUT / https://api-wallmapu-mesana.vercel.app/api/news/{id}
 Datos de entrada:
 ```json
 {
-  "title": "Edición noticia 5",
-  "subtitle": "Subtítulo 5",
-  "body": "Esta es una noticia con un subtítulo 5"
+  "title": string,
+  "subtitle": string,
+  "body": string
 }
 ```
 Datos de salida: 
 RESPONSE 200
 ```json
 {
+    "isSuccess": true,
+    "statusCode": 200,
     "message": "Noticia editada correctamente",
     "data": {
-        "id": 5,
-        "title": "Edición noticia 5",
-        "subtitle": "Subtítulo 5",
-        "body": "Esta es una noticia con un subtítulo 5",
-        "date": "2026-02-05"
+        "id": 0,
+        "title": string,
+        "subtitle": string,
+        "body": string,
+        "created_at": datetime,
+        "updated_at": datetime,
+        "images": []
     }
 }
 ```
