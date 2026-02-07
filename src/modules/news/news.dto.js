@@ -16,7 +16,7 @@ export const newsResponseDTO = (news) => ({
     body: news.body,
     created_at: news.created_at,
     updated_at: news.updated_at,
-    images: news.gallery ? news.gallery.map(g => ({
+    gallery: news.gallery ? news.gallery.map(g => ({
       id_news_gallery: g.id_news_gallery,
       img: g.img,
       alt: g.alt,

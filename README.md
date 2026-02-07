@@ -19,68 +19,90 @@
 API NEWS
 GET / https://api-wallmapu-mesana.vercel.app/api/news
 
-```json
-{
-    "isSuccess": true,
-    "statusCode": 200,
-    "message": "Operación exitosa",
-    "data": {
-        "pagination": {
-            "total": int,
-            "page": str,
-            "limit": int,
-            "next": null,
-            "prev": null
-        },
-        "rows": [
-            {
-                "id": 1,
-                "title": string,
-                "subtitle": string,
-                "body": string,
-                "created_at": datetime,
-                "updated_at": datetime,
-                "images": []
-            },
-            {
-                 "id": 1,
-                "title": string,
-                "subtitle": string,
-                "body": string,
-                "created_at": datetime,
-                "updated_at": datetime,
-                "images": []
-            }
-        ]
-    }
-}
-```
-
-GET / https://api-wallmapu-mesana.vercel.app/api/news/{id}
-
+Datos de salida: 
 RESPONSE 200
 ```json
 {
-    "isSuccess": true,
-    "statusCode": 200,
-    "message": "Noticia encontrada",
-    "data": {
-        "id": 1,
-        "title": string,
-        "subtitle": string,
-        "body": string,
-        "created_at": datetime,
-        "updated_at": datetime,
-        "images": []
-    }
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "data": {
+    "pagination": {
+      "total": 0,
+      "page": 0,
+      "limit": 0,
+      "next": "string",
+      "prev": "string"
+    },
+    "rows": [
+      {
+        "id": 0,
+        "title": "string",
+        "subtitle": "string",
+        "body": "string",
+        "created_at": "string",
+        "updated_at": "string",
+        "gallery": [
+          {
+            "id": 0,
+            "alt": "string",
+            "img": "string",
+            "id_news": 0
+          }
+        ]
+      }
+    ]
+  }
 }
+
 ```
 RESPONSE 404
 ```json
 {
     "isSuccess": false,
-    "statusCode": 404,
-    "message": "Noticia no encontrada",
+    "statusCode": 0,
+    "message": "string",
+    "data": null
+}
+```
+
+GET / https://api-wallmapu-mesana.vercel.app/api/news/{id}
+
+Requerido: {id}
+
+Datos de salida: 
+
+RESPONSE 200
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "data": {
+    "id": 0,
+    "title": "string",
+    "subtitle": "string",
+    "body": "string",
+    "created_at": "string",
+    "updated_at": "string",
+    "gallery": [
+      {
+        "id_news_gallery": 0,
+        "img": "string",
+        "alt": "string",
+        "id_news": 0
+      }
+    ]
+  }
+}
+
+```
+RESPONSE 404
+```json
+{
+    "isSuccess": false,
+    "statusCode": 0,
+    "message": "string",
     "data": null
 }
 ```
@@ -90,75 +112,98 @@ POST / https://api-wallmapu-mesana.vercel.app/api/news
 Datos de entrada:
 ```json 
 {
-  "title": string,
-  "subtitle": string,
-  "body": string
+  "title": "string",
+  "subtitle": "string",
+  "body": "string"
 }
 ```
 Datos de salida:
+
+RESPONSE 201
 ```json
 {
-    "isSuccess": true,
-    "statusCode": 200,
-    "message": "Noticia creada exitosamente",
-    "data": {
-        "id": 0,
-        "title": string,
-        "subtitle": string,
-        "body": string,
-        "created_at": datetime,
-        "updated_at": datetime,
-        "images": []
-    }
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "data": {
+    "id": 0,
+    "title": "string",
+    "subtitle": "string",
+    "body": "string",
+    "created_at": "string",
+    "updated_at": "string",
+    "gallery": []
+  }
 }
 ```
 PUT / https://api-wallmapu-mesana.vercel.app/api/news/{id}
 
+Requerido: {id}
+
 Datos de entrada:
 ```json
 {
-  "title": string,
-  "subtitle": string,
-  "body": string
+  "title": "string",
+  "subtitle": "string",
+  "body": "string"
 }
 ```
 Datos de salida: 
+
 RESPONSE 200
 ```json
 {
-    "isSuccess": true,
-    "statusCode": 200,
-    "message": "Noticia editada correctamente",
-    "data": {
-        "id": 0,
-        "title": string,
-        "subtitle": string,
-        "body": string,
-        "created_at": datetime,
-        "updated_at": datetime,
-        "images": []
-    }
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "data": {
+    "id": 0,
+    "title": "string",
+    "subtitle": "string",
+    "body": "string",
+    "created_at": "string",
+    "updated_at": "string",
+    "gallery": [
+      {
+        "id_news_gallery": 0,
+        "img": "string",
+        "alt": "string",
+        "id_news": 0
+      }
+    ]
+  }
 }
+
 ```
 RESPONSE 404
 ```json
 {
-    "error": "Noticia no encontrada"
+    "isSuccess": false,
+    "statusCode": 0,
+    "message": "string",
+    "data": null
 }
 ```
 
 DELETE / https://api-wallmapu-mesana.vercel.app/api/news/{id}
 
-RESPONSE 200
+Requerido: {id}
+
+RESPONSE 204
 ```json
 {
-    "message": "Noticia eliminada correctamente"
+    "isSuccess": true,
+    "statusCode": 0,
+    "message": "string"
 }
 ```
 RESPONSE 404
 ```json
 {
-    "error": "Noticia no encontrada"
+    "isSuccess": true,
+    "statusCode": 0,
+    "message": "string",
+    "data": null
 }
 ```
 

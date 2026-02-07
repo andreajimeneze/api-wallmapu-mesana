@@ -16,7 +16,13 @@ export const getAllNewsService = async ({ limit, offset }) => {
 };
 
 export const getOneNewsService = async (id) => {
-  return await NewsModel.findByPk(id);
+  return await NewsModel.findByPk(id,{  include: [
+      {
+        model: News_galleryModel,
+        as: "gallery",
+        attributes: ["id_news_gallery", "img", "alt", 'id_news'],
+      },
+    ],});
 };
 
 export const createNewsService = async (newsData) => {

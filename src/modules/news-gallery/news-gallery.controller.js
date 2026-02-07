@@ -1,4 +1,4 @@
-import { errorResponse, successResponse } from "../../shared/apiResponse.js";
+import { successCreateResponse, successGetResponse, internalServerResponse, notFoundResponse } from "../../shared/apiResponse.js";
 import { generateFileName } from "../../shared/images/generateFileName.js";
 import { resizeImage } from "../../shared/images/resizeImage.js";
 import { saveImageFile } from "../../shared/images/saveImage.js";
@@ -21,16 +21,16 @@ export const getGalleryByNews = async (req, res) => {
     if (gallery.length === 0) {
       return res
         .status(404)
-        .json({ message: "No existen imágenes en la galería" });
+        .json(notFoundResponse({ message: "No existen imágenes en la galería" }));
     }
 
     return res
       .status(200)
-      .json({ gallery: gallery.map(newsGalleryResponseDTO) });
+      .json(successGetResponse({ message: 'Imagenes obtenidas exitosamente',data: gallery.map(newsGalleryResponseDTO) }));
   } catch (error) {
     res
       .status(500)
-      .json({ error: "Error al obtener las imágenes de la galería" });
+      .json(internalServerResponse({ error: "Error al obtener las imágenes de la galería" }));
   }
 };
 
@@ -42,7 +42,7 @@ export const createGalleryNews = async (req, res) => {
 
     if (!req.file) {
       return res.status(400).json(
-        errorResponse({
+        notFoundResponse({
           error: "No se ha proporcionado una imagen para la galería",
         }),
       );
@@ -67,12 +67,12 @@ export const createGalleryNews = async (req, res) => {
     res
       .status(201)
       .json(
-        successResponse({ message: "Imagen de galería creada exitosamente" }),
+        successCreateResponse({ message: "Imagen de galería creada exitosamente" }),
       );
   } catch (error) {
     console.error("Error al crear la imagen de la galería:", error);
     res
       .status(500)
-      .json(errorResponse({ error: "Error al crear la imagen en la galería" }));
+      .json(internalServerResponse({ error: "Error al crear la imagen en la galería" }));
   }
 };
