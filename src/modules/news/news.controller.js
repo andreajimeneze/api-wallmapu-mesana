@@ -4,9 +4,8 @@ import {
   successUpdateResponse,
   successDeleteResponse,
   internalServerResponse,
-  notFoundResponse
+  notFoundResponse,
 } from "../../shared/apiResponse.js";
-import { paginationResponseDTO } from "../../shared/paginationResponse.js";
 import { createNewsDTO, newsResponseDTO } from "./news.dto.js";
 import {
   getAllNewsService,
@@ -18,57 +17,28 @@ import {
 
 export const getAllNews = async (req, res) => {
   try {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
-    const offset = (page - 1) * limit;
-    const search = req.query.search || null;
-
-    const { count, rows } = await getAllNewsService({
-      limit,
-      offset,
-      search: search === "null" ? null : search,
+    const result = await getAllNewsService({
+      page: Number(req.query.page) || 1,
+      limit: Number(req.query.limit) || 10,
+      search: req.query.search || null,
     });
 
-    if (!rows || rows.length === 0) {
-      if (search) {
-        return res
-          .status(404)
-          .json(
-            notFoundResponse({
-              message:
-                "No se encontraron noticias que coincidan con la búsqueda",
-            }),
-          );
-      } else {
-        return res
-          .status(404)
-          .json(notFoundResponse({ message: "No hay noticias actualmente" }));
-      }
+    if (result.result.total === 0) {
+      return res.status(404).json(notFoundResponse({ message: "No se encontraron noticias", result: result.result}));
     }
-
-    const pages = Math.ceil(count / limit);
-    const next =
-      page < pages
-        ? `/news?page=${page + 1}&items=${limit}&search=${search}`
-        : null;
-    const prev =
-      page > 1
-        ? `/news?page=${page - 1}&items=${limit}&search=${search}`
-        : null;
 
     return res.status(200).json(
       successGetResponse({
         message: "Noticias obtenidas exitosamente",
-        result: {
-          ...paginationResponseDTO({ count, pages, next, prev, result: rows.map(newsResponseDTO) }),
-        },
+        result: result.result,
       }),
     );
   } catch (error) {
-    console.error(error);
-    res
+    return res
       .status(500)
-      .json(internalServerResponse({ error: "Error al obtener las noticias" }));
+      .json(
+        internalServerResponse({ message: "Error al obtener las noticias" }),
+      );
   }
 };
 
@@ -76,27 +46,24 @@ export const getOneNews = async (req, res) => {
   try {
     const { id_news } = req.params;
     const newsSelected = await getOneNewsService(id_news);
-    if (!newsSelected) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "Noticia no encontrada" }));
-    }
-    res
-      .status(200)
-      .json(
-        successGetResponse({
-          message: "Noticia obtenida exitosamente",
-          result: newsResponseDTO(newsSelected),
-        }),
-      );
+
+    res.status(200).json(
+      successGetResponse({
+        message: "Noticia obtenida exitosamente",
+        result: newsResponseDTO(newsSelected),
+      }),
+    );
   } catch (error) {
-    res
-      .status(500)
-      .json(
-        internalServerResponse({
-          message: "Error al obtener la noticia solicitada",
+    if (error.code === "NOT_FOUND")
+      return res.status(404).json(
+        notFoundResponse({
+          message: error.message,
         }),
       );
+
+    return res
+      .status(500)
+      .json(internalServerResponse({ message: error.message }));
   }
 };
 
@@ -112,13 +79,11 @@ export const createNews = async (req, res) => {
       }),
     );
   } catch (error) {
-    res
-      .status(500)
-      .json(
-        internalServerResponse({
-          message: error.message || "Error al crear la noticia",
-        }),
-      );
+    res.status(500).json(
+      internalServerResponse({
+        message: error.message || "Error al crear la noticia",
+      }),
+    );
   }
 };
 
@@ -141,13 +106,11 @@ export const updateNews = async (req, res) => {
       }),
     );
   } catch (error) {
-    return res
-      .status(500)
-      .json(
-        internalServerResponse({
-          message: "Error al intentar editar la noticia",
-        }),
-      );
+    return res.status(500).json(
+      internalServerResponse({
+        message: "Error al intentar editar la noticia",
+      }),
+    );
   }
 };
 
