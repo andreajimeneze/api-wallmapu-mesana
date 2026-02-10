@@ -4,22 +4,22 @@ export const resizeImage = async (
   buffer,
   {
     width,
-    heigth,
+    height,
     ratio,
-    fit = "cover",
+    fit,
     allowEnlargement = true,
-    quality = 90,
+    quality
   },
 ) => {
   const image = sharp(buffer);
   const metadata = await image.metadata();
 
   let targetWidth = width;
-  let targetHeight = heigth;
+  let targetHeight = height;
 
-  if (ratio && (!width || !heigth)) {
+  if (ratio && (!width || !height)) {
     if (width) targetHeight = Math.round(width / ratio);
-    if (heigth) targetWidth = Math.round(heigth * ratio);
+    if (height) targetWidth = Math.round(height * ratio);
   }
 
   const shouldEnLarge =

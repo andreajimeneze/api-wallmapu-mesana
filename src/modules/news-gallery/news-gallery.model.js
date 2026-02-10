@@ -11,7 +11,7 @@ export const News_gallery = ( sequelize, DataTypes ) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        img: {
+        url: {
            type: DataTypes.STRING,
            allowNull: false
         },

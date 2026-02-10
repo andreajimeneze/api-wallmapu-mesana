@@ -11,7 +11,7 @@ router.get("/:id_news", getGalleryByNews);
 
 router.post(
   "/news/:id_news",
-  upload.single("img"),
+  upload.single("url"),
   createGalleryNews,
 );
 

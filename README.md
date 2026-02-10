@@ -26,15 +26,14 @@ RESPONSE 200
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "data": {
+  "result": {
     "pagination": {
-      "total": 0,
-      "page": 0,
-      "limit": 0,
+      "items": 0,
+      "pages": 0,
       "next": "string",
       "prev": "string"
     },
-    "rows": [
+    "result": [
       {
         "id": 0,
         "title": "string",
@@ -42,11 +41,11 @@ RESPONSE 200
         "body": "string",
         "created_at": "string",
         "updated_at": "string",
-        "gallery": [
+        "images": [
           {
             "id": 0,
             "alt": "string",
-            "img": "string",
+            "url": "string",
             "id_news": 0
           }
         ]
@@ -62,13 +61,13 @@ RESPONSE 404
     "isSuccess": false,
     "statusCode": 0,
     "message": "string",
-    "data": null
+    "result": null
 }
 ```
 
 GET / https://api-wallmapu-mesana.vercel.app/api/news/{id}
 
-Requerido: {id}
+Requerido: {id} *id_news
 
 Datos de salida: 
 
@@ -78,17 +77,17 @@ RESPONSE 200
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "data": {
+  "result": {
     "id": 0,
     "title": "string",
     "subtitle": "string",
     "body": "string",
     "created_at": "string",
     "updated_at": "string",
-    "gallery": [
+    "images": [
       {
         "id_news_gallery": 0,
-        "img": "string",
+        "url": "string",
         "alt": "string",
         "id_news": 0
       }
@@ -103,7 +102,7 @@ RESPONSE 404
     "isSuccess": false,
     "statusCode": 0,
     "message": "string",
-    "data": null
+    "result": null
 }
 ```
 
@@ -125,20 +124,20 @@ RESPONSE 201
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "data": {
+  "result": {
     "id": 0,
     "title": "string",
     "subtitle": "string",
     "body": "string",
     "created_at": "string",
     "updated_at": "string",
-    "gallery": []
+    "images": []
   }
 }
 ```
 PUT / https://api-wallmapu-mesana.vercel.app/api/news/{id}
 
-Requerido: {id}
+Requerido: {id} *id_news
 
 Datos de entrada:
 ```json
@@ -156,17 +155,17 @@ RESPONSE 200
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "data": {
+  "result": {
     "id": 0,
     "title": "string",
     "subtitle": "string",
     "body": "string",
     "created_at": "string",
     "updated_at": "string",
-    "gallery": [
+    "images": [
       {
         "id_news_gallery": 0,
-        "img": "string",
+        "url": "string",
         "alt": "string",
         "id_news": 0
       }
@@ -181,13 +180,13 @@ RESPONSE 404
     "isSuccess": false,
     "statusCode": 0,
     "message": "string",
-    "data": null
+    "result": null
 }
 ```
 
 DELETE / https://api-wallmapu-mesana.vercel.app/api/news/{id}
 
-Requerido: {id}
+Requerido: {id} *id_news
 
 RESPONSE 204
 ```json
@@ -203,7 +202,81 @@ RESPONSE 404
     "isSuccess": true,
     "statusCode": 0,
     "message": "string",
-    "data": null
+    "result": null
+}
+```
+
+GET / https://api-wallmapu-mesana.vercel.app/api/gallery/{id}
+
+Requerido: {id} *id_news
+
+RESPONSE 200
+
+```json
+{
+    "isSuccess": true,
+    "statusCode": 0,
+    "message": "string",
+    "result": [
+        {
+            "id": 0,
+            "alt": "string",
+            "url": "string",
+            "id_news": 0
+        },
+        {
+            "id": 0,
+            "alt": "string",
+            "url": "string",
+            "id_news": 0
+        }
+    ]
+}
+```
+RESPONSE 404
+```json
+{
+    "isSuccess": true,
+    "statusCode": 0,
+    "message": "string",
+    "result": null
+}
+```
+POST / https://api-wallmapu-mesana.vercel.app/api/gallery/news/{id}
+
+Requerido: {id} *id_news
+
+Datos de entrada:
+```json 
+{
+  "alt": "string",
+  "url": "string"
+}
+```
+Datos de salida: 
+
+```json 
+RESPONSE 201
+{
+    "isSuccess": true,
+    "statusCode": 0,
+    "message": "string",
+    "result": {
+        "id": 0,
+        "alt": "string",
+        "url": "string",
+        "id_news": 0
+    }
+}
+```
+
+RESPONSE 404
+```json
+{
+    "isSuccess": true,
+    "statusCode": 0,
+    "message": "string",
+    "result": null
 }
 ```
 
@@ -281,3 +354,11 @@ src
     |
     |───app.js
 ```
+
+# SERVIDOR LOCAL
+Para arrancar servidor local:
+
+npm run dev
+
+Corre en http://localhost:3000/
+

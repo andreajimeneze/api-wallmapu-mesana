@@ -1,3 +1,4 @@
-export const generateFileName = (prefix = 'image', ext = 'webp') => {
-  return `${prefix}-${Date.now()}.${ext}`;
+export const generateFileName = (prefix = 'image', id, ext = 'webp') => {
+  const shortDate = Date.now().toString(36);
+  return `${id}-${prefix}-${shortDate}.${ext}`;
 };

@@ -148,7 +148,7 @@ CREATE TABLE wm_loans (
 CREATE TABLE wm_news_gallery (
     id_news_gallery INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     alt VARCHAR(45) NOT NULL,
-	img VARCHAR(45) NOT NULL,
+	url VARCHAR(256) NOT NULL,
 	id_news INTEGER NOT NULL,
 	CONSTRAINT wm_news_gallery_wm_news_fk
         FOREIGN KEY (id_news) REFERENCES wm_news(id_news)

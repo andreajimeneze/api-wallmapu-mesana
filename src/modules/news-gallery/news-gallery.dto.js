@@ -1,14 +1,14 @@
-export const createNewsGalleryDTO = ({ alt, img, id_news }) => {
+export const createNewsGalleryDTO = ({ alt, url, id_news }) => {
     if(!id_news) {
          throw new Error('id_news es obligatorio');
     }
-    if(!alt && !img ) {
-        throw new Error('Campos de la galería son obligatorios');
+    if(!alt && !url ) {
+        throw new Error('Campos de la imagen son obligatorios');
     }
 
     return {
-        alt: alt.trim(),
-        img: img.trim(),
+        alt,
+        url,
         id_news: Number(id_news)
     }
 };
@@ -16,6 +16,6 @@ export const createNewsGalleryDTO = ({ alt, img, id_news }) => {
 export const newsGalleryResponseDTO = (news_gallery) => ({
     id: news_gallery.id_news_gallery,
     alt: news_gallery.alt,
-    img: news_gallery.img,
+    url: `${process.env.URL_BASE}/public/images/news-gallery/${news_gallery.url}`,
     id_news: news_gallery.id_news
 })

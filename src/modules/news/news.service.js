@@ -1,15 +1,27 @@
 import { News_galleryModel, NewsModel } from "../../config/dbSequelize.js";
+import { Op } from "sequelize";
 
-export const getAllNewsService = async ({ limit, offset }) => {
+export const getAllNewsService = async ({ limit, offset, search }) => {
+  const where = search
+    ? {
+        [Op.or]: [
+          { title: { [Op.iLike]: `%${search}%` } },
+          { subtitle: { [Op.iLike]: `%${search}%` } },
+        ],
+      }
+    : {};
+
   return await NewsModel.findAndCountAll({
+    where,
     limit,
     offset,
     order: [["created_at", "DESC"]],
+    distinct: true,
     include: [
       {
         model: News_galleryModel,
-        as: "gallery",
-        attributes: ["id_news_gallery", "img", "alt", 'id_news'],
+        as: "images",
+        attributes: ["id_news_gallery", "url", "alt", "id_news"],
       },
     ],
   });
@@ -19,8 +31,8 @@ export const getOneNewsService = async (id) => {
   return await NewsModel.findByPk(id,{  include: [
       {
         model: News_galleryModel,
-        as: "gallery",
-        attributes: ["id_news_gallery", "img", "alt", 'id_news'],
+        as: "images",
+        attributes: ["id_news_gallery", "url", "alt", 'id_news'],
       },
     ],});
 };
