@@ -15,14 +15,14 @@ import {
 
 export const getGalleryByNews = async (req, res) => {
   try {
-    const { id_news } = req.params;
-    const images = await getGalleryByNewsService(id_news);
+    const { news_id } = req.params;
+    const images = await getGalleryByNewsService(news_id);
 
     if (images.length === 0) {
       return res
         .status(404)
         .json(
-          notFoundResponse({ message: `No existen imágenes en la galería asociadas a la noticia ${id_news}` }),
+          notFoundResponse({ message: `No existen imágenes en la galería asociadas a la noticia ${news_id}` }),
         );
     }
 
@@ -47,7 +47,7 @@ export const getGalleryByNews = async (req, res) => {
 
 export const createGalleryNews = async (req, res) => {
   try {
-    const { id_news } = req.params;
+    const { news_id } = req.params;
     const { alt } = req.body;
 
     if (!req.file) {
@@ -59,7 +59,7 @@ export const createGalleryNews = async (req, res) => {
     }
 
     const createdGallery = await createGalleryNewsService({
-      id_news,
+      news_id,
       alt,
       file: req.file.buffer,
     });

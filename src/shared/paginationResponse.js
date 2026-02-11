@@ -1,12 +1,11 @@
 export const paginationResponseDTO =
-  ({ items, pages, next, prev, result }) => {
-    const emptyResult = items === 0;
+  ({ items, pages, next = 'none', prev = 'none', result = [] }) => {
 
     return {
       items,
       pages,
-      next: emptyResult ? "none" : next,
-      prev: emptyResult ? "none" : prev,
-      result: emptyResult ? [] : result,
+      next,
+      prev,
+      result
     };
   };

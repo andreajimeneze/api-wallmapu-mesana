@@ -4,8 +4,8 @@ import { paginationResponseDTO } from "../../shared/paginationResponse.js";
 import { newsResponseDTO } from "./news.dto.js";
 
 export const getNewsPaginationAndSearchService = async ({ page, limit, search }) => {
-  const DEFAULT_LIMIT = 10;
-  const MAX_LIMIT = 100;
+  const DEFAULT_LIMIT = 1;
+  const MAX_LIMIT = 50;
   if (limit < 1) limit = DEFAULT_LIMIT;
   if (limit > MAX_LIMIT) limit = MAX_LIMIT;
   const searchNomalized = search === "null" ? null : search;
@@ -52,7 +52,7 @@ export const getNewsPaginationAndSearchService = async ({ page, limit, search })
       {
         model: News_galleryModel,
         as: "images",
-        attributes: ["id_news_gallery", "url", "alt", "id_news"],
+        attributes: ["id_news_gallery", "url", "alt", "news_id"],
       },
     ],
    })
@@ -83,7 +83,7 @@ export const getNewsByIdService = async (id) => {
       {
         model: News_galleryModel,
         as: "images",
-        attributes: ["id_news_gallery", "url", "alt", "id_news"],
+        attributes: ["id_news_gallery", "url", "alt", "news_id"],
       },
     ],
   });

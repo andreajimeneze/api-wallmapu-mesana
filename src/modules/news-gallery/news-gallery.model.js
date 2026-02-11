@@ -15,7 +15,7 @@ export const News_gallery = ( sequelize, DataTypes ) => {
            type: DataTypes.STRING,
            allowNull: false
         },
-        id_news: {
+        news_id: {
             type: DataTypes.INTEGER,
             allowNull: false
         } 
@@ -26,7 +26,8 @@ export const News_gallery = ( sequelize, DataTypes ) => {
 
     News_gallery.associate = (models) => {
         News_gallery.belongsTo(models.NewsModel, {
-            foreignKey: 'id_news', 
+            foreignKey: 'news_id', 
+            targetKey: 'id_news',
             as: 'news'
         })
     }

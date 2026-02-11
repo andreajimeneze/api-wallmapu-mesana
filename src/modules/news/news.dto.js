@@ -21,7 +21,7 @@ export const newsResponseDTO = (news) => ({
       id_news_gallery: g.id_news_gallery,
       url: g.url,
       alt: g.alt,
-      id_news: g.id_news
+      news_id: g.news_id
     })) : []
 });
 

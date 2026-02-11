@@ -7,10 +7,10 @@ import { upload } from "../../config/multer.js";
 
 const router = express.Router();
 
-router.get("/:id_news", getGalleryByNews);
+router.get("/:news_id", getGalleryByNews);
 
 router.post(
-  "/news/:id_news",
+  "/news/:news_id",
   upload.single("url"),
   createGalleryNews,
 );
