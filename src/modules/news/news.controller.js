@@ -5,7 +5,8 @@ import {
   successDeleteResponse,
   internalServerResponse,
   notFoundResponse,
-  badRequestResponse,
+  badRequestResponse, 
+  conflictResponse
 } from "../../shared/apiResponse.js";
 import { createNewsDTO, newsResponseDTO } from "./news.dto.js";
 import {
@@ -21,23 +22,20 @@ export const getNewsPaginationAndSearch = async (req, res) => {
     let page = parseInt(req.query.page ?? 10);
     let items = parseInt(req.query.items ?? 10);
 
-    if ((isNaN(page) || page < 1) || (isNaN(items) || items < 1)){
-      return res
-        .status(400)
-        .json(
-          badRequestResponse({
-            message: "El número de página o items debe ser mayor a 0",
-          }),
-        );
+    if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
+      return res.status(400).json(
+        badRequestResponse({
+          message: "El número de página o items debe ser mayor a 0",
+        }),
+      );
     }
-    
+
     const result = await getNewsPaginationAndSearchService({
       page,
       limit: items,
       search: req.query.search ?? "",
     });
 
-    
     return res.status(200).json(
       successGetResponse({
         message: "Noticias obtenidas exitosamente",
@@ -81,6 +79,7 @@ export const getNewsById = async (req, res) => {
 export const createNews = async (req, res) => {
   try {
     const dto = createNewsDTO(req.body);
+
     const createdNews = await createNewsService(dto);
 
     res.status(201).json(
@@ -90,11 +89,19 @@ export const createNews = async (req, res) => {
       }),
     );
   } catch (error) {
-    res.status(500).json(
-      internalServerResponse({
-        message: error.message || "Error al crear la noticia",
-      }),
-    );
+    if (error.code === "CONFLICT") {
+      res.status(409).json(
+        conflictResponse({
+          message: error.message || "Título de la noticia ya existe",
+        }),
+      );
+    } else {
+      res.status(500).json(
+        internalServerResponse({
+          message: error.message || "Error al crear la noticia",
+        }),
+      );
+    }
   }
 };
 

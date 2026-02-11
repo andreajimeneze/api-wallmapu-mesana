@@ -96,3 +96,14 @@ export const badRequestResponse = ({
   message,
   result,
 });
+
+export const conflictResponse = ({
+  message = "",
+  result = null,
+  statusCode = 409,
+}) => ({
+  isSuccess: false,
+  statusCode,
+  message,
+  result,
+});
