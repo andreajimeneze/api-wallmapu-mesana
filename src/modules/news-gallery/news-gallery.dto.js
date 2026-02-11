@@ -14,7 +14,7 @@ export const createNewsGalleryDTO = ({ alt, url, id_news }) => {
 };
 
 export const newsGalleryResponseDTO = (news_gallery) => ({
-    id: news_gallery.id_news_gallery,
+    id_news_gallery: news_gallery.id_news_gallery,
     alt: news_gallery.alt,
     url: `${process.env.URL_BASE}/public/images/news-gallery/${news_gallery.url}`,
     id_news: news_gallery.id_news

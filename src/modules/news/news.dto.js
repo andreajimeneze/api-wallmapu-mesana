@@ -11,7 +11,7 @@ export const createNewsDTO = ({ title, subtitle, body }) => {
 };
 
 export const newsResponseDTO = (news) => ({
-    id: news.id_news,
+    id_news: news.id_news,
     title: news.title,
     subtitle: news.subtitle,
     body: news.body,

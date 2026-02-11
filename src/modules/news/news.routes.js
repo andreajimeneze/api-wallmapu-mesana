@@ -1,7 +1,7 @@
 import express from 'express';
 import {
-  getAllNews,
-  getOneNews,
+  getNewsPaginationAndSearch,
+  getNewsById,
   createNews,
   updateNews,
   deleteNews,
@@ -10,9 +10,9 @@ import {
 const router = express.Router();
 
 
-router.get('/', getAllNews);
+router.get('/', getNewsPaginationAndSearch);
 
-router.get('/:id_news', getOneNews);
+router.get('/:id_news', getNewsById);
 
 router.post('/', createNews);
 

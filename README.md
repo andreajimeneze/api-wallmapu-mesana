@@ -17,25 +17,24 @@
 ## DOCUMENTACIÓN API
 
 API NEWS
-GET / https://api-wallmapu-mesana.vercel.app/api/news
+GET / https://api-wallmapu-mesana.vercel.app/api/news?page=0&items=0&search=null
 
-Datos de salida: 
+Datos de salida:
 RESPONSE 200
+
 ```json
 {
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
   "result": {
-    "pagination": {
-      "items": 0,
-      "pages": 0,
-      "next": "string",
-      "prev": "string"
-    },
+    "items": 0,
+    "pages": 0,
+    "next": "string",
+    "prev": "string",
     "result": [
       {
-        "id": 0,
+        "id_news": 0,
         "title": "string",
         "subtitle": "string",
         "body": "string",
@@ -43,7 +42,7 @@ RESPONSE 200
         "updated_at": "string",
         "images": [
           {
-            "id": 0,
+            "id_news_gallery": 0,
             "alt": "string",
             "url": "string",
             "id_news": 0
@@ -53,32 +52,34 @@ RESPONSE 200
     ]
   }
 }
-
 ```
+
 RESPONSE 404
+
 ```json
 {
-    "isSuccess": false,
-    "statusCode": 0,
-    "message": "string",
-    "result": null
+  "isSuccess": false,
+  "statusCode": 0,
+  "message": "string",
+  "result": null
 }
 ```
 
 GET / https://api-wallmapu-mesana.vercel.app/api/news/{id}
 
-Requerido: {id} *id_news
+Requerido: {id} \*id_news
 
-Datos de salida: 
+Datos de salida:
 
 RESPONSE 200
+
 ```json
 {
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
   "result": {
-    "id": 0,
+    "id_news": 0,
     "title": "string",
     "subtitle": "string",
     "body": "string",
@@ -94,38 +95,42 @@ RESPONSE 200
     ]
   }
 }
-
 ```
+
 RESPONSE 404
+
 ```json
 {
-    "isSuccess": false,
-    "statusCode": 0,
-    "message": "string",
-    "result": null
+  "isSuccess": false,
+  "statusCode": 0,
+  "message": "string",
+  "result": null
 }
 ```
 
 POST / https://api-wallmapu-mesana.vercel.app/api/news
 
 Datos de entrada:
-```json 
+
+```json
 {
   "title": "string",
   "subtitle": "string",
   "body": "string"
 }
 ```
+
 Datos de salida:
 
 RESPONSE 201
+
 ```json
 {
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
   "result": {
-    "id": 0,
+    "id_news": 0,
     "title": "string",
     "subtitle": "string",
     "body": "string",
@@ -135,11 +140,13 @@ RESPONSE 201
   }
 }
 ```
+
 PUT / https://api-wallmapu-mesana.vercel.app/api/news/{id}
 
-Requerido: {id} *id_news
+Requerido: {id} \*id_news
 
 Datos de entrada:
+
 ```json
 {
   "title": "string",
@@ -147,16 +154,18 @@ Datos de entrada:
   "body": "string"
 }
 ```
-Datos de salida: 
+
+Datos de salida:
 
 RESPONSE 200
+
 ```json
 {
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
   "result": {
-    "id": 0,
+    "id_news": 0,
     "title": "string",
     "subtitle": "string",
     "body": "string",
@@ -172,90 +181,99 @@ RESPONSE 200
     ]
   }
 }
-
 ```
+
 RESPONSE 404
+
 ```json
 {
-    "isSuccess": false,
-    "statusCode": 0,
-    "message": "string",
-    "result": null
+  "isSuccess": false,
+  "statusCode": 0,
+  "message": "string",
+  "result": null
 }
 ```
 
 DELETE / https://api-wallmapu-mesana.vercel.app/api/news/{id}
 
-Requerido: {id} *id_news
+Requerido: {id} \*id_news
 
 RESPONSE 204
+
 ```json
 {
-    "isSuccess": true,
-    "statusCode": 0,
-    "message": "string"
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string"
 }
 ```
+
 RESPONSE 404
+
 ```json
 {
-    "isSuccess": true,
-    "statusCode": 0,
-    "message": "string",
-    "result": null
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": null
 }
 ```
 
 GET / https://api-wallmapu-mesana.vercel.app/api/gallery/{id}
 
-Requerido: {id} *id_news
+Requerido: {id} \*id_news
 
 RESPONSE 200
 
 ```json
 {
-    "isSuccess": true,
-    "statusCode": 0,
-    "message": "string",
-    "result": [
-        {
-            "id": 0,
-            "alt": "string",
-            "url": "string",
-            "id_news": 0
-        },
-        {
-            "id": 0,
-            "alt": "string",
-            "url": "string",
-            "id_news": 0
-        }
-    ]
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": [
+    {
+      "id": 0,
+      "alt": "string",
+      "url": "string",
+      "id_news": 0
+    },
+    {
+      "id": 0,
+      "alt": "string",
+      "url": "string",
+      "id_news": 0
+    }
+  ]
 }
 ```
+
 RESPONSE 404
+
 ```json
 {
-    "isSuccess": true,
-    "statusCode": 0,
-    "message": "string",
-    "result": null
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": null
 }
 ```
+
 POST / https://api-wallmapu-mesana.vercel.app/api/gallery/news/{id}
 
-Requerido: {id} *id_news
+Requerido: {id} \*id_news
 
 Datos de entrada:
-```json 
+
+```json
 {
   "alt": "string",
   "url": "string"
 }
 ```
-Datos de salida: 
 
-```json 
+Datos de salida:
+
+```json
 RESPONSE 201
 {
     "isSuccess": true,
@@ -271,12 +289,13 @@ RESPONSE 201
 ```
 
 RESPONSE 404
+
 ```json
 {
-    "isSuccess": true,
-    "statusCode": 0,
-    "message": "string",
-    "result": null
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": null
 }
 ```
 
@@ -356,9 +375,9 @@ src
 ```
 
 # SERVIDOR LOCAL
+
 Para arrancar servidor local:
 
 npm run dev
 
 Corre en http://localhost:3000/
-

@@ -3,7 +3,7 @@ import { Op } from "sequelize";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
 import { newsResponseDTO } from "./news.dto.js";
 
-export const getAllNewsService = async ({ page, limit, search }) => {
+export const getNewsPaginationAndSearchService = async ({ page, limit, search }) => {
   const DEFAULT_LIMIT = 10;
   const MAX_LIMIT = 100;
   if (limit < 1) limit = DEFAULT_LIMIT;
@@ -18,15 +18,15 @@ export const getAllNewsService = async ({ page, limit, search }) => {
         }
       : {};
 
-  const total = await NewsModel.count({
+  const items = await NewsModel.count({
     where
   });
 
-  if(total === 0) {
+  if(items === 0) {
     return {
       response: "No se encontraron noticias",
       result: paginationResponseDTO({
-        total: 0,
+        items: 0,
         pages: 0,
         next: 'none',
         prev: 'none',
@@ -35,7 +35,7 @@ export const getAllNewsService = async ({ page, limit, search }) => {
   }
 }
 
-  const pages = Math.ceil(total / limit);
+  const pages = Math.ceil(items / limit);
   
   if(page > pages) {
     page = pages;
@@ -56,13 +56,13 @@ export const getAllNewsService = async ({ page, limit, search }) => {
       },
     ],
    })
-  const nextPage = (page < pages) ? page + 1 : null;
-  const prevPage = (page > 1) ? page - 1 : null;
+  const nextPage = (page < pages) ? (page + 1) : null;
+  const prevPage = (page > 1) ? (page - 1) : null;
 
   return {
     response: "Noticias obtenidas exitosamente",
     result: paginationResponseDTO({
-      total,
+      items,
       pages,
       next:
         page < pages
@@ -77,7 +77,7 @@ export const getAllNewsService = async ({ page, limit, search }) => {
   };
 };
 
-export const getOneNewsService = async (id) => {
+export const getNewsByIdService = async (id) => {
   const newsById = await NewsModel.findByPk(id, {
     include: [
       {

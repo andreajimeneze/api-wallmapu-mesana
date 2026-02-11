@@ -1,9 +1,9 @@
 export const paginationResponseDTO =
-  ({ total, pages, next, prev, result }) => {
-    const emptyResult = total === 0;
+  ({ items, pages, next, prev, result }) => {
+    const emptyResult = items === 0;
 
     return {
-      total,
+      items,
       pages,
       next: emptyResult ? "none" : next,
       prev: emptyResult ? "none" : prev,
