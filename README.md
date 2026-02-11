@@ -17,7 +17,12 @@
 ## DOCUMENTACIÓN API
 
 API NEWS
-GET / https://api-wallmapu-mesana.vercel.app/api/news?page=0&items=0&search=null
+GET / https://api-wallmapu-mesana.vercel.app/api/news?page=0&items=0&search=
+
+Datos de entrada opcional:
+page = 0,
+items = 0,
+search = "string"
 
 Datos de salida:
 RESPONSE 200
@@ -42,10 +47,10 @@ RESPONSE 200
         "updated_at": "string",
         "images": [
           {
-            "id_news_gallery": 0,
+            "news_id_gallery": 0,
             "alt": "string",
             "url": "string",
-            "id_news": 0
+            "news_id": 0
           }
         ]
       }
@@ -90,7 +95,7 @@ RESPONSE 200
         "id_news_gallery": 0,
         "url": "string",
         "alt": "string",
-        "id_news": 0
+        "news_id": 0
       }
     ]
   }
@@ -176,7 +181,7 @@ RESPONSE 200
         "id_news_gallery": 0,
         "url": "string",
         "alt": "string",
-        "id_news": 0
+        "news_id": 0
       }
     ]
   }
@@ -221,7 +226,7 @@ RESPONSE 404
 
 GET / https://api-wallmapu-mesana.vercel.app/api/gallery/{id}
 
-Requerido: {id} \*id_news
+Requerido: {id} \*news_id
 
 RESPONSE 200
 
@@ -235,13 +240,13 @@ RESPONSE 200
       "id": 0,
       "alt": "string",
       "url": "string",
-      "id_news": 0
+      "news_id": 0
     },
     {
       "id": 0,
       "alt": "string",
       "url": "string",
-      "id_news": 0
+      "news_id": 0
     }
   ]
 }
@@ -260,7 +265,7 @@ RESPONSE 404
 
 POST / https://api-wallmapu-mesana.vercel.app/api/gallery/news/{id}
 
-Requerido: {id} \*id_news
+Requerido: {id} \*news_id
 
 Datos de entrada:
 
@@ -283,7 +288,7 @@ RESPONSE 201
         "id": 0,
         "alt": "string",
         "url": "string",
-        "id_news": 0
+        "news_id": 0
     }
 }
 ```

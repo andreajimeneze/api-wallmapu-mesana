@@ -17,15 +17,13 @@ import {
 
 export const getNewsPaginationAndSearch = async (req, res) => {
   try {
+    let page = parseInt(req.query.page ?? '1', 10);
+    let items = parseInt(req.query.items ?? '1', 10);
     const result = await getNewsPaginationAndSearchService({
-      page: Number(req.query.page) || 1,
-      limit: Number(req.query.limit) || 10,
-      search: req.query.search || null,
+      page,
+      limit: items,
+      search: req.query.search ?? '',
     });
-
-    if (result.result.items === 0) {
-      return res.status(404).json(notFoundResponse({ message: "No se encontraron noticias", result: result.result}));
-    }
 
     return res.status(200).json(
       successGetResponse({

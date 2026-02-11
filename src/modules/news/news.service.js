@@ -4,16 +4,22 @@ import { paginationResponseDTO } from "../../shared/paginationResponse.js";
 import { newsResponseDTO } from "./news.dto.js";
 
 export const getNewsPaginationAndSearchService = async ({ page, limit, search }) => {
+  limit = parseInt(limit) || 1;
+  page = parseInt(page) || 1;
   const DEFAULT_LIMIT = 1;
   const MAX_LIMIT = 50;
-  if (limit < 1) limit = DEFAULT_LIMIT;
-  if (limit > MAX_LIMIT) limit = MAX_LIMIT;
-  const searchNomalized = search === "null" ? null : search;
-  const where = searchNomalized
+
+  if (limit < 1) {
+    limit = DEFAULT_LIMIT;
+  } else if (limit > MAX_LIMIT) {
+    limit = MAX_LIMIT;
+  } 
+
+  const where = search
       ? {
           [Op.or]: [
-            { title: { [Op.iLike]: `%${searchNomalized}%` } },
-            { subtitle: { [Op.iLike]: `%${searchNomalized}%` } },
+            { title: { [Op.iLike]: `%${search}%` } },
+            { subtitle: { [Op.iLike]: `%${search}%` } },
           ],
         }
       : {};
@@ -39,7 +45,10 @@ export const getNewsPaginationAndSearchService = async ({ page, limit, search })
   
   if(page > pages) {
     page = pages;
+  } else if (page < 1) {
+    page = 1;
   }
+  
    const offset = (page - 1) * limit;
 
    const result = await NewsModel.findAll({
@@ -56,8 +65,6 @@ export const getNewsPaginationAndSearchService = async ({ page, limit, search })
       },
     ],
    })
-  const nextPage = (page < pages) ? (page + 1) : null;
-  const prevPage = (page > 1) ? (page - 1) : null;
 
   return {
     response: "Noticias obtenidas exitosamente",
@@ -66,11 +73,11 @@ export const getNewsPaginationAndSearchService = async ({ page, limit, search })
       pages,
       next:
         page < pages
-          ? `/news?page=${nextPage}&items=${limit}&search=${search}`
+          ? `/news?page=${page + 1}&items=${limit}&search=${search}`
           : null,
       prev:
         page > 1
-          ? `/news?page=${prevPage}&items=${limit}&search=${search}`
+          ? `/news?page=${page - 1}&items=${limit}&search=${search}`
           : null,
       result: result.map(newsResponseDTO),
     }),
