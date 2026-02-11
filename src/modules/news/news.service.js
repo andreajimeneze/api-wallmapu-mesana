@@ -3,8 +3,12 @@ import { Op } from "sequelize";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
 import { newsResponseDTO } from "./news.dto.js";
 
-export const getNewsPaginationAndSearchService = async ({ page, limit, search }) => {
-  limit = parseInt(limit) || 1;
+export const getNewsPaginationAndSearchService = async ({
+  page,
+  limit,
+  search,
+}) => {
+  limit = parseInt(limit) || 10;
   page = parseInt(page) || 1;
   const DEFAULT_LIMIT = 1;
   const MAX_LIMIT = 50;
@@ -13,45 +17,45 @@ export const getNewsPaginationAndSearchService = async ({ page, limit, search })
     limit = DEFAULT_LIMIT;
   } else if (limit > MAX_LIMIT) {
     limit = MAX_LIMIT;
-  } 
+  }
 
   const where = search
-      ? {
-          [Op.or]: [
-            { title: { [Op.iLike]: `%${search}%` } },
-            { subtitle: { [Op.iLike]: `%${search}%` } },
-          ],
-        }
-      : {};
+    ? {
+        [Op.or]: [
+          { title: { [Op.iLike]: `%${search}%` } },
+          { subtitle: { [Op.iLike]: `%${search}%` } },
+        ],
+      }
+    : {};
 
   const items = await NewsModel.count({
-    where
+    where,
   });
 
-  if(items === 0) {
+  if (items === 0) {
     return {
       response: "No se encontraron noticias",
       result: paginationResponseDTO({
         items: 0,
         pages: 0,
-        next: 'none',
-        prev: 'none',
-        result: []
-      })
+        next: "none",
+        prev: "none",
+        result: [],
+      }),
+    };
   }
-}
 
   const pages = Math.ceil(items / limit);
-  
-  if(page > pages) {
+
+  if (page > pages) {
     page = pages;
   } else if (page < 1) {
     page = 1;
   }
-  
-   const offset = (page - 1) * limit;
 
-   const result = await NewsModel.findAll({
+  const offset = (page - 1) * limit;
+
+  const result = await NewsModel.findAll({
     where,
     limit,
     offset,
@@ -64,7 +68,7 @@ export const getNewsPaginationAndSearchService = async ({ page, limit, search })
         attributes: ["id_news_gallery", "url", "alt", "news_id"],
       },
     ],
-   })
+  });
 
   return {
     response: "Noticias obtenidas exitosamente",

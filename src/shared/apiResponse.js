@@ -85,3 +85,14 @@ export const notPermissionResponse = ({
   message,
   result,
 });
+
+export const badRequestResponse = ({
+  message = "",
+  result = null,
+  statusCode = 400,
+}) => ({
+  isSuccess: false,
+  statusCode,
+  message,
+  result,
+});

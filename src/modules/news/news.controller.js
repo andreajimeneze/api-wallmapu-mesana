@@ -5,6 +5,7 @@ import {
   successDeleteResponse,
   internalServerResponse,
   notFoundResponse,
+  badRequestResponse,
 } from "../../shared/apiResponse.js";
 import { createNewsDTO, newsResponseDTO } from "./news.dto.js";
 import {
@@ -17,14 +18,26 @@ import {
 
 export const getNewsPaginationAndSearch = async (req, res) => {
   try {
-    let page = parseInt(req.query.page ?? '1', 10);
-    let items = parseInt(req.query.items ?? '1', 10);
+    let page = parseInt(req.query.page ?? 10);
+    let items = parseInt(req.query.items ?? 10);
+
+    if ((isNaN(page) || page < 1) || (isNaN(items) || items < 1)){
+      return res
+        .status(400)
+        .json(
+          badRequestResponse({
+            message: "El número de página o items debe ser mayor a 0",
+          }),
+        );
+    }
+    
     const result = await getNewsPaginationAndSearchService({
       page,
       limit: items,
-      search: req.query.search ?? '',
+      search: req.query.search ?? "",
     });
 
+    
     return res.status(200).json(
       successGetResponse({
         message: "Noticias obtenidas exitosamente",
