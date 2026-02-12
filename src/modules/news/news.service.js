@@ -47,8 +47,10 @@ export const getNewsPaginationAndSearchService = async ({
 
   const pages = Math.ceil(items / limit);
 
+  const haveSearch = search && search.trim() !== "";
+
   if (page > pages) {
-    page = pages;
+    page = haveSearch ? 1 : pages;
   } else if (page < 1) {
     page = 1;
   }
@@ -61,14 +63,14 @@ export const getNewsPaginationAndSearchService = async ({
     offset,
     distinct: true,
     order: [
-    ["created_at", "DESC"],
-    [{ model: News_galleryModel, as: "images" }, "id_news_gallery", "ASC"],
-  ],
+      ["created_at", "DESC"],
+      [{ model: News_galleryModel, as: "images" }, "id_news_gallery", "ASC"],
+    ],
     include: [
       {
         model: News_galleryModel,
         as: "images",
-        attributes: ["id_news_gallery", "url", "alt", "news_id"]
+        attributes: ["id_news_gallery", "url", "alt", "news_id"],
       },
     ],
   });
@@ -93,6 +95,9 @@ export const getNewsPaginationAndSearchService = async ({
 
 export const getNewsByIdService = async (id) => {
   const newsById = await NewsModel.findByPk(id, {
+    order: [
+      [{ model: News_galleryModel, as: "images" }, "id_news_gallery", "ASC"],
+    ],
     include: [
       {
         model: News_galleryModel,
@@ -108,8 +113,15 @@ export const getNewsByIdService = async (id) => {
   return newsById;
 };
 
-export const createNewsService = async ({ title, subtitle, body, images = [] }) => {
-  const existingNews = await NewsModel.findOne({ where: { title: { [Op.iLike]: title } } });
+export const createNewsService = async ({
+  title,
+  subtitle,
+  body,
+  images = [],
+}) => {
+  const existingNews = await NewsModel.findOne({
+    where: { title: { [Op.iLike]: title } },
+  });
   if (existingNews) {
     throw { code: "CONFLICT", message: "Ya existe una noticia con ese título" };
   }
