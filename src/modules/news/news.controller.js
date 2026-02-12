@@ -5,8 +5,8 @@ import {
   successDeleteResponse,
   internalServerResponse,
   notFoundResponse,
-  badRequestResponse, 
-  conflictResponse
+  badRequestResponse,
+  conflictResponse,
 } from "../../shared/apiResponse.js";
 import { createNewsDTO, newsResponseDTO } from "./news.dto.js";
 import {
@@ -78,7 +78,27 @@ export const getNewsById = async (req, res) => {
 
 export const createNews = async (req, res) => {
   try {
-    const dto = createNewsDTO(req.body);
+    const { title, subtitle, body } = req.body;
+    console.log("req.body:", req.body);
+    const altTexts = Array.isArray(req.body.altTexts)
+      ? req.body.altTexts
+      : req.body.altTexts
+        ? [req.body.altTexts]
+        : [];
+    console.log("altTexts:", altTexts);
+
+    const files = req.files || [];
+    const images = files.map((file, index) => ({
+      url: file.path,
+      alt: altTexts[index] || null,
+    }));
+
+    const dto = createNewsDTO({
+      title,
+      subtitle,
+      body,
+      images,
+    });
 
     const createdNews = await createNewsService(dto);
 

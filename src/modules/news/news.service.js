@@ -1,5 +1,5 @@
 import { News_galleryModel, NewsModel } from "../../config/dbSequelize.js";
-import { Op } from "sequelize";
+import { fn, Op } from "sequelize";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
 import { newsResponseDTO } from "./news.dto.js";
 
@@ -36,8 +36,8 @@ export const getNewsPaginationAndSearchService = async ({
     return {
       response: "No se encontraron noticias",
       result: paginationResponseDTO({
-        items: 0,
         pages: 0,
+        items: 0,
         next: "none",
         prev: "none",
         result: [],
@@ -59,13 +59,16 @@ export const getNewsPaginationAndSearchService = async ({
     where,
     limit,
     offset,
-    order: [["created_at", "DESC"]],
     distinct: true,
+    order: [
+    ["created_at", "DESC"],
+    [{ model: News_galleryModel, as: "images" }, "id_news_gallery", "ASC"],
+  ],
     include: [
       {
         model: News_galleryModel,
         as: "images",
-        attributes: ["id_news_gallery", "url", "alt", "news_id"],
+        attributes: ["id_news_gallery", "url", "alt", "news_id"]
       },
     ],
   });
@@ -73,8 +76,8 @@ export const getNewsPaginationAndSearchService = async ({
   return {
     response: "Noticias obtenidas exitosamente",
     result: paginationResponseDTO({
-      items,
       pages,
+      items,
       next:
         page < pages
           ? `/news?page=${page + 1}&items=${limit}&search=${search}`
@@ -105,20 +108,34 @@ export const getNewsByIdService = async (id) => {
   return newsById;
 };
 
-export const createNewsService = async ({title, subtitle, body}) => {
-  const existingNews = await NewsModel.findOne({where : {title}});
-  if(existingNews) {
+export const createNewsService = async ({ title, subtitle, body, images = [] }) => {
+  const existingNews = await NewsModel.findOne({ where: { title: { [Op.iLike]: title } } });
+  if (existingNews) {
     throw { code: "CONFLICT", message: "Ya existe una noticia con ese título" };
   }
 
-
-  return await NewsModel.create({
-    title,
-    subtitle,
-    body,
-    created_at: new Date(),
-    updated_at: new Date()
-  });
+  return await NewsModel.create(
+    {
+      title,
+      subtitle,
+      body,
+      created_at: new Date(),
+      updated_at: new Date(),
+      images: images.map((img) => ({
+        url: img.url,
+        alt: img.alt,
+      })),
+    },
+    {
+      include: [
+        {
+          model: News_galleryModel,
+          as: "images",
+          attributes: ["id_news_gallery", "url", "alt", "news_id"],
+        },
+      ],
+    },
+  );
 };
 
 export const updateNewsService = async (id, newsData) => {
