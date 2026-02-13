@@ -113,41 +113,22 @@ export const getNewsByIdService = async (id) => {
   return newsById;
 };
 
-export const createNewsService = async ({
-  title,
-  subtitle,
-  body,
-  images = [],
-}) => {
+export const createNewsService = async ({ title, subtitle, body }) => {
   const existingNews = await NewsModel.findOne({
     where: { title: { [Op.iLike]: title } },
   });
+
   if (existingNews) {
     throw { code: "CONFLICT", message: "Ya existe una noticia con ese título" };
   }
 
-  return await NewsModel.create(
-    {
-      title,
-      subtitle,
-      body,
-      created_at: new Date(),
-      updated_at: new Date(),
-      images: images.map((img) => ({
-        url: img.url,
-        alt: img.alt,
-      })),
-    },
-    {
-      include: [
-        {
-          model: News_galleryModel,
-          as: "images",
-          attributes: ["id_news_gallery", "url", "alt", "news_id"],
-        },
-      ],
-    },
-  );
+  return await NewsModel.create({
+    title,
+    subtitle,
+    body,
+    created_at: new Date(),
+    updated_at: new Date(),
+  });
 };
 
 export const updateNewsService = async (id, newsData) => {
@@ -164,6 +145,10 @@ export const deleteNewsService = async (id) => {
   const newsSelected = await NewsModel.findByPk(id);
 
   if (!newsSelected) return null;
+
+  const deletedNews = { ...newsSelected.get() };
+  
   await newsSelected.destroy();
-  return true;
+ 
+  return deletedNews;
 };

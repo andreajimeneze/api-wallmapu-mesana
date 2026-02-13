@@ -1,26 +1,24 @@
-export const createNewsDTO = ({ title, subtitle, body, images = [] }) => {
+export const createNewsDTO = ({ title, subtitle, body }) => {
   if (!title.trim() || !body.trim()) {
     throw new Error("Título y cuerpo de la noticia son obligatorios");
   }
-
-  const formatedImages = Array.isArray(images)
-    ? images.map((img) => {
-        if (!img.url.trim()) {
-          throw new Error("La URL de la imagen no puede estar vacía");
-        }
-
-        return {
-          url: img.url.trim(),
-          alt: img.alt?.trim() || null,
-        };
-      })
-    : [];
 
   return {
     title: title.trim(),
     subtitle: subtitle?.trim() || null,
     body: body.trim(),
-    images: formatedImages,
+    created_at: new Date(),
+    updated_at: new Date()
+  };
+};
+
+export const updateNewsDTO = ({ title, subtitle, body, created_at }) => {
+  return {
+    title: title.trim(),
+    subtitle: subtitle?.trim() || null,
+    body: body.trim(),
+    created_at,
+    updated_at: new Date()
   };
 };
 

@@ -1,6 +1,6 @@
 import {
   successCreateResponse,
-  successGetResponse,
+  succesGetResponse,
   successUpdateResponse,
   successDeleteResponse,
   internalServerResponse,
@@ -8,7 +8,7 @@ import {
   badRequestResponse,
   conflictResponse,
 } from "../../shared/apiResponse.js";
-import { createNewsDTO, newsResponseDTO } from "./news.dto.js";
+import { createNewsDTO, newsResponseDTO, updateNewsDTO } from "./news.dto.js";
 import {
   getNewsPaginationAndSearchService,
   createNewsService,
@@ -36,12 +36,10 @@ export const getNewsPaginationAndSearch = async (req, res) => {
       search: req.query.search ?? "",
     });
 
-    return res.status(200).json(
-      successGetResponse({
-        message: "Noticias obtenidas exitosamente",
-        result: result.result,
-      }),
-    );
+    return res.status(200).json({
+      message: "Noticias obtenidas exitosamente",
+      result: result.result,
+    });
   } catch (error) {
     return res
       .status(500)
@@ -57,7 +55,7 @@ export const getNewsById = async (req, res) => {
     const newsSelected = await getNewsByIdService(id_news);
 
     res.status(200).json(
-      successGetResponse({
+      succesGetResponse({
         message: "Noticia obtenida exitosamente",
         result: newsResponseDTO(newsSelected),
       }),
@@ -79,33 +77,19 @@ export const getNewsById = async (req, res) => {
 export const createNews = async (req, res) => {
   try {
     const { title, subtitle, body } = req.body;
-    console.log("req.body:", req.body);
-    const altTexts = Array.isArray(req.body.altTexts)
-      ? req.body.altTexts
-      : req.body.altTexts
-        ? [req.body.altTexts]
-        : [];
-    console.log("altTexts:", altTexts);
-
-    const files = req.files || [];
-    const images = files.map((file, index) => ({
-      url: file.path,
-      alt: altTexts[index] || null,
-    }));
 
     const dto = createNewsDTO({
       title,
       subtitle,
       body,
-      images,
     });
 
     const createdNews = await createNewsService(dto);
 
     res.status(201).json(
       successCreateResponse({
-        result: newsResponseDTO(createdNews),
         message: "Noticia creada exitosamente",
+        result: createNewsDTO(createdNews),
       }),
     );
   } catch (error) {
@@ -128,8 +112,15 @@ export const createNews = async (req, res) => {
 export const updateNews = async (req, res) => {
   try {
     const { id } = req.params;
-    const dto = createNewsDTO(req.body);
-    const updatedNews = await updateNewsService(id, dto);
+    const { title, subtitle, body } = req.body;
+
+    const updateDto = updateNewsDTO({
+      title,
+      subtitle,
+      body,
+    });
+
+    const updatedNews = await updateNewsService(id, updateDto);
 
     if (!updatedNews) {
       return res
@@ -137,10 +128,10 @@ export const updateNews = async (req, res) => {
         .json(notFoundResponse({ message: "Noticia no encontrada" }));
     }
 
-    res.status(200).json(
+    res.status(202).json(
       successUpdateResponse({
         message: "Noticia editada correctamente",
-        result: newsResponseDTO(updatedNews),
+        result: updateNewsDTO(updatedNews),
       }),
     );
   } catch (error) {
@@ -155,21 +146,32 @@ export const updateNews = async (req, res) => {
 export const deleteNews = async (req, res) => {
   try {
     const { id } = req.params;
-    const newsSelected = await deleteNewsService(id);
+    const newsDeleted = await deleteNewsService(id);
 
-    if (!newsSelected) {
+    if (!newsDeleted) {
       return res
         .status(404)
         .json(notFoundResponse({ message: "Noticia no encontrada" }));
     }
 
     res
-      .status(200)
-      .json(
-        successDeleteResponse({ message: "Noticia eliminada correctamente" }),
-      );
+      .status(202)
+      .json(successDeleteResponse({
+        message: "Noticia eliminada correctamente",
+        result: newsDeleted,
+      }));
   } catch (error) {
-    res
+    
+    if (error.parent?.code === "23503") { // código de error error constraint
+      return res
+        .status(409)
+        .json(
+          conflictResponse({ 
+             message: "No se puede eliminar una noticia porque existen registros asociados"
+          }),
+        );
+    }
+    return res
       .status(500)
       .json(
         internalServerResponse({ message: "Error al eliminar la noticia" }),

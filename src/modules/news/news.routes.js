@@ -1,5 +1,4 @@
 import express from 'express';
-import { upload } from '../../config/multer.js';
 import {
   getNewsPaginationAndSearch,
   getNewsById,
@@ -15,7 +14,7 @@ router.get('/', getNewsPaginationAndSearch);
 
 router.get('/:id_news', getNewsById);
 
-router.post('/', upload.array('images', 3),createNews);
+router.post('/', createNews);
 
 router.put('/:id', updateNews);
 

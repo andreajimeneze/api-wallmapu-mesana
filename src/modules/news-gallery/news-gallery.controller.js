@@ -1,6 +1,6 @@
 import {
   successCreateResponse,
-  successGetResponse,
+  succesGetResponse,
   internalServerResponse,
   notFoundResponse,
 } from "../../shared/apiResponse.js";
@@ -29,7 +29,7 @@ export const getGalleryByNews = async (req, res) => {
     return res
       .status(200)
       .json(
-        successGetResponse({
+    succesGetResponse({
           message: "Imagenes obtenidas exitosamente",
           result: images.map(newsGalleryResponseDTO),
         }),

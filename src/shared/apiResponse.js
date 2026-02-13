@@ -9,7 +9,7 @@ export const successCreateResponse = ({
   result,
 });
 
-export const successGetResponse = ({
+export const succesGetResponse = ({
   statusCode = 200,
   message = "",
   result = result,
@@ -21,7 +21,7 @@ export const successGetResponse = ({
 });
 
 export const successUpdateResponse = ({
-  statusCode = 200,
+  statusCode = 202,
   message = "",
   result,
 }) => ({
@@ -32,14 +32,14 @@ export const successUpdateResponse = ({
 });
 
 export const successDeleteResponse = ({
-  statusCode = 204,
+  statusCode = 202,
   message = "",
-  result,
+  result = null,
 }) => ({
   isSuccess: true,
   statusCode,
   message,
-  result,
+  result
 });
 
 export const notFoundResponse = ({
