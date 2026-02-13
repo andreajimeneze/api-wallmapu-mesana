@@ -140,8 +140,7 @@ RESPONSE 201
     "subtitle": "string",
     "body": "string",
     "created_at": "string",
-    "updated_at": "string",
-    "images": []
+    "updated_at": "string"
   }
 }
 ```
@@ -162,7 +161,7 @@ Datos de entrada:
 
 Datos de salida:
 
-RESPONSE 200
+RESPONSE 202
 
 ```json
 {
@@ -176,14 +175,6 @@ RESPONSE 200
     "body": "string",
     "created_at": "string",
     "updated_at": "string",
-    "images": [
-      {
-        "id_news_gallery": 0,
-        "url": "string",
-        "alt": "string",
-        "news_id": 0
-      }
-    ]
   }
 }
 ```
@@ -203,13 +194,21 @@ DELETE / https://api-wallmapu-mesana.vercel.app/api/news/{id}
 
 Requerido: {id} \*id_news
 
-RESPONSE 204
+RESPONSE 202
 
 ```json
 {
   "isSuccess": true,
   "statusCode": 0,
-  "message": "string"
+  "message": "string",
+  "result": {
+    "id_news": 0,
+    "title": "string",
+    "subtitle": "string",
+    "body": "string",
+    "created_at": "string",
+    "updated_at": "string",
+  }
 }
 ```
 
@@ -217,7 +216,18 @@ RESPONSE 404
 
 ```json
 {
-  "isSuccess": true,
+  "isSuccess": false,
+  "statusCode": 0,
+  "message": "string",
+  "result": null
+}
+```
+
+RESPONSE 409 
+
+```json
+{
+  "isSuccess": false,
   "statusCode": 0,
   "message": "string",
   "result": null
