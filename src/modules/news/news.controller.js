@@ -1,24 +1,20 @@
 import {
   successCreateResponse,
   succesGetResponse,
-  //successUpdateResponse,
-  //successDeleteResponse,
+  successUpdateResponse,
+  successDeleteResponse,
   internalServerResponse,
   notFoundResponse,
   badRequestResponse,
   conflictResponse,
 } from "../../shared/apiResponse.js";
-import { 
-  createNewsDTO, 
-  newsResponseDTO, 
-  //updateNewsDTO 
-} from "./news.dto.js";
+import { createNewsDTO, newsResponseDTO, updateNewsDTO } from "./news.dto.js";
 import {
   getNewsPaginationAndSearchService,
   createNewsService,
   getNewsByIdService,
-  //updateNewsService,
-  //deleteNewsService,
+  updateNewsService,
+  deleteNewsService,
 } from "./news.service.js";
 
 export const getNewsPaginationAndSearch = async (req, res) => {
@@ -113,72 +109,72 @@ export const createNews = async (req, res) => {
   }
 };
 
-// export const updateNews = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { title, subtitle, body } = req.body;
+export const updateNews = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, subtitle, body } = req.body;
 
-//     const updateDto = updateNewsDTO({
-//       title,
-//       subtitle,
-//       body,
-//     });
+    const updateDto = updateNewsDTO({
+      title,
+      subtitle,
+      body,
+    });
 
-//     const updatedNews = await updateNewsService(id, updateDto);
+    const updatedNews = await updateNewsService(id, updateDto);
 
-//     if (!updatedNews) {
-//       return res
-//         .status(404)
-//         .json(notFoundResponse({ message: "Noticia no encontrada" }));
-//     }
+    if (!updatedNews) {
+      return res
+        .status(404)
+        .json(notFoundResponse({ message: "Noticia no encontrada" }));
+    }
 
-//     res.status(202).json(
-//       successUpdateResponse({
-//         message: "Noticia editada correctamente",
-//         result: updateNewsDTO(updatedNews),
-//       }),
-//     );
-//   } catch (error) {
-//     return res.status(500).json(
-//       internalServerResponse({
-//         message: "Error al intentar editar la noticia",
-//       }),
-//     );
-//   }
-// };
+    res.status(202).json(
+      successUpdateResponse({
+        message: "Noticia editada correctamente",
+        result: updateNewsDTO(updatedNews),
+      }),
+    );
+  } catch (error) {
+    return res.status(500).json(
+      internalServerResponse({
+        message: "Error al intentar editar la noticia",
+      }),
+    );
+  }
+};
 
-// export const deleteNews = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const newsDeleted = await deleteNewsService(id);
+export const deleteNews = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const newsDeleted = await deleteNewsService(id);
 
-//     if (!newsDeleted) {
-//       return res
-//         .status(404)
-//         .json(notFoundResponse({ message: "Noticia no encontrada" }));
-//     }
+    if (!newsDeleted) {
+      return res
+        .status(404)
+        .json(notFoundResponse({ message: "Noticia no encontrada" }));
+    }
 
-//     res
-//       .status(202)
-//       .json(successDeleteResponse({
-//         message: "Noticia eliminada correctamente",
-//         result: newsDeleted,
-//       }));
-//   } catch (error) {
+    res
+      .status(202)
+      .json(successDeleteResponse({
+        message: "Noticia eliminada correctamente",
+        result: newsDeleted,
+      }));
+  } catch (error) {
     
-//     if (error.parent?.code === "23503") { // código de error constraint
-//       return res
-//         .status(409)
-//         .json(
-//           conflictResponse({ 
-//              message: "No se puede eliminar una noticia porque existen registros asociados"
-//           }),
-//         );
-//     }
-//     return res
-//       .status(500)
-//       .json(
-//         internalServerResponse({ message: "Error al eliminar la noticia" }),
-//       );
-//   }
-// };
+    if (error.parent?.code === "23503") { // código de error constraint
+      return res
+        .status(409)
+        .json(
+          conflictResponse({ 
+             message: "No se puede eliminar una noticia porque existen registros asociados"
+          }),
+        );
+    }
+    return res
+      .status(500)
+      .json(
+        internalServerResponse({ message: "Error al eliminar la noticia" }),
+      );
+  }
+};

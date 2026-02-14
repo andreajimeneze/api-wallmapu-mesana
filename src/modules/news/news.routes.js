@@ -3,8 +3,8 @@ import {
   getNewsPaginationAndSearch,
   getNewsById,
   createNews,
-  //updateNews,
-  //deleteNews,
+  updateNews,
+  deleteNews,
 } from './news.controller.js';
 
 const router = express.Router();
@@ -16,8 +16,8 @@ router.get('/:id_news', getNewsById);
 
 router.post('/', createNews);
 
-//router.put('/:id', updateNews);
+router.put('/:id', updateNews);
 
-//router.delete('/:id', deleteNews);
+router.delete('/:id', deleteNews);
 
 export default router;
