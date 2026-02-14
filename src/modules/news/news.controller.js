@@ -143,38 +143,38 @@ export const updateNews = async (req, res) => {
   }
 };
 
-export const deleteNews = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const newsDeleted = await deleteNewsService(id);
+// export const deleteNews = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const newsDeleted = await deleteNewsService(id);
 
-    if (!newsDeleted) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "Noticia no encontrada" }));
-    }
+//     if (!newsDeleted) {
+//       return res
+//         .status(404)
+//         .json(notFoundResponse({ message: "Noticia no encontrada" }));
+//     }
 
-    res
-      .status(202)
-      .json(successDeleteResponse({
-        message: "Noticia eliminada correctamente",
-        result: newsDeleted,
-      }));
-  } catch (error) {
+//     res
+//       .status(202)
+//       .json(successDeleteResponse({
+//         message: "Noticia eliminada correctamente",
+//         result: newsDeleted,
+//       }));
+//   } catch (error) {
     
-    if (error.parent?.code === "23503") { // código de error constraint
-      return res
-        .status(409)
-        .json(
-          conflictResponse({ 
-             message: "No se puede eliminar una noticia porque existen registros asociados"
-          }),
-        );
-    }
-    return res
-      .status(500)
-      .json(
-        internalServerResponse({ message: "Error al eliminar la noticia" }),
-      );
-  }
-};
+//     if (error.parent?.code === "23503") { // código de error constraint
+//       return res
+//         .status(409)
+//         .json(
+//           conflictResponse({ 
+//              message: "No se puede eliminar una noticia porque existen registros asociados"
+//           }),
+//         );
+//     }
+//     return res
+//       .status(500)
+//       .json(
+//         internalServerResponse({ message: "Error al eliminar la noticia" }),
+//       );
+//   }
+// };
