@@ -1,19 +1,23 @@
 import {
   successCreateResponse,
   succesGetResponse,
-  successUpdateResponse,
-  successDeleteResponse,
+  //successUpdateResponse,
+  //successDeleteResponse,
   internalServerResponse,
   notFoundResponse,
   badRequestResponse,
   conflictResponse,
 } from "../../shared/apiResponse.js";
-import { createNewsDTO, newsResponseDTO, updateNewsDTO } from "./news.dto.js";
+import { 
+  createNewsDTO, 
+  newsResponseDTO, 
+  //updateNewsDTO 
+} from "./news.dto.js";
 import {
   getNewsPaginationAndSearchService,
   createNewsService,
   getNewsByIdService,
-  updateNewsService,
+  //updateNewsService,
   //deleteNewsService,
 } from "./news.service.js";
 
@@ -109,39 +113,39 @@ export const createNews = async (req, res) => {
   }
 };
 
-export const updateNews = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { title, subtitle, body } = req.body;
+// export const updateNews = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { title, subtitle, body } = req.body;
 
-    const updateDto = updateNewsDTO({
-      title,
-      subtitle,
-      body,
-    });
+//     const updateDto = updateNewsDTO({
+//       title,
+//       subtitle,
+//       body,
+//     });
 
-    const updatedNews = await updateNewsService(id, updateDto);
+//     const updatedNews = await updateNewsService(id, updateDto);
 
-    if (!updatedNews) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "Noticia no encontrada" }));
-    }
+//     if (!updatedNews) {
+//       return res
+//         .status(404)
+//         .json(notFoundResponse({ message: "Noticia no encontrada" }));
+//     }
 
-    res.status(202).json(
-      successUpdateResponse({
-        message: "Noticia editada correctamente",
-        result: updateNewsDTO(updatedNews),
-      }),
-    );
-  } catch (error) {
-    return res.status(500).json(
-      internalServerResponse({
-        message: "Error al intentar editar la noticia",
-      }),
-    );
-  }
-};
+//     res.status(202).json(
+//       successUpdateResponse({
+//         message: "Noticia editada correctamente",
+//         result: updateNewsDTO(updatedNews),
+//       }),
+//     );
+//   } catch (error) {
+//     return res.status(500).json(
+//       internalServerResponse({
+//         message: "Error al intentar editar la noticia",
+//       }),
+//     );
+//   }
+// };
 
 // export const deleteNews = async (req, res) => {
 //   try {

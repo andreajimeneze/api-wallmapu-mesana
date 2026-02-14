@@ -3,7 +3,7 @@ import {
   getNewsPaginationAndSearch,
   getNewsById,
   createNews,
-  updateNews,
+  //updateNews,
   //deleteNews,
 } from './news.controller.js';
 
@@ -16,7 +16,7 @@ router.get('/:id_news', getNewsById);
 
 router.post('/', createNews);
 
-router.put('/:id', updateNews);
+//router.put('/:id', updateNews);
 
 //router.delete('/:id', deleteNews);
 

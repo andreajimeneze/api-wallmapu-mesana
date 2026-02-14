@@ -1,5 +1,7 @@
 import { News_galleryModel, NewsModel } from "../../config/dbSequelize.js";
-import { fn, Op } from "sequelize";
+import { 
+  //fn, 
+  Op } from "sequelize";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
 import { newsResponseDTO } from "./news.dto.js";
 
@@ -131,15 +133,15 @@ export const createNewsService = async ({ title, subtitle, body }) => {
   });
 };
 
-export const updateNewsService = async (id, newsData) => {
-  const newsSelected = await NewsModel.findByPk(id);
+// export const updateNewsService = async (id, newsData) => {
+//   const newsSelected = await NewsModel.findByPk(id);
 
-  if (!newsSelected) return null;
-  return await newsSelected.update({
-    ...newsData,
-    updated_at: new Date(),
-  });
-};
+//   if (!newsSelected) return null;
+//   return await newsSelected.update({
+//     ...newsData,
+//     updated_at: new Date(),
+//   });
+// };
 
 // export const deleteNewsService = async (id) => {
 //   const newsSelected = await NewsModel.findByPk(id);
