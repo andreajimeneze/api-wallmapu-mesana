@@ -141,14 +141,14 @@ export const updateNewsService = async (id, newsData) => {
   });
 };
 
-export const deleteNewsService = async (id) => {
-  const newsSelected = await NewsModel.findByPk(id);
+// export const deleteNewsService = async (id) => {
+//   const newsSelected = await NewsModel.findByPk(id);
 
-  if (!newsSelected) return null;
+//   if (!newsSelected) return null;
 
   
   
-  await newsSelected.destroy();
+//   await newsSelected.destroy();
  
-  return true;
-};
+//   return true;
+// };

@@ -4,7 +4,7 @@ import {
   getNewsById,
   createNews,
   updateNews,
-  deleteNews,
+  //deleteNews,
 } from './news.controller.js';
 
 const router = express.Router();
