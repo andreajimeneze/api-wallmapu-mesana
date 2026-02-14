@@ -146,9 +146,9 @@ export const deleteNewsService = async (id) => {
 
   if (!newsSelected) return null;
 
-  const deletedNews = { ...newsSelected.get() };
+  
   
   await newsSelected.destroy();
  
-  return deletedNews;
+  return true;
 };

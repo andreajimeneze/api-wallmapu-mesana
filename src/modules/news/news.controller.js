@@ -162,7 +162,7 @@ export const deleteNews = async (req, res) => {
       }));
   } catch (error) {
     
-    if (error.parent?.code === "23503") { // código de error error constraint
+    if (error.parent?.code === "23503") { // código de error constraint
       return res
         .status(409)
         .json(
