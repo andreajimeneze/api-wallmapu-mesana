@@ -9,7 +9,7 @@ export const getNewsPaginationAndSearchService = async ({
   search,
 }) => {
   limit = Number.isInteger(Number(limit)) ? Number(limit) : 10;
-page = Number.isInteger(Number(page)) ? Number(page) : 1;
+  page = Number.isInteger(Number(page)) ? Number(page) : 1;
 
   const DEFAULT_LIMIT = 1;
   const MAX_LIMIT = 100;
@@ -50,9 +50,9 @@ page = Number.isInteger(Number(page)) ? Number(page) : 1;
 
   const haveSearch = search && search.trim() !== "";
 
-  if (page > pages) {
+  if (page > pages && page > 0) {
     page = haveSearch ? 1 : pages;
-  } else if(page < 1) {
+  } else if (page < 1) {
     page = 1;
   }
 
@@ -147,9 +147,7 @@ export const deleteNewsService = async (id) => {
 
   if (!newsSelected) return null;
 
-  
-  
   await newsSelected.destroy();
- 
+
   return true;
 };
