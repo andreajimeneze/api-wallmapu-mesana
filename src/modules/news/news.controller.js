@@ -19,7 +19,7 @@ import {
 
 export const getNewsPaginationAndSearch = async (req, res) => {
   try {
-    let page = parseInt(req.query.page ?? 10);
+    let page = parseInt(req.query.page ?? 1);
     let items = parseInt(req.query.items ?? 10);
 
     if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {

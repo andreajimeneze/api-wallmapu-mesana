@@ -8,10 +8,11 @@ export const getNewsPaginationAndSearchService = async ({
   limit,
   search,
 }) => {
-  limit = parseInt(limit) || 10;
-  page = parseInt(page) || 1;
+  limit = Number.isInteger(Number(limit)) ? Number(limit) : 10;
+page = Number.isInteger(Number(page)) ? Number(page) : 1;
+
   const DEFAULT_LIMIT = 1;
-  const MAX_LIMIT = 50;
+  const MAX_LIMIT = 100;
 
   if (limit < 1) {
     limit = DEFAULT_LIMIT;
@@ -51,7 +52,7 @@ export const getNewsPaginationAndSearchService = async ({
 
   if (page > pages) {
     page = haveSearch ? 1 : pages;
-  } else if (page < 1) {
+  } else {
     page = 1;
   }
 
