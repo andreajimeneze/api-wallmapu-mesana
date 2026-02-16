@@ -36,10 +36,10 @@ export const getNewsPaginationAndSearch = async (req, res) => {
       search: req.query.search ?? "",
     });
 
-    return res.status(200).json({
+    return res.status(200).json(succesGetResponse({
       message: "Noticias obtenidas exitosamente",
       result: result.result,
-    });
+    }));
   } catch (error) {
     return res
       .status(500)
