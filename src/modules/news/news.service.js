@@ -52,7 +52,7 @@ page = Number.isInteger(Number(page)) ? Number(page) : 1;
 
   if (page > pages) {
     page = haveSearch ? 1 : pages;
-  } else {
+  } else if(page < 1) {
     page = 1;
   }
 
