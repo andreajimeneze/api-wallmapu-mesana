@@ -4,7 +4,8 @@ import {
   getNewsById,
   createNews,
   updateNews,
-  deleteNews
+  deleteNews,
+  createNewsWithImages
 } from './news.controller.js';
 
 import { upload } from '../../services/images/multer.js';
@@ -16,7 +17,9 @@ router.get('/', getNewsPaginationAndSearch);
 
 router.get('/:id_news', getNewsById);
 
-router.post('/', upload('image', 3), createNews);
+router.post('/', createNews);
+
+router.post('/images', upload('image', 3), createNewsWithImages);
 
 router.put('/:id', updateNews);
 
