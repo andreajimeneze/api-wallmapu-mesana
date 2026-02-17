@@ -20,7 +20,7 @@ export const createNewsWithImagesService = async ({
         subtitle,
         body,
       },
-      { transaction },
+      transaction 
     );
 
     const newsId = createdNews.id_news;
@@ -41,14 +41,14 @@ export const createNewsWithImagesService = async ({
           url: result.url,
           newsId,
         },
-        { transaction },
+        transaction
       );
 
       uploadImages.push(createdGallery);
     }
     await transaction.commit();
 
-    return { news, uploadImages };
+    return { news: createdNews, uploadImages };
 
   } catch (error) {
     await transaction.rollback();

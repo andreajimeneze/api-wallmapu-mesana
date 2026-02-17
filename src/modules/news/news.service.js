@@ -116,9 +116,9 @@ export const getNewsByIdService = async (id) => {
   return newsById;
 };
 
-export const createNewsService = async ({ title, subtitle, body }) => {
+export const createNewsService = async ({ title, subtitle, body, transaction}) => {
   const existingNews = await NewsModel.findOne({
-    where: { title: { [Op.iLike]: title } },
+    where: { title: { [Op.iLike]: title } }
   });
 
   if (existingNews) {
@@ -131,7 +131,8 @@ export const createNewsService = async ({ title, subtitle, body }) => {
     body,
     created_at: new Date(),
     updated_at: new Date(),
-  });
+    
+  }, {transaction});
 };
 
 export const updateNewsService = async (id, newsData) => {

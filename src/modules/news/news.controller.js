@@ -89,7 +89,7 @@ export const createNews = async (req, res) => {
     res.status(201).json(
       successCreateResponse({
         message: "Noticia creada exitosamente",
-        result: createNewsDTO(createdNews),
+        result: newsResponseDTO(createdNews),
       }),
     );
   } catch (error) {
