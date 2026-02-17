@@ -16,6 +16,7 @@ import {
   updateNewsService,
   deleteNewsService
 } from "./news.service.js";
+import { createNewsWithImagesService } from "../../application/news/createNewsWithImages.usecase.js";
 
 export const getNewsPaginationAndSearch = async (req, res) => {
   try {
@@ -179,3 +180,21 @@ export const deleteNews = async (req, res) => {
   }
 };
 
+export const createNewsWithImages = async (req, res) => {
+  const { title, subtitle, body, alt } = req.body;
+  const images = req.files;
+  
+  try {
+    const result = await createNewsWithImagesService({
+      title,
+      subtitle,
+      body,
+      alt,
+      images
+    })
+
+    return res.status(201).json(successCreateResponse({ message: 'Noticia con imagen creada exitosamente', result}))
+  } catch(error) {
+    return res.status(500).json(internalServerResponse({ message: 'Error al intentar crear la noticia con imágenes'}));
+  }
+}
