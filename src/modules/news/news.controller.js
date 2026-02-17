@@ -14,8 +14,7 @@ import {
   createNewsService,
   getNewsByIdService,
   updateNewsService,
-  deleteNewsService,
-  createNewsWithImagesService,
+  deleteNewsService
 } from "./news.service.js";
 
 export const getNewsPaginationAndSearch = async (req, res) => {
