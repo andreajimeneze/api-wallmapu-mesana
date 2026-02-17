@@ -2,9 +2,8 @@ import { NewsGalleryModel, NewsModel } from "../../config/dbSequelize.js";
 import { Op } from "sequelize";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
 import { newsResponseDTO } from "./news.dto.js";
-import { uploadImageCloud } from "../../services/images/cloudinary.service.js";
 
-const PATH = "news";
+
 
 export const getNewsPaginationAndSearchService = async ({
   page,
@@ -155,51 +154,4 @@ export const deleteNewsService = async (id) => {
   return true;
 };
 
-export const createNewsWithImagesService = async ({
-  title,
-  subtitle,
-  body,
-  alt = [],
-  images = [],
-}) => {
-  const transaction = await sequelize.transaction();
 
-  try {
-    const createdNews = await NewsModel.create(
-      {
-        title,
-        subtitle,
-        body,
-      },
-      { transaction }
-    );
-
-    const newsId = createdNews.id_news;
-
-    const uploadImages = [];
-
-    for (let i = 0; i < images.length; i++) {
-      const image = images[i];
-
-      const result = await uploadImageCloud(image.buffer, PATH);
-
-      const createdGallery = await NewsGalleryModel.create(
-        {
-          alt: alt[i],
-          url: result.url,
-          newsId,
-        },
-        { transaction }
-      );
-
-      uploadImages.push(createdGallery);
-
-      await transaction.commit();
-
-      return { news, uploadImages };
-    }
-  } catch (error) {
-    await transaction.rollback();
-    throw error;
-  }
-};
