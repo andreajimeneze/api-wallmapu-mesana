@@ -7,7 +7,6 @@ import {
   deleteNews
 } from './news.controller.js';
 
-import { createNewsWithImagesService } from '../../application/news/createNewsWithImages.usecase.js';
 import { upload } from '../../services/images/multer.js';
 
 const router = express.Router();
