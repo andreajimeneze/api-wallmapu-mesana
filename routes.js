@@ -5,6 +5,6 @@ import  news_gallery_routes from './src/modules/news-gallery/news-gallery.routes
 const router = Router();
 
 router.use('/api/news', news_routes);
-router.use('/api/gallery', news_gallery_routes);
+router.use('/api/news-gallery', news_gallery_routes);
 
 export default router;
