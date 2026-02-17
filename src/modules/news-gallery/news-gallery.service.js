@@ -33,14 +33,14 @@ export const createGalleryNewsService = async ({
     for (let i = 0; i < images.length; i++) {
       const image = images[i];
 
-      const result = await uploadImageCloud(image.buffer, PATH);
+      //const result = await uploadImageCloud(image.buffer, PATH);
 
-      console.log("resultado cloud", result);
+      //console.log("resultado cloud", result);
 
       const createdGallery = await NewsGalleryModel.create(
         {
           alt: alt[i] || null,
-          url: result.url,
+          url: image.url,
           newsId: id,
         },
         { transaction },

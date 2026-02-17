@@ -1,6 +1,6 @@
 import { createNewsService } from "../../modules/news/news.service.js";
 import { createGalleryNewsService } from "../../modules/news-gallery/news-gallery.service.js";
-import { uploadImageCloud } from "../../services/images/cloudinary.service";
+import { uploadImageCloud } from "../../services/images/cloudinary.service.js";
 
 const PATH = "news";
 
