@@ -16,7 +16,7 @@ import { User_status } from "../modules/user-status/user-status.model.js";
 import { User_type } from "../modules/user-type/user-type.model.js";
 import { User } from "../modules/users/user.model.js";
 import { News } from "../modules/news/news.model.js";
-import { News_gallery } from "../modules/news-gallery/news-gallery.model.js";
+import { NewsGallery } from "../modules/news-gallery/news-gallery.model.js";
 
 let sequelize = new Sequelize(
   env.database.name,
@@ -58,7 +58,7 @@ export const getModels = () => {
       User_typeModel: User_type(sequelize, DataTypes),
       UserModel: User(sequelize, DataTypes),
       NewsModel: News(sequelize, DataTypes),
-      News_galleryModel: News_gallery(sequelize, DataTypes),
+      NewsGalleryModel: NewsGallery(sequelize, DataTypes),
     };
 
     // Asociaciones
@@ -89,7 +89,7 @@ export const {
   User_typeModel,
   UserModel,
   NewsModel,
-  News_galleryModel,
+  NewsGalleryModel,
 } = getModels();
 
 export { sequelize };

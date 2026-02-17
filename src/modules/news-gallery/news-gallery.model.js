@@ -1,11 +1,12 @@
 'use strict';
 
-export const News_gallery = ( sequelize, DataTypes ) => {
-    const News_gallery = sequelize.define('News_gallery', {
-        id_news_gallery: {
+export const NewsGallery = ( sequelize, DataTypes ) => {
+    const NewsGallery = sequelize.define('NewsGallery', {
+        idNewsGallery: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            autoIncrement: true
+            autoIncrement: true,
+            field: 'id_news_gallery'
         },
         alt: {
             type: DataTypes.STRING,
@@ -15,21 +16,22 @@ export const News_gallery = ( sequelize, DataTypes ) => {
            type: DataTypes.STRING,
            allowNull: false
         },
-        news_id: {
+        newsId: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            field: 'news_id'
         } 
     },{
         tableName : 'wm_news_gallery',
         timestamps : false
     });
 
-    News_gallery.associate = (models) => {
-        News_gallery.belongsTo(models.NewsModel, {
-            foreignKey: 'news_id', 
+    NewsGallery.associate = (models) => {
+        NewsGallery.belongsTo(models.NewsModel, {
+            foreignKey: 'newsId', 
             targetKey: 'id_news',
             as: 'news'
         })
     }
-    return News_gallery;
+    return NewsGallery;
 }

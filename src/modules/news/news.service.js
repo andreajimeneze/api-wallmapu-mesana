@@ -1,4 +1,4 @@
-import { News_galleryModel, NewsModel } from "../../config/dbSequelize.js";
+import { NewsGalleryModel, NewsModel } from "../../config/dbSequelize.js";
 import { Op } from "sequelize";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
 import { newsResponseDTO } from "./news.dto.js";
@@ -65,13 +65,13 @@ export const getNewsPaginationAndSearchService = async ({
     distinct: true,
     order: [
       ["created_at", "DESC"],
-      [{ model: News_galleryModel, as: "images" }, "id_news_gallery", "ASC"],
+      [{ model: NewsGalleryModel, as: "images" }, "idNewsGallery", "ASC"],
     ],
     include: [
       {
-        model: News_galleryModel,
+        model: NewsGalleryModel,
         as: "images",
-        attributes: ["id_news_gallery", "url", "alt", "news_id"],
+        attributes: ["idNewsGallery", "url", "alt", "newsId"],
       },
     ],
   });
@@ -97,13 +97,13 @@ export const getNewsPaginationAndSearchService = async ({
 export const getNewsByIdService = async (id) => {
   const newsById = await NewsModel.findByPk(id, {
     order: [
-      [{ model: News_galleryModel, as: "images" }, "id_news_gallery", "ASC"],
+      [{ model: NewsGalleryModel, as: "images" }, "idNewsGallery", "ASC"],
     ],
     include: [
       {
-        model: News_galleryModel,
+        model: NewsGalleryModel,
         as: "images",
-        attributes: ["id_news_gallery", "url", "alt", "news_id"],
+        attributes: ["idNewsGallery", "url", "alt", "newsId"],
       },
     ],
   });

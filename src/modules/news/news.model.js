@@ -34,8 +34,8 @@ export const News = (sequelize, DataTypes) => {
   });
 
   News.associate = (models) => {
-    News.hasMany(models.News_galleryModel, {
-        foreignKey: 'news_id',
+    News.hasMany(models.NewsGalleryModel, {
+        foreignKey: 'newsId',
         sourceKey: 'id_news',
         as: 'images'
     });
