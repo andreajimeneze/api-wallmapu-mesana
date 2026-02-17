@@ -28,14 +28,12 @@ export const createNewsWithImagesService = async ({
     console.log('noticia creada', createdNews);
     console.log("newsId", newsId);
 
-    const uploadImages = [];
-
     for (let i = 0; i < images.length; i++) {
       const image = images[i];
 
       const result = await uploadImageCloud(image.buffer, PATH);
 
-      const createdGallery = await createGalleryNewsService(
+      await createGalleryNewsService(
         {
           alt: alt[i],
           url: result.url,
@@ -43,12 +41,10 @@ export const createNewsWithImagesService = async ({
         },
         transaction
       );
-
-      uploadImages.push(createdGallery);
     }
     await transaction.commit();
 
-    return { news: createdNews, uploadImages };
+    return { news: createdNews };
 
   } catch (error) {
     await transaction.rollback();

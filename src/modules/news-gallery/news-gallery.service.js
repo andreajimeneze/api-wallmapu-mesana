@@ -15,12 +15,12 @@ export const createGalleryNewsService = async ({
   id,
   alt = [],
   images = [],
-}) => {
-  const transaction = await sequelize.transaction();
+}, transaction) => {
+  //const transaction = await sequelize.transaction();
   const uploadedImages = [];
 
   try {
-    const existingNews = await NewsModel.findByPk(id);
+    const existingNews = await NewsModel.findByPk(id, {transaction});
 
     if (!existingNews) {
       throw new Error("Imagen no puede ser asociada a una noticia inexistente");
@@ -49,11 +49,9 @@ export const createGalleryNewsService = async ({
       uploadedImages.push(createdGallery);
     }
 
-    await transaction.commit();
-
     return uploadedImages;
   } catch (error) {
-    await transaction.rollback();
+
     throw error;
   }
 };

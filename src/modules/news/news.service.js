@@ -116,7 +116,7 @@ export const getNewsByIdService = async (id) => {
   return newsById;
 };
 
-export const createNewsService = async ({ title, subtitle, body, transaction}) => {
+export const createNewsService = async ({ title, subtitle, body}, transaction) => {
   const existingNews = await NewsModel.findOne({
     where: { title: { [Op.iLike]: title } }
   });

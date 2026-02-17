@@ -7,6 +7,9 @@ import {
   deleteNews
 } from './news.controller.js';
 
+import { createNewsWithImagesService } from '../../application/news/createNewsWithImages.usecase.js';
+import { upload } from '../../services/images/multer.js';
+
 const router = express.Router();
 
 
@@ -14,7 +17,7 @@ router.get('/', getNewsPaginationAndSearch);
 
 router.get('/:id_news', getNewsById);
 
-router.post('/', createNews);
+router.post('/', upload('image', 3), createNews);
 
 router.put('/:id', updateNews);
 
