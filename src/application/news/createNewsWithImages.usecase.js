@@ -25,6 +25,9 @@ export const createNewsWithImagesService = async ({
 
     const newsId = createdNews.id_news;
 
+    console.log('noticia creada', createdNews);
+    console.log("newsId", newsId);
+
     const uploadImages = [];
 
     for (let i = 0; i < images.length; i++) {
@@ -46,7 +49,7 @@ export const createNewsWithImagesService = async ({
     await transaction.commit();
 
     return { news, uploadImages };
-    
+
   } catch (error) {
     await transaction.rollback();
     throw error;
