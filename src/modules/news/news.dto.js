@@ -31,10 +31,10 @@ export const newsResponseDTO = (news) => ({
   updated_at: news.updated_at,
   images: news.images
     ? news.images.map((g) => ({
-        id_news_gallery: g.id_news_gallery,
+        id_news_gallery: g.idNewsGallery,
         url: g.url,
         alt: g.alt,
-        news_id: g.news_id,
+        news_id: g.newsId,
       }))
     : [],
 });

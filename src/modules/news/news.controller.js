@@ -14,7 +14,7 @@ import {
   createNewsService,
   getNewsByIdService,
   updateNewsService,
-  deleteNewsService
+  deleteNewsService,
 } from "./news.service.js";
 import { createNewsWithImagesService } from "../../application/news/createNewsWithImages.usecase.js";
 
@@ -37,10 +37,12 @@ export const getNewsPaginationAndSearch = async (req, res) => {
       search: req.query.search ?? "",
     });
 
-    return res.status(200).json(succesGetResponse({
-      message: "Noticias obtenidas exitosamente",
-      result: result.result,
-    }));
+    return res.status(200).json(
+      succesGetResponse({
+        message: "Noticias obtenidas exitosamente",
+        result: result.result,
+      }),
+    );
   } catch (error) {
     return res
       .status(500)
@@ -155,22 +157,21 @@ export const deleteNews = async (req, res) => {
         .json(notFoundResponse({ message: "Noticia no encontrada" }));
     }
 
-    res
-      .status(202)
-      .json(successDeleteResponse({
+    res.status(202).json(
+      successDeleteResponse({
         message: "Noticia eliminada correctamente",
         result: newsDeleted,
-      }));
+      }),
+    );
   } catch (error) {
-    
-    if (error.parent?.code === "23503") { // código de error constraint
-      return res
-        .status(409)
-        .json(
-          conflictResponse({ 
-             message: "No se puede eliminar una noticia porque existen registros asociados"
-          }),
-        );
+    if (error.parent?.code === "23503") {
+      // código de error constraint
+      return res.status(409).json(
+        conflictResponse({
+          message:
+            "No se puede eliminar una noticia porque existen registros asociados",
+        }),
+      );
     }
     return res
       .status(500)
@@ -181,20 +182,40 @@ export const deleteNews = async (req, res) => {
 };
 
 export const createNewsWithImages = async (req, res) => {
-  const { title, subtitle, body, alt } = req.body;
+  const { title, subtitle, body } = req.body;
   const images = req.files;
-  
+  let { alt } = req.body;
+
+console.log("FILES:", req.files);
+console.log("BODY:", req.body);
+
+  if(alt && !Array.isArray(alt)) {
+    alt = [alt];
+  }
+
   try {
-    const result = await createNewsWithImagesService({
+    const newsWithImages = await createNewsWithImagesService({
       title,
       subtitle,
       body,
       alt,
-      images
-    })
+      images,
+    });
 
-    return res.status(201).json(successCreateResponse({ message: 'Noticia con imagen creada exitosamente', result}))
-  } catch(error) {
-    return res.status(500).json(internalServerResponse({ message: 'Error al intentar crear la noticia con imágenes'}));
-  }
+    return res
+      .status(201)
+      .json(
+        successCreateResponse({
+          message: "Noticia con imagen creada exitosamente",
+          result: newsWithImages
+        }),
+      );
+  } catch (error) {
+    console.error("🔥 ERROR COMPLETO:", error);
+
+  return res.status(500).json({
+    message: error.message,
+    error: error,
+  });
+}
 }

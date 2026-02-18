@@ -1,6 +1,8 @@
 import { createNewsService } from "../../modules/news/news.service.js";
 import { createGalleryNewsService } from "../../modules/news-gallery/news-gallery.service.js";
 import { uploadImageCloud } from "../../services/images/cloudinary.service.js";
+import { NewsModel, NewsGalleryModel } from "../../config/dbSequelize.js";
+import { sequelize } from "../../config/dbSequelize.js";
 
 const PATH = "news";
 
@@ -11,6 +13,24 @@ export const createNewsWithImagesService = async ({
   alt = [],
   images = [],
 }) => {
+  console.log("titulo", title);
+
+  // Validaciones
+  if (!Array.isArray(images)) {
+    throw new Error("Formato de imágenes, inválido");
+  }
+  if (!images || images.length === 0) {
+    throw new Error("Debe subir al menos una imagen");
+  }
+
+  if (!Array.isArray(alt)) {
+    throw new Error("Formato de textos alternativos de imágenes, inválido");
+  }
+
+  if (images.length !== alt.length) {
+    throw new Error("Cada imagen debe contar con texto alternativo");
+  }
+
   const transaction = await sequelize.transaction();
 
   try {
@@ -20,34 +40,46 @@ export const createNewsWithImagesService = async ({
         subtitle,
         body,
       },
-      transaction 
+      transaction,
     );
 
     const newsId = createdNews.id_news;
 
-    console.log('noticia creada', createdNews);
-    console.log("newsId", newsId);
+    const uploadPromises = images.map((image) =>
+      uploadImageCloud(image.buffer, PATH),
+    );
 
-    for (let i = 0; i < images.length; i++) {
-      const image = images[i];
+    const uploadResults = await Promise.all(uploadPromises);
 
-      const result = await uploadImageCloud(image.buffer, PATH);
-
+    console.log("resultado subida", uploadResults);
+    for (let i = 0; i < uploadResults.length; i++) {
       await createGalleryNewsService(
         {
           alt: alt[i],
-          url: result.url,
+          url: uploadResults[i].url,
           newsId,
         },
-        transaction
+        transaction,
       );
     }
     await transaction.commit();
+    const newsWithImages = await NewsModel.findByPk(newsId, {
+    include: [
+      {
+        model: NewsGalleryModel,
+        as: "images",
+      },
+    ],
+  });
 
-    return { news: createdNews };
-
+  return newsWithImages;
   } catch (error) {
-    await transaction.rollback();
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
+
     throw error;
   }
+
+  
 };

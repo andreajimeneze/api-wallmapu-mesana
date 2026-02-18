@@ -1,60 +1,35 @@
 import {
-  uploadImageCloud,
   deleteImageCloud,
   extractPublicId,
 } from "../../services/images/cloudinary.service.js";
 import {
   NewsGalleryModel,
-  NewsModel,
-  sequelize,
+  NewsModel
 } from "../../config/dbSequelize.js";
 
-const PATH = "news";
 
 export const createGalleryNewsService = async ({
-  id,
-  alt = [],
-  images = [],
+  alt = null,
+  url,
+  newsId
 }, transaction) => {
-  //const transaction = await sequelize.transaction();
-  const uploadedImages = [];
+  
 
-  try {
-    const existingNews = await NewsModel.findByPk(id, {transaction});
+    const existingNews = await NewsModel.findByPk(newsId, {transaction});
 
     if (!existingNews) {
       throw new Error("Imagen no puede ser asociada a una noticia inexistente");
     }
 
-    if (!images || images.length === 0) {
-      throw new Error("No se enviaron imágenes");
-    }
-
-    for (let i = 0; i < images.length; i++) {
-      const image = images[i];
-
-      //const result = await uploadImageCloud(image.buffer, PATH);
-
-      //console.log("resultado cloud", result);
-
-      const createdGallery = await NewsGalleryModel.create(
+    return await NewsGalleryModel.create(
         {
-          alt: alt[i] || null,
-          url: image.url,
-          newsId: id,
+          alt,
+          url,
+          newsId,
         },
-        { transaction },
-      );
-
-      uploadedImages.push(createdGallery);
-    }
-
-    return uploadedImages;
-  } catch (error) {
-
-    throw error;
-  }
-};
+        { transaction }
+      )
+    };
 
 export const getGalleryByNewsIdService = async (newsId) => {
   return await NewsGalleryModel.findAll({

@@ -122,7 +122,7 @@ export const createNewsService = async ({ title, subtitle, body}, transaction) =
   });
 
   if (existingNews) {
-    throw { code: "CONFLICT", message: "Ya existe una noticia con ese título" };
+    throw  new Error("Ya existe una noticia con ese título");
   }
 
   return await NewsModel.create({
@@ -133,6 +133,7 @@ export const createNewsService = async ({ title, subtitle, body}, transaction) =
     updated_at: new Date(),
     
   }, {transaction});
+
 };
 
 export const updateNewsService = async (id, newsData) => {
