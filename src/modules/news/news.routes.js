@@ -19,7 +19,7 @@ router.get('/:id_news', getNewsById);
 
 router.post('/', createNews);
 
-router.post('/images', upload.array('image', 3), createNewsWithImages);
+router.post('/images', upload.any(), createNewsWithImages);
 
 router.put('/:id', updateNews);
 
