@@ -1,7 +1,7 @@
 import express from "express";
 import {
   getGalleryByNewsId,
-  createGalleryNews,
+  createGalleryByNewsId,
   getImageByIdGallery,
   deleteImageByIdGallery,
   deleteGalleryByNewsId
@@ -10,14 +10,14 @@ import { upload } from "../../services/images/multer.js";
 
 const router = express.Router();
 
-router.get("/news/:news_id", getGalleryByNewsId);
+router.get("/news/:newsId", getGalleryByNewsId);
 
 router.get("/:id", getImageByIdGallery);
 
 router.post(
   "/news/:id",
-  upload.array("image", 3),
-  createGalleryNews,
+  upload.array("files", 3),
+  createGalleryByNewsId,
 );
 
 router.delete('/:id', deleteImageByIdGallery);

@@ -1,16 +1,16 @@
 "use strict";
 
-export const Region = (sequelize, DataTypes) => {
-  const Region = sequelize.define(
-    "Region",
+export const UserRole = (sequelize, DataTypes) => {
+  const UserRole = sequelize.define(
+    "UserRole",
     {
-      idRegion: {
+      idUserRole: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-        field: "id_region",
+        field: "id_user_role",
       },
-      region: {
+      role: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -26,18 +26,18 @@ export const Region = (sequelize, DataTypes) => {
       },
     },
     {
-      tableName: "wm_regions",
+      tableName: "wm_user_role",
       timestamps: false,
     },
   );
 
-  Region.associate = (models) => {
-    Region.hasMany(models.ProvinceModel, {
-      foreignKey: 'regionId' ,
-      sourceKey: "idRegion",
-      as: "province",
+  UserRole.associate = (models) => {
+    UserRole.hasMany(models.UserModel, {
+      foreignKey: 'userRoleId',
+      sourceKey: "idUserRole",
+      as: "user",
     });
   };
 
-  return Region;
+  return UserRole;
 };

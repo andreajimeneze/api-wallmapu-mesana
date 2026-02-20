@@ -1,21 +1,21 @@
-export const createNewsGalleryDTO = ({ alt = [], images = [], newsId }) => {
+export const createNewsGalleryDTO = ({ alt, image, newsId }) => {
     if(!newsId) {
          throw new Error('news_id es obligatorio');
     }
-    if(!alt && !images ) {
+    if(!alt && !image ) {
         throw new Error('Campos de la imagen son obligatorios');
     }
 
     return {
         alt,
-        images,
+        url: image,
         newsId: Number(newsId)
     }
 };
 
 export const newsGalleryResponseDTO = (newsGallery) => ({
-    idNewsGallery: newsGallery.idNewsGallery,
+    id_news_gallery: newsGallery.idNewsGallery,
+    url: newsGallery.url,
     alt: newsGallery.alt,
-    images: newsGallery.images,
-    newsId: newsGallery.newsId
+    news_id: newsGallery.newsId
 })

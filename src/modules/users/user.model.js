@@ -2,12 +2,13 @@
 
 export const User = (sequelize, DataTypes) => {
   const User = sequelize.define(
-    "Users",
+    "User",
     {
-      id_user: {
+      idUser: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+        field: 'id_user'
       },
       username: {
         type: DataTypes.STRING,
@@ -25,12 +26,15 @@ export const User = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      id_commun: {
+      idCommune: {
         type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'id_commune'
       },
-      phone_number: {
+      phoneNumber: {
         type: DataTypes.STRING,
         allowNull: false,
+        field: 'phone_number'
       },
       email: {
         type: DataTypes.STRING,
@@ -40,13 +44,15 @@ export const User = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      id_user_type: {
+      idUserRole: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'id_user_role'
       },
-      id_user_status: {
+      idUserStatus: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'id_user_status'
       },
     },
     {
@@ -56,14 +62,16 @@ export const User = (sequelize, DataTypes) => {
   );
 
   User.associate = (models) => {
-    User.belongsTo(models.User_statusModel, {
-      foreignKey: "id_user_status",
-      as: "user_status",
+    User.belongsTo(models.UserStatusModel, {
+      foreignKey: 'userStatusId' ,
+      targetKey: "idUserStatus",
+      as: "userStatus",
     });
 
-    User.belongsTo(models.User_typeModel, {
-      foreignKey: "id_user_type",
-      as: "user_type",
+    User.belongsTo(models.UserRoleModel, {
+      foreignKey: "userRoleId",
+      targetKey: "idUserRole",
+      as: "userRole",
     });
   };
 

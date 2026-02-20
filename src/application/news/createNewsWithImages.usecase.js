@@ -1,5 +1,5 @@
 import { createNewsService } from "../../modules/news/news.service.js";
-import { createGalleryNewsService } from "../../modules/news-gallery/news-gallery.service.js";
+import { createGalleryByNewsIdService } from "../../modules/news-gallery/news-gallery.service.js";
 import { uploadImageCloud } from "../../services/images/cloudinary.service.js";
 import { NewsModel, NewsGalleryModel } from "../../config/dbSequelize.js";
 import { sequelize } from "../../config/dbSequelize.js";
@@ -53,7 +53,7 @@ export const createNewsWithImagesService = async ({
 
     console.log("resultado subida", uploadResults);
     for (let i = 0; i < uploadResults.length; i++) {
-      await createGalleryNewsService(
+      await createGalleryByNewsIdService(
         {
           alt: alt[i],
           url: uploadResults[i].url,

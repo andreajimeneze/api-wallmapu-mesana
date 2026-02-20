@@ -1,17 +1,28 @@
 "use strict";
 
-export const User_status = (sequelize, DataTypes) => {
-  const User_status = sequelize.define(
-    "User_status",
+export const UserStatus = (sequelize, DataTypes) => {
+  const UserStatus = sequelize.define(
+    "UserStatus",
     {
-      id_user_status: {
+      idUserStatus: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+        field: "id_user_status",
       },
-      user_status: {
+      status: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        field: "created_at",
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: "updated_at",
       },
     },
     {
@@ -20,12 +31,13 @@ export const User_status = (sequelize, DataTypes) => {
     },
   );
 
-    User_status.associate = (models) => {
-    User_status.hasMany(models.UserModel, {
-      foreignKey: "id_user_status",
+  UserStatus.associate = (models) => {
+    UserStatus.hasMany(models.UserModel, {
+      foreignKey:  'userStatusId' ,
+      targetKey: "idUserStatus",
       as: "user",
     });
   };
 
-  return User_status;
+  return UserStatus;
 };

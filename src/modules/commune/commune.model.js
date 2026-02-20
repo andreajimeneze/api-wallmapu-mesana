@@ -1,18 +1,23 @@
 "use strict";
 
-export const Region = (sequelize, DataTypes) => {
-  const Region = sequelize.define(
-    "Region",
+export const Commune = (sequelize, DataTypes) => {
+  const Commune = sequelize.define(
+    "Commune",
     {
-      idRegion: {
+      idCommune: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-        field: "id_region",
+        field: "id_commune",
       },
-      region: {
+      commune: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      provinceId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: "province_id",
       },
       createdAt: {
         type: DataTypes.DATE,
@@ -26,18 +31,18 @@ export const Region = (sequelize, DataTypes) => {
       },
     },
     {
-      tableName: "wm_regions",
+      tableName: "wm_communes",
       timestamps: false,
     },
   );
 
-  Region.associate = (models) => {
-    Region.hasMany(models.ProvinceModel, {
-      foreignKey: 'regionId' ,
-      sourceKey: "idRegion",
+  Commune.associate = (models) => {
+    Commune.belongsTo(models.ProvinceModel, {
+      foreignKey: "provinceId",
+      targetKey: "idProvince",
       as: "province",
     });
   };
 
-  return Region;
+  return Commune;
 };

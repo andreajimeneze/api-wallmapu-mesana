@@ -12,8 +12,9 @@ export const createNewsDTO = ({ title, subtitle, body }) => {
   };
 };
 
-export const updateNewsDTO = ({ title, subtitle, body, created_at }) => {
+export const updateNewsDTO = ({ id_news, title, subtitle, body, created_at }) => {
   return {
+    id_news: Number(id_news),
     title: title.trim(),
     subtitle: subtitle?.trim() || null,
     body: body.trim(),

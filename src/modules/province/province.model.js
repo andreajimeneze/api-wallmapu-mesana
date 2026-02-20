@@ -2,34 +2,50 @@
 
 export const Province = (sequelize, DataTypes) => {
   const Province = sequelize.define(
-    "Provinces",
+    "Province",
     {
-      id_province: {
+      idProvince: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+        field: 'id_province'
       },
       province: {
         type: DataTypes.STRING,
+        allowNull: false
       },
-      region_id: {
+      regionId: {
         type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'region_id'
       },
+      createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'created_at'
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: 'updated_at'
+    }
     },
     {
-      tableName: "provinces",
+      tableName: "wm_provinces",
       timestamps: false,
     },
   );
 
   Province.associate = (models) => {
-    Province.belongsTo(models.CommunModel, {
-      foreignKey: "id_province",
-      as: "commun",
+    Province.hasMany(models.CommuneModel, {
+      foreignKey: "provinceId" ,
+      sourceKey: "idProvince",
+      as: "commune",
     });
   
-    Province.hasMany(models.RegionModel, {
-      foreignKey: "id_region",
+    Province.belongsTo(models.RegionModel, {
+      foreignKey:  "regionId",
+      targetKey: "idRegion",
       as: "region",
     });
   };

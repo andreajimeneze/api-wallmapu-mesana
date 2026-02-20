@@ -14,9 +14,9 @@ import {
   createNewsService,
   getNewsByIdService,
   updateNewsService,
-  deleteNewsService,
 } from "./news.service.js";
 import { createNewsWithImagesService } from "../../application/news/createNewsWithImages.usecase.js";
+import { deleteNewsAndImages } from "../../application/news/deleteNewsAndImages.usecase.js";
 
 export const getNewsPaginationAndSearch = async (req, res) => {
   try {
@@ -134,7 +134,7 @@ export const updateNews = async (req, res) => {
     res.status(202).json(
       successUpdateResponse({
         message: "Noticia editada correctamente",
-        result: updateNewsDTO(updatedNews),
+        result: newsResponseDTO(updatedNews),
       }),
     );
   } catch (error) {
@@ -149,7 +149,7 @@ export const updateNews = async (req, res) => {
 export const deleteNews = async (req, res) => {
   try {
     const { id } = req.params;
-    const newsDeleted = await deleteNewsService(id);
+    const newsDeleted = await deleteNewsAndImages(id);
 
     if (!newsDeleted) {
       return res
@@ -164,19 +164,12 @@ export const deleteNews = async (req, res) => {
       }),
     );
   } catch (error) {
-    if (error.parent?.code === "23503") {
-      // código de error constraint
-      return res.status(409).json(
-        conflictResponse({
+
+      return res.status(500).json(
+        internalServerResponse({
           message:
-            "No se puede eliminar una noticia porque existen registros asociados",
+            "Error al eliminar la noticia",
         }),
-      );
-    }
-    return res
-      .status(500)
-      .json(
-        internalServerResponse({ message: "Error al eliminar la noticia" }),
       );
   }
 };
@@ -186,10 +179,7 @@ export const createNewsWithImages = async (req, res) => {
   const images = req.files;
   let { alt } = req.body;
 
-console.log("FILES:", req.files);
-console.log("BODY:", req.body);
-
-  if(alt && !Array.isArray(alt)) {
+  if (alt && !Array.isArray(alt)) {
     alt = [alt];
   }
 
@@ -199,23 +189,19 @@ console.log("BODY:", req.body);
       subtitle,
       body,
       alt,
-      images,
+      images
     });
 
-    return res
-      .status(201)
-      .json(
-        successCreateResponse({
-          message: "Noticia con imagen creada exitosamente",
-          result: newsWithImages
-        }),
-      );
+    return res.status(201).json(
+      successCreateResponse({
+        message: "Noticia con imagen creada exitosamente",
+        result: newsResponseDTO(newsWithImages)
+      }),
+    );
   } catch (error) {
-    console.error("🔥 ERROR COMPLETO:", error);
 
-  return res.status(500).json({
-    message: error.message,
-    error: error,
-  });
-}
-}
+    return res.status(500).json({
+      message: error.message
+    });
+  }
+};
