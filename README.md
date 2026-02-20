@@ -314,6 +314,135 @@ RESPONSE 404
 }
 ```
 
+GET /api/communes
+
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": [
+    {
+      "id_commune": 0,
+      "commune": "string",
+      "province_id": 0,
+      "province": {
+        "id_province": 0,
+        "province": "string",
+        "region_id": 0
+      }
+    }
+  ]
+}
+```
+GET /api/communes/{id}
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": {
+    "id_commune": 0,
+    "commune": "string",
+    "province_id": 0,
+    "province": {
+      "id_province": 0,
+      "province": "string",
+      "region_id": 0
+    }
+  }
+}
+```
+
+GET /api/provinces
+
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": [
+    {
+      "id_province": 0,
+      "province": "string",
+      "region_id": 0,
+      "region": {
+        "id_region": 0,
+        "region": "string"
+      }
+    }
+  ]
+}
+```
+GET /api/provinces/{id}
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": {
+    "id_province": 0,
+    "province": "string",
+    "region_id": 0,
+    "region": {
+      "id_region": 0,
+      "region": "string"
+    }
+  }
+}
+```
+GET /api/regions
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": [
+    {
+      "id_region": 0,
+      "region": "string"
+    }
+  ]
+}
+```
+
+GET /api/regions/{id}
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": {
+    "id_region": 0,
+    "region": "string"
+  }
+}
+```
+GET /api/role/{id}
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": {
+    "id_user_role": 0,
+    "role": "string"
+  }
+}
+```
+GET /api/status/{id}
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": {
+    "id_user_status": 0,
+    "status": "string"
+  }
+}
+```
+
 ## ESTRUCTURA DE CARPETAS
 
 ```
