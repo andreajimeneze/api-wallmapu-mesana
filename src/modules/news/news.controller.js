@@ -80,7 +80,7 @@ export const getNewsById = async (req, res) => {
 export const createNews = async (req, res) => {
   try {
     const { title, subtitle, body } = req.body;
-
+  
     const dto = createNewsDTO({
       title,
       subtitle,
@@ -175,9 +175,18 @@ export const deleteNews = async (req, res) => {
 };
 
 export const createNewsWithImages = async (req, res) => {
-  const { title, subtitle, body } = req.body;
-  const images = req.files;
+  //const { title, subtitle, body } = req.body;
+  const title = req.body.title;
+  const subtitle = req.body.subtitle;
+  const body = req.body.body;
+  const files = req.files;
   let { alt } = req.body;
+
+  console.log('título controller con imagen: ', title)
+  console.log('subtítulo controller con imagen: ', subtitle)
+  console.log('body controller con imagen: ', body)
+  console.log("BODY en controlador con imágenes:", req.body);
+console.log("FILES en controlador con imágenes:", req.files);
 
   if (alt && !Array.isArray(alt)) {
     alt = [alt];
@@ -189,9 +198,10 @@ export const createNewsWithImages = async (req, res) => {
       subtitle,
       body,
       alt,
-      images
+      files
     });
 
+    console.log('noticia creada', newsWithImages)
     return res.status(201).json(
       successCreateResponse({
         message: "Noticia con imagen creada exitosamente",
@@ -199,7 +209,7 @@ export const createNewsWithImages = async (req, res) => {
       }),
     );
   } catch (error) {
-
+console.error(error);
     return res.status(500).json({
       message: error.message
     });

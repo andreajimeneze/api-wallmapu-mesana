@@ -8,7 +8,6 @@ import {
 } from "../../shared/apiResponse.js";
 
 import {
-  createNewsGalleryDTO,
   newsGalleryResponseDTO,
 } from "./news-gallery.dto.js";
 import {

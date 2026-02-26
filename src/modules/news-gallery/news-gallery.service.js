@@ -8,15 +8,15 @@ import { NewsGalleryModel, NewsModel } from "../../config/dbSequelize.js";
 const path = "news";
 
 export const createGalleryByNewsIdService = async (
-  { alts, images, newsId },
+  { alts, files =[], newsId },
   transaction,
 ) => {
-
+console.log('imágenes recibidas en service: ', files);
   // Validaciones
-  if (!Array.isArray(images)) {
+  if (!Array.isArray(files)) {
     throw new Error("Formato de imágenes, inválido");
   }
-  if (!images || images.length === 0) {
+  if (!files || files.length === 0) {
     throw new Error("Debe subir al menos una imagen");
   }
 
@@ -24,7 +24,7 @@ export const createGalleryByNewsIdService = async (
     throw new Error("Formato de textos alternativos de imágenes, inválido");
   }
 
-  if (images.length !== alts.length) {
+  if (files.length !== alts.length) {
     throw new Error("Cada imagen debe contar con texto alternativo");
   }
 
@@ -35,24 +35,34 @@ export const createGalleryByNewsIdService = async (
   }
 
   const uploadResults = await Promise.all(
-    images.map((file, index) =>
+    files.map((file, index) =>
       uploadImageCloud(
         file.buffer,
         path,
-        `${newsId}-'idNews'-${Date.now().toString(36)}_${index}`,
+        publicId = `${newsId}-'idNews'-${Date.now().toString(36)}_${index}`,
       ),
     ),
   );
 
-  const galleryData = uploadResults.map((result, index) => ({
-    alt: alts[index],
-    url: result.url,
-    newsId,
-  }));
+  // const galleryData = uploadResults.map((result, index) => ({
+  //   alt: alts[index],
+  //   url: result.url,
+  //   newsId,
+  // }));
 
-  const createdGallery = await NewsGalleryModel.bulkCreate(galleryData, {
-    transaction,
-  });
+  const createdGallery = await Promise.all(
+    uploadResults.map((file, index) => 
+      NewsGallery.create(
+        {
+        alts: alts[index],
+        url: file.url,
+        newsId
+      }
+      ))
+  )
+  // const createdGallery = await NewsGalleryModel.bulkCreate(galleryData, {
+  //   transaction,
+  // });
   return createdGallery;
 };
 

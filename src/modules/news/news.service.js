@@ -116,7 +116,7 @@ export const getNewsByIdService = async (id) => {
   return newsById;
 };
 
-export const createNewsService = async ({ title, subtitle, body}, transaction) => {
+export const createNewsService = async ({ title, subtitle, body}) => {
   const existingNews = await NewsModel.findOne({
     where: { title: { [Op.iLike]: title } }
   });
@@ -125,15 +125,17 @@ export const createNewsService = async ({ title, subtitle, body}, transaction) =
     throw  new Error("Ya existe una noticia con ese título");
   }
 
-  return await NewsModel.create({
+  const createdNews = await NewsModel.create({
     title,
     subtitle,
     body,
     created_at: new Date(),
     updated_at: new Date(),
     
-  }, {transaction});
-
+  });
+console.log('created news en servicio news: ', createdNews)
+  
+  return createdNews
 };
 
 export const updateNewsService = async (id, newsData) => {
