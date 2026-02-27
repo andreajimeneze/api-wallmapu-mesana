@@ -1,4 +1,4 @@
-import { getUserRoleService } from "./user-role.service.js";
+import { getUserRolesService } from "./user-role.service.js";
 import {
   internalServerResponse,
   notFoundResponse,
@@ -6,13 +6,11 @@ import {
 } from "../../shared/apiResponse.js";
 import { responseUserRoleDTO } from "./user-role.dto.js";
 
-export const getUserRole = async (req, res) => {
-  const { id } = req.params;
+export const getUserRoles = async (req, res) => {
+   try {
+    const userRoles = await getUserRolesService();
 
-  try {
-    const userRole = await getUserRoleService(id);
-
-    if (!userRole) {
+    if (!userRoles) {
       return res
         .status(404)
         .json(notFoundResponse({ message: "No existe rol solicitado" }));
@@ -23,7 +21,7 @@ export const getUserRole = async (req, res) => {
       .json(
           succesGetResponse({
           message: "Rol obtenido exitosamente",
-          result: responseUserRoleDTO(userRole),
+          result: userRoles.map(responseUserRoleDTO),
         }),
       );
   } catch (error) {

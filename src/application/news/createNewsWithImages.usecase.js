@@ -9,11 +9,9 @@ export const createNewsWithImagesService = async ({
   title,
   subtitle,
   body,
-  alt = [],
-  images = [],
+  alts,
+  files,
 }) => {
-  console.log("titulo en orquestador", title);
-
   const transaction = await sequelize.transaction();
 
   try {
@@ -21,22 +19,23 @@ export const createNewsWithImagesService = async ({
       {
         title,
         subtitle,
-        body
+        body,
       },
       transaction,
     );
 
     const newsId = createdNews.id_news;
- console.log('id news en servicio orquestador: ', newsId)
-    await createGalleryByNewsIdService(
-      {
-        alts: alt,
-        files: images,
-        newsId,
-      },
-      transaction,
-    );
 
+    if (files && files.length > 0) {
+      await createGalleryByNewsIdService(
+        {
+          alts,
+          files,
+          newsId,
+        },
+        transaction,
+      );
+    }
     await transaction.commit();
     const newsWithImages = await NewsModel.findByPk(newsId, {
       include: [

@@ -1,4 +1,4 @@
-import { sequelize } from "../../config/dbSequelize.js";
+import { NewsGalleryModel, sequelize } from "../../config/dbSequelize.js";
 import { getGalleryByNewsIdService } from "../../modules/news-gallery/news-gallery.service.js";
 import { getNewsByIdService } from "../../modules/news/news.service.js";
 import {
@@ -7,12 +7,11 @@ import {
 } from "../../services/images/cloudinary.service.js";
 
 export const deleteNewsAndImages = async (id) => {
-
   const transaction = await sequelize.transaction();
 
   try {
-
     const news = await getNewsByIdService(id, { transaction });
+    console.log('noticia encontrada en orquestador', news)
 
     if (!news) {
       await transaction.rollback();
@@ -21,23 +20,24 @@ export const deleteNewsAndImages = async (id) => {
 
     const gallery = await getGalleryByNewsIdService(id, { transaction });
 
-    const publicIds = gallery
-      .map(img => extractPublicId(img.url))
+    const publicIds = (gallery || [])
+      .map((img) => extractPublicId(img.url))
       .filter(Boolean);
+
+    await NewsGalleryModel.destroy({
+      where: { newsId: id },
+      transaction
+    });
+
+    await Promise.all(publicIds.map((id) => deleteImageCloud(id)));
 
     await news.destroy({ transaction });
 
     await transaction.commit();
 
-    await Promise.all(
-      publicIds.map(id => deleteImageCloud(id))
-    );
-
     return true;
-
   } catch (error) {
     await transaction.rollback();
     throw error;
   }
 };
-

@@ -1,8 +1,8 @@
 import express from 'express';
-import { getUserStatus } from './user-status.controller.js';
+import { getUsersStatus } from './user-status.controller.js';
 
 const router = express.Router();
 
-router.get('/:id', getUserStatus);
+router.get('/', getUsersStatus);
 
 export default router;

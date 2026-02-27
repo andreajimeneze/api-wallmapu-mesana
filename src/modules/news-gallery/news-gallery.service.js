@@ -4,25 +4,22 @@ import {
   uploadImageCloud,
 } from "../../services/images/cloudinary.service.js";
 import { NewsGalleryModel, NewsModel } from "../../config/dbSequelize.js";
+import { generateFileName } from "../../services/images/generateFileName.js";
 
 const path = "news";
 
 export const createGalleryByNewsIdService = async (
-  { alts, files =[], newsId },
-  transaction,
+  { alts, files, newsId },
+  options = {},
 ) => {
-console.log('imágenes recibidas en service: ', files);
-  // Validaciones
-  if (!Array.isArray(files)) {
-    throw new Error("Formato de imágenes, inválido");
-  }
-  if (!files || files.length === 0) {
+
+  const { transaction } = options;
+
+  if (!Array.isArray(files) || files.length === 0) {
     throw new Error("Debe subir al menos una imagen");
   }
 
-  if (!Array.isArray(alts)) {
-    throw new Error("Formato de textos alternativos de imágenes, inválido");
-  }
+  alts = Array.isArray(alts) ? alts : [alts];
 
   if (files.length !== alts.length) {
     throw new Error("Cada imagen debe contar con texto alternativo");
@@ -39,40 +36,34 @@ console.log('imágenes recibidas en service: ', files);
       uploadImageCloud(
         file.buffer,
         path,
-        publicId = `${newsId}-'idNews'-${Date.now().toString(36)}_${index}`,
-      ),
-    ),
+        generateFileName(newsId, path) + "_" + index
+      )
+    )
   );
 
-  // const galleryData = uploadResults.map((result, index) => ({
-  //   alt: alts[index],
-  //   url: result.url,
-  //   newsId,
-  // }));
-
   const createdGallery = await Promise.all(
-    uploadResults.map((file, index) => 
-      NewsGallery.create(
+    uploadResults.map((file, index) =>
+      NewsGalleryModel.create(
         {
-        alts: alts[index],
-        url: file.url,
-        newsId
-      }
-      ))
-  )
-  // const createdGallery = await NewsGalleryModel.bulkCreate(galleryData, {
-  //   transaction,
-  // });
+          alt: alts[index],
+          url: file.url,
+          newsId,
+        },
+        { transaction }
+      )
+    )
+  );
+
   return createdGallery;
 };
 
-
-
-export const getGalleryByNewsIdService = async (newsId) => {
+export const getGalleryByNewsIdService = async (newsId, options = {}) => {
+  const { transaction } = options;
   return await NewsGalleryModel.findAll({
     where: { newsId },
     attributes: ["idNewsGallery", "alt", "url", "newsId"],
     order: [["idNewsGallery", "ASC"]],
+    transaction
   });
 };
 
@@ -80,7 +71,8 @@ export const getImageByIdGalleryService = async (id) => {
   return await NewsGalleryModel.findByPk(id);
 };
 
-export const deleteImagebyIdGalleryService = async (id) => {
+export const deleteImagebyIdGalleryService = async (id, options = {}) => {
+  const { transaction } = options;
   const existingImage = await NewsGalleryModel.findByPk(id);
 
   if (!existingImage) {
@@ -92,7 +84,7 @@ export const deleteImagebyIdGalleryService = async (id) => {
   try {
     await deleteImageCloud(publicId);
 
-    await existingImage.destroy();
+    await existingImage.destroy({transaction});
 
     return true;
   } catch (error) {

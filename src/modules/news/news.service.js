@@ -96,7 +96,9 @@ export const getNewsPaginationAndSearchService = async ({
   };
 };
 
-export const getNewsByIdService = async (id) => {
+export const getNewsByIdService = async (id, options = {}) => {
+  const { transaction } = options;
+
   const newsById = await NewsModel.findByPk(id, {
     order: [
       [{ model: NewsGalleryModel, as: "images" }, "idNewsGallery", "ASC"],
@@ -108,6 +110,7 @@ export const getNewsByIdService = async (id) => {
         attributes: ["idNewsGallery", "url", "alt", "newsId"],
       },
     ],
+    transaction
   });
 
   if (!newsById) {
@@ -133,7 +136,6 @@ export const createNewsService = async ({ title, subtitle, body}) => {
     updated_at: new Date(),
     
   });
-console.log('created news en servicio news: ', createdNews)
   
   return createdNews
 };
@@ -148,7 +150,9 @@ export const updateNewsService = async (id, newsData) => {
   });
 };
 
-export const deleteNewsService = async (id, transaction) => {
+export const deleteNewsService = async (id, options = {}) => {
+  const { transaction } = options;
+  
   const newsSelected = await NewsModel.findByPk(id, {transaction});
 
   if (!newsSelected) return null;

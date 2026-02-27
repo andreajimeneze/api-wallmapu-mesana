@@ -76,11 +76,9 @@ export const getImageByIdGallery = async (req, res) => {
 
 export const createGalleryByNewsId = async (req, res) => {
   const { id } = req.params;
-  const images = req.files;
+  const files = req.files;
   let { alts } = req.body;
 
-  console.log('alt length en controller línea 81', alts);
-  console.log('imágenes recibidas controller línea 80', images);
   try {
     if (!id || isNaN(Number(id))) {
       return res.status(400).json(
@@ -90,7 +88,7 @@ export const createGalleryByNewsId = async (req, res) => {
       );
     }
 
-    if (!images || images.length < 1 || images.length > 3) {
+    if (!files || files.length < 1 || files.length > 3) {
       return res.status(400).json(
         badRequestResponse({
           message: "Debe subir entre 1 y 3 imágenes",
@@ -101,18 +99,18 @@ export const createGalleryByNewsId = async (req, res) => {
 
     if (!Array.isArray(alts)) alts = [alts];
     
-    if (alts.length !== images.length) {
+    if (alts.length !== files.length) {
       return res.status(400).json(
         badRequestResponse({
           message:
-            "La cantidad de textos alternativos de imágenes debe coincidir con la cantidad de imágenes",
+            "La cantidad de textos altsernativos de imágenes debe coincidir con la cantidad de imágenes",
         }),
       );
     }
     
     const gallery = await createGalleryByNewsIdService( {
       alts,
-      images,
+      files,
       newsId: Number(id)
     });
                 

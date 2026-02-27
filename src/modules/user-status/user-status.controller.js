@@ -1,4 +1,4 @@
-import { getUserStatusService } from "./user-status.service.js";
+import { getUsersStatusService } from "./user-status.service.js";
 import {
   internalServerResponse,
   notFoundResponse,
@@ -6,22 +6,20 @@ import {
 } from "../../shared/apiResponse.js";
 import { responseUserStatusDTO } from "./user-status.dto.js";
 
-export const getUserStatus = async (req, res) => {
-  const { id } = req.params;
-
+export const getUsersStatus = async (req, res) => {
   try {
-    const userStatus = await getUserStatusService(id);
+    const userStatus = await getUsersStatusService();
 
-    if (!userStatus) {
+    if (!userStatus  || userStatus.length === 0) {
       return res
         .status(404)
-        .json(notFoundResponse({ message: "Status no existe" }));
+        .json(notFoundResponse({ message: "No existen status cargados" }));
     }
 
     return res.status(200).json(
       succesGetResponse({
-        message: "Status obtenido exitosamente",
-        result: responseUserStatusDTO(userStatus),
+        message: "Status obtenidos exitosamente",
+        result: userStatus.map(responseUserStatusDTO),
       }),
     );
   } catch (error) {

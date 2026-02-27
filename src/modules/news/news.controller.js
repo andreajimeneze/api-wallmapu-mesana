@@ -96,6 +96,7 @@ export const createNews = async (req, res) => {
       }),
     );
   } catch (error) {
+    console.error(error);
     if (error.code === "CONFLICT") {
       res.status(409).json(
         conflictResponse({
@@ -149,8 +150,9 @@ export const updateNews = async (req, res) => {
 export const deleteNews = async (req, res) => {
   try {
     const { id } = req.params;
+    
     const newsDeleted = await deleteNewsAndImages(id);
-
+   
     if (!newsDeleted) {
       return res
         .status(404)
@@ -164,7 +166,6 @@ export const deleteNews = async (req, res) => {
       }),
     );
   } catch (error) {
-
       return res.status(500).json(
         internalServerResponse({
           message:
@@ -175,29 +176,19 @@ export const deleteNews = async (req, res) => {
 };
 
 export const createNewsWithImages = async (req, res) => {
-  //const { title, subtitle, body } = req.body;
-  const title = req.body.title;
-  const subtitle = req.body.subtitle;
-  const body = req.body.body;
+  const { title, subtitle, body } = req.body;
   const files = req.files;
-  let { alt } = req.body;
+  let { alts } = req.body;
 
-  console.log('título controller con imagen: ', title)
-  console.log('subtítulo controller con imagen: ', subtitle)
-  console.log('body controller con imagen: ', body)
-  console.log("BODY en controlador con imágenes:", req.body);
-console.log("FILES en controlador con imágenes:", req.files);
-
-  if (alt && !Array.isArray(alt)) {
-    alt = [alt];
+  if (alts && !Array.isArray(alts)) {
+    alts = [alts];
   }
-
   try {
     const newsWithImages = await createNewsWithImagesService({
       title,
       subtitle,
       body,
-      alt,
+      alts,
       files
     });
 
