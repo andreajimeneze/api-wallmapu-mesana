@@ -42,6 +42,12 @@ export const Commune = (sequelize, DataTypes) => {
       targetKey: "idProvince",
       as: "province",
     });
+
+    Commune.hasMany(models.UserModel, {
+      foreignKey: 'communeId',
+      sourceKey: 'idCommune',
+      as: 'user'
+    });
   };
 
   return Commune;

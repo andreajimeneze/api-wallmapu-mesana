@@ -39,6 +39,7 @@ export const getNewsPaginationAndSearchService = async ({
     return {
       response: "No se encontraron noticias",
       result: paginationResponseDTO({
+        page: 0,
         pages: 0,
         items: 0,
         next: "none",
@@ -81,6 +82,7 @@ export const getNewsPaginationAndSearchService = async ({
   return {
     response: "Noticias obtenidas exitosamente",
     result: paginationResponseDTO({
+      page,
       pages,
       items,
       next:

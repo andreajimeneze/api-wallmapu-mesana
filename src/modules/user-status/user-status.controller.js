@@ -1,4 +1,4 @@
-import { getUsersStatusService } from "./user-status.service.js";
+import { getUsersStatusService, getUserStatusByIdService} from "./user-status.service.js";
 import {
   internalServerResponse,
   notFoundResponse,
@@ -27,8 +27,37 @@ export const getUsersStatus = async (req, res) => {
       .status(500)
       .json(
         internalServerResponse({
-          message: "Error al intentar obtener status de usuario",
+          message: "Error al intentar obtener status de usuarios",
         }),
       );
   }
 };
+
+export const getUserStatusById = async (req, res) => {
+  const {id} = req.params;
+  try {
+    const userStatus = await getUserStatusByIdService(id);
+
+    if (!userStatus) {
+      return res
+        .status(404)
+        .json(notFoundResponse({ message: "No existe status solicitado" }));
+    }
+
+    return res.status(200).json(
+      succesGetResponse({
+        message: "Status obtenido exitosamente",
+        result: responseUserStatusDTO(userStatus)
+      }),
+    );
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        internalServerResponse({
+          message: "Error al intentar obtener status de usuario"
+        }),
+      );
+  }
+};
+

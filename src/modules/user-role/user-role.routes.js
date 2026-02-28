@@ -1,8 +1,10 @@
 import express from 'express';
-import { getUserRoles } from './user-role.controller.js';
+import { getUserRoleById, getUserRoles } from './user-role.controller.js';
 
 const router = express.Router();
 
 router.get('/', getUserRoles);
+
+router.get('/:id', getUserRoleById);
 
 export default router;

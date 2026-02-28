@@ -16,16 +16,67 @@
 
 ## DOCUMENTACIÓN API
 
-API NEWS
-GET / https://api-wallmapu-mesana.vercel.app/api/news?page=0&items=0&search=
+# 📘 WALLMAPU MESANA API
 
-Datos de entrada opcional:
-page = 0,
-items = 0,
-search = "string"
+Base URL:
 
-Datos de salida:
-RESPONSE 200
+https://api-wallmapu-mesana.vercel.app/api
+
+---
+
+# 📌 FORMATO GLOBAL DE RESPUESTA
+
+Todas las respuestas siguen esta estructura:
+
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": {}
+}
+```
+
+---
+
+# 📑 TABLA RESUMEN DE ENDPOINTS
+
+| Método |      Endpoint      |          Descripción            |
+|--------|--------------------|---------------------------------|
+| GET    | /news              | Listado paginado de noticias    |
+| GET    | /news/{id}         | Obtener noticia por ID          |
+| POST   | /news              | Crear noticia                   |
+| PUT    | /news/{id}         | Actualizar noticia              |
+| DELETE | /news/{id}         | Eliminar noticia                |
+| GET    | /gallery/{id}      | Galería imágenes por ID         |
+| POST   | /gallery/news/{id} | Crear imagen por ID noticia     |
+| DELETE | /gallery/news/{id} | Eliminar galería por ID noticia |
+| DELETE | /gallery/{id}      | Eliminar imagen por ID          |
+| GET    | /users             | Listado paginado de usuarios    |
+| GET    | /users/{id}        | Usuario por ID                  |
+| PUT    | /users/{id}        | Actualizar usuario              |
+| GET    | /regions           | Listado de regiones             |
+| GET    | /regions/{id}      | Región por ID                   |
+| GET    | /provinces         | Listado de provincias           |
+| GET    | /provinces/{id}    | Provincia por ID                |
+| GET    | /communes          | Listado de comunas              |
+| GET    | /communes/{id}     | Comunas por ID                  |
+| GET    | /role              | Listado de roles usuarios       |
+| GET    | /role/{id}         | Rol por ID                      |
+| GET    | /status            | Listado estado usuarios         |
+| GET    | /status/{id}       | Estado por ID                   |
+
+---
+
+# 📰 NEWS
+
+## GET /news
+
+Query Params:
+
+page=0  
+items=0  
+search=string  
 
 ```json
 {
@@ -33,8 +84,9 @@ RESPONSE 200
   "statusCode": 0,
   "message": "string",
   "result": {
-    "items": 0,
+    "page": 0,
     "pages": 0,
+    "items": 0,
     "next": "string",
     "prev": "string",
     "result": [
@@ -47,7 +99,7 @@ RESPONSE 200
         "updated_at": "string",
         "images": [
           {
-            "news_id_gallery": 0,
+            "id_news_gallery": 0,
             "alt": "string",
             "url": "string",
             "news_id": 0
@@ -59,24 +111,9 @@ RESPONSE 200
 }
 ```
 
-RESPONSE 404
+---
 
-```json
-{
-  "isSuccess": false,
-  "statusCode": 0,
-  "message": "string",
-  "result": null
-}
-```
-
-GET / https://api-wallmapu-mesana.vercel.app/api/news/{id}
-
-Requerido: {id} \*id_news
-
-Datos de salida:
-
-RESPONSE 200
+## GET /news/{id}
 
 ```json
 {
@@ -93,8 +130,8 @@ RESPONSE 200
     "images": [
       {
         "id_news_gallery": 0,
-        "url": "string",
         "alt": "string",
+        "url": "string",
         "news_id": 0
       }
     ]
@@ -102,20 +139,9 @@ RESPONSE 200
 }
 ```
 
-RESPONSE 404
+---
 
-```json
-{
-  "isSuccess": false,
-  "statusCode": 0,
-  "message": "string",
-  "result": null
-}
-```
-
-POST / https://api-wallmapu-mesana.vercel.app/api/news
-
-Datos de entrada:
+## POST /news
 
 ```json
 {
@@ -125,31 +151,9 @@ Datos de entrada:
 }
 ```
 
-Datos de salida:
+---
 
-RESPONSE 201
-
-```json
-{
-  "isSuccess": true,
-  "statusCode": 0,
-  "message": "string",
-  "result": {
-    "id_news": 0,
-    "title": "string",
-    "subtitle": "string",
-    "body": "string",
-    "created_at": "string",
-    "updated_at": "string"
-  }
-}
-```
-
-PUT / https://api-wallmapu-mesana.vercel.app/api/news/{id}
-
-Requerido: {id} \*id_news
-
-Datos de entrada:
+## PUT /news/{id}
 
 ```json
 {
@@ -159,86 +163,26 @@ Datos de entrada:
 }
 ```
 
-Datos de salida:
+---
 
-RESPONSE 202
+## DELETE /news/{id}
 
-```json
-{
-  "isSuccess": true,
-  "statusCode": 0,
-  "message": "string",
-  "result": {
-    "id_news": 0,
-    "title": "string",
-    "subtitle": "string",
-    "body": "string",
-    "created_at": "string",
-    "updated_at": "string",
-  }
-}
-```
-
-RESPONSE 404
-
-```json
-{
-  "isSuccess": false,
-  "statusCode": 0,
-  "message": "string",
-  "result": null
-}
-```
-
-DELETE / https://api-wallmapu-mesana.vercel.app/api/news/{id}
-
-Requerido: {id} \*id_news
-
-RESPONSE 202
+### Response 202
 
 ```json
 {
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
-    "id_news": 0,
-    "title": "string",
-    "subtitle": "string",
-    "body": "string",
-    "created_at": "string",
-    "updated_at": "string",
-  }
+  "result": {}
 }
 ```
 
-RESPONSE 404
+---
 
-```json
-{
-  "isSuccess": false,
-  "statusCode": 0,
-  "message": "string",
-  "result": null
-}
-```
+# 🖼 GALLERY
 
-RESPONSE 409 
-
-```json
-{
-  "isSuccess": false,
-  "statusCode": 0,
-  "message": "string",
-  "result": null
-}
-```
-
-GET / https://api-wallmapu-mesana.vercel.app/api/gallery/{id}
-
-Requerido: {id} \*news_id
-
-RESPONSE 200
+## GET /gallery/{id}
 
 ```json
 {
@@ -250,34 +194,17 @@ RESPONSE 200
       "id": 0,
       "alt": "string",
       "url": "string",
-      "news_id": 0
-    },
-    {
-      "id": 0,
-      "alt": "string",
-      "url": "string",
-      "news_id": 0
+      "news_id": 0,
+      "created_at": "string",
+      "updated_at": "string"
     }
   ]
 }
 ```
 
-RESPONSE 404
+---
 
-```json
-{
-  "isSuccess": true,
-  "statusCode": 0,
-  "message": "string",
-  "result": null
-}
-```
-
-POST / https://api-wallmapu-mesana.vercel.app/api/gallery/news/{id}
-
-Requerido: {id} \*news_id
-
-Datos de entrada:
+## POST /gallery/news/{id}
 
 ```json
 {
@@ -285,36 +212,124 @@ Datos de entrada:
   "url": "string"
 }
 ```
+## DELETE /gallery/{id_gallery}
 
-Datos de salida:
-
-```json
-RESPONSE 201
-{
-    "isSuccess": true,
-    "statusCode": 0,
-    "message": "string",
-    "result": {
-        "id": 0,
-        "alt": "string",
-        "url": "string",
-        "news_id": 0
-    }
-}
-```
-
-RESPONSE 404
+### Response 202
 
 ```json
 {
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": null
+  "result": {}
 }
 ```
 
-GET /api/communes
+---
+
+## DELETE /gallery/news/{id_news}
+
+### Response 202
+
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": {}
+}
+```
+---
+
+# 👥 USERS
+
+## GET /users
+
+Query Params:
+
+page=0  
+items=0  
+search=string  
+
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": {
+    "page": 0,
+    "pages": 0,
+    "items": 0,
+    "next": "string",
+    "prev": "string",
+    "result": [
+      {
+        "id_user": 0,
+        "username": "string",
+        "userlastname": "string",
+        "rut": "string",
+        "address": "string",
+        "phone_number": "string",
+        "email": "string",
+        "commune_id": 0,
+        "user_role_id": 0,
+        "user_status_id": 0,
+        "created_at": "string",
+        "updated_at": "string"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## GET /users/{id}
+
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": {
+    "id_user": 0,
+    "username": "string",
+    "userlastname": "string",
+    "rut": "string",
+    "address": "string",
+    "phone_number": "string",
+    "email": "string",
+    "commune_id": 0,
+    "user_role_id": 0,
+    "user_status_id": 0,
+    "created_at": "string",
+    "updated_at": "string"
+  }
+}
+```
+
+---
+
+## PUT /users/{id}
+
+```json
+{
+  "username": "string",
+  "userlastname": "string",
+  "rut": "string",
+  "address": "string",
+  "phone_number": "string",
+  "commune_id": 0,
+  "user_role_id": 0,
+  "user_status_id": 0
+}
+```
+
+---
+
+# 🌎 REGIONS
+
+## GET /regions
 
 ```json
 {
@@ -323,38 +338,33 @@ GET /api/communes
   "message": "string",
   "result": [
     {
-      "id_commune": 0,
-      "commune": "string",
-      "province_id": 0,
-      "province": {
-        "id_province": 0,
-        "province": "string",
-        "region_id": 0
-      }
+      "id_region": 0,
+      "region": "string",
+      "created_at": "string",
+      "updated_at": "string"
     }
   ]
 }
 ```
-GET /api/communes/{id}
+
+---
+
+## GET /regions/{id}
+
 ```json
 {
-  "isSuccess": true,
-  "statusCode": 0,
-  "message": "string",
-  "result": {
-    "id_commune": 0,
-    "commune": "string",
-    "province_id": 0,
-    "province": {
-      "id_province": 0,
-      "province": "string",
-      "region_id": 0
-    }
-  }
+  "id_region": 0,
+  "region": "string",
+  "created_at": "string",
+  "updated_at": "string"
 }
 ```
 
-GET /api/provinces
+---
+
+# 🏛 PROVINCES
+
+## GET /provinces
 
 ```json
 {
@@ -366,32 +376,21 @@ GET /api/provinces
       "id_province": 0,
       "province": "string",
       "region_id": 0,
+      "created_at": "string",
+      "updated_at": "string",
       "region": {
-        "id_region": 0,
-        "region": "string"
-      }
+            "id_region": 0,
+            "region": "string"
+        }
     }
   ]
 }
 ```
-GET /api/provinces/{id}
-```json
-{
-  "isSuccess": true,
-  "statusCode": 0,
-  "message": "string",
-  "result": {
-    "id_province": 0,
-    "province": "string",
-    "region_id": 0,
-    "region": {
-      "id_region": 0,
-      "region": "string"
-    }
-  }
-}
-```
-GET /api/regions
+
+---
+
+## GET /provinces/{id}
+
 ```json
 {
   "isSuccess": true,
@@ -399,123 +398,253 @@ GET /api/regions
   "message": "string",
   "result": [
     {
-      "id_region": 0,
-      "region": "string"
+      "id_province": 0,
+      "province": "string",
+      "region_id": 0,
+      "created_at": "string",
+      "updated_at": "string",
+      "region": {
+            "id_region": 0,
+            "region": "string"
+        }
     }
   ]
 }
 ```
 
-GET /api/regions/{id}
+---
+
+# 🏘 COMMUNES
+
+## GET /communes
+
 ```json
 {
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
-    "id_region": 0,
-    "region": "string"
-  }
+  "result": [
+    {
+      "id_commune": 0,
+      "commune": "string",
+      "province_id": 0,
+      "created_at": "string",
+      "updated_at": "string",
+      "province": {
+                "id_province": 0,
+                "province": "string",
+                "region_id": 0
+            }
+    }
+  ]
 }
 ```
-GET /api/role/{id}
+
+---
+## GET /communes/{id}
+
 ```json
 {
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
-    "id_user_role": 0,
-    "role": "string"
-  }
+  "result": [
+    {
+      "id_commune": 0,
+      "commune": "string",
+      "province_id": 0,
+      "created_at": "string",
+      "updated_at": "string",
+      "province": {
+                "id_province": 0,
+                "province": "string",
+                "region_id": 0
+            }
+    }
+  ]
 }
 ```
-GET /api/status/{id}
+
+---
+
+# 🔐 ROLES
+
+## GET /roles
+
 ```json
 {
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
-    "id_user_status": 0,
-    "status": "string"
-  }
+  "result": [
+    {
+      "id_user_role": 0,
+      "role": "string",
+      "created_at": "string",
+      "updated_at": "string"
+    }
+  ]
 }
 ```
+
+---
+
+## GET /roles/{id}
+
+```json
+{
+  "id_user_role": 0,
+  "role": "string",
+  "created_at": "string",
+  "updated_at": "string"
+}
+```
+
+---
+
+# 🔎 STATUS
+
+## GET /status
+
+```json
+{
+  "isSuccess": true,
+  "statusCode": 0,
+  "message": "string",
+  "result": [
+    {
+      "id_user_status": 0,
+      "status": "string",
+      "created_at": "string",
+      "updated_at": "string"
+    }
+  ]
+}
+```
+
+---
+
+## GET /status/{id}
+
+```json
+{
+  "id_user_status": 0,
+  "status": "string",
+  "created_at": "string",
+  "updated_at": "string"
+}
+```
+
+---
 
 ## ESTRUCTURA DE CARPETAS
 
 ```
-src
-    ├───config
-    │       dbSequelize.js
-    │       env.js
-    |       multer.js
-    │
-    ├───modules
-    │   ├───authors
-    │   │       author.model.js
-    │   │
-    │   ├───books
-    │   │       book.model.js
-    │   │
-    │   ├───categories
-    │   │       category.model.js
-    │   │
-    │   ├───communs
-    │   │       commun.model.js
-    │   │
-    │   ├───editorials
-    │   │       editorial.model.js
-    │   │
-    │   ├───loans
-    │   │       loan.model.js
-    │   │
-    │   ├───loans-status
-    │   │       loan-status.model.js
-    │   │
-    │   ├───news
-    │   │       news.controller.js
-    │   │       news.dto.js
-    │   │       news.model.js
-    │   │       news.routes.js
-    │   │       news.service.js
-    │   │
-    │   ├───news-gallery
-    │   │       news-gallery.controller.js
-    │   │       news-gallery.dto.js
-    │   │       news-gallery.model.js
-    │   │       news-gallery.routes.js
-    │   │       news-gallery.service.js
-    │   │
-    │   ├───province
-    │   │       province.model.js
-    │   │
-    │   ├───region
-    │   │       region.model.js
-    │   │
-    │   ├───return-status
-    │   │       return-status.model.js
-    │   │
-    │   ├───user-status
-    │   │       user-status.model.js
-    │   │
-    │   ├───user-type
-    │   │       user-type.model.js
-    │   │
-    │   └───users
-    │           user.model.js
-    │
-    ├───public
-    │   └───images
-    │       └───books
-    ├───services
-    |       └───processImage.js
+---src
+    |   app.js
     |
-    └───sql
-    |        scriptswallmapu.sql
+    +---application
+    |   \---news
+    |           createNewsWithImages.usecase.js
+    |           deleteNewsAndImages.usecase.js
     |
-    |───app.js
+    +---auth
+    +---config
+    |       cloudinary.js
+    |       dbSequelize.js
+    |       env.js
+    |
+    +---modules
+    |   +---authors
+    |   |       author.model.js
+    |   |
+    |   +---books
+    |   |       book.model.js
+    |   |
+    |   +---categories
+    |   |       category.model.js
+    |   |
+    |   +---commune
+    |   |       commune.controller.js
+    |   |       commune.dto.js
+    |   |       commune.model.js
+    |   |       commune.routes.js
+    |   |       commune.service.js
+    |   |
+    |   +---editorials
+    |   |       editorial.model.js
+    |   |
+    |   +---loans
+    |   |       loan.model.js
+    |   |
+    |   +---loans-status
+    |   |       loan-status.model.js
+    |   |
+    |   +---news
+    |   |       news.controller.js
+    |   |       news.dto.js
+    |   |       news.model.js
+    |   |       news.routes.js
+    |   |       news.service.js
+    |   |
+    |   +---news-gallery
+    |   |       news-gallery.controller.js
+    |   |       news-gallery.dto.js
+    |   |       news-gallery.model.js
+    |   |       news-gallery.routes.js
+    |   |       news-gallery.service.js
+    |   |
+    |   +---province
+    |   |       province.controller.js
+    |   |       province.dto.js
+    |   |       province.model.js
+    |   |       province.routes.js
+    |   |       province.service.js
+    |   |
+    |   +---region
+    |   |       region.controller.js
+    |   |       region.dto.js
+    |   |       region.model.js
+    |   |       region.routes.js
+    |   |       region.service.js
+    |   |
+    |   +---return-status
+    |   |       return-status.model.js
+    |   |
+    |   +---user-role
+    |   |       user-role.controller.js
+    |   |       user-role.dto.js
+    |   |       user-role.model.js
+    |   |       user-role.routes.js
+    |   |       user-role.service.js
+    |   |
+    |   +---user-status
+    |   |       user-status.controller.js
+    |   |       user-status.dto.js
+    |   |       user-status.model.js
+    |   |       user-status.routes.js
+    |   |       user-status.service.js
+    |   |
+    |   \---users
+    |           user.controller.js
+    |           user.dto.js
+    |           user.model.js
+    |           user.routes.js
+    |           user.service.js
+    |
+    +---services
+    |   +---images
+    |   |       cloudinary.service.js
+    |   |       generateFileName.js
+    |   |       multer.js
+    |   |
+    |   \---middlewares
+    +---shared
+    |       apiResponse.js
+    |       paginationResponse.js
+    |
+    \---sql
+            scriptswallmapu.sql
 ```
 
 # SERVIDOR LOCAL

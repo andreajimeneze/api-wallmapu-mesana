@@ -26,10 +26,10 @@ export const User = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      idCommune: {
+      communeId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        field: 'id_commune'
+        field: 'commune_id'
       },
       phoneNumber: {
         type: DataTypes.STRING,
@@ -44,16 +44,26 @@ export const User = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      idUserRole: {
+      userRoleId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        field: 'id_user_role'
+        field: 'user_role_id'
       },
-      idUserStatus: {
+      userStatusId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        field: 'id_user_status'
+        field: 'user_status_id'
       },
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        field: "created_at",
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: "updated_at",
+      }
     },
     {
       tableName: "wm_users",
@@ -73,6 +83,12 @@ export const User = (sequelize, DataTypes) => {
       targetKey: "idUserRole",
       as: "userRole",
     });
+
+    User.belongsTo(models.CommuneModel, {
+       foreignKey: 'communeId' ,
+      targetKey: "idCommune",
+      as: "commune",
+    })
   };
 
   return User;
