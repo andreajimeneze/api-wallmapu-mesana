@@ -46,7 +46,7 @@ export const getUsersPaginationSearch = async (req, res) => {
   }
 };
 
-export const getUserById = async (req, res) => {
+export const getUserByIdUser = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -74,10 +74,38 @@ export const getUserById = async (req, res) => {
   }
 };
 
+export const getUserByIdAdmin = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const userSelected = await getUserByIdService(id);
+
+    if (!userSelected) {
+      return res
+        .status(404)
+        .json(notFoundResponse({ message: "No existe usuario" }));
+    }
+
+    return res.status(200).json(
+      succesGetResponse({
+        message: "Usuario Admin encontrado con éxito",
+        result: userResponseDTO(userSelected),
+      }),
+    );
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(
+      internalServerResponse({
+        message: "Error al intentar obtener al usuario",
+      }),
+    );
+  }
+};
+
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { username, userlastname, rut, address, phoneNumber } = req.body;
-  const { communeId, userStatusId, userRoleId } = req.body;
+  const { username, lastname, rut, address, phone } = req.body;
+  const { commune_id, userStatusId, userRoleId } = req.body;
 
   try {
     const userSelected = await getUserByIdService(id);
@@ -90,11 +118,11 @@ export const updateUser = async (req, res) => {
 
     const updatedUser = await updateUserService(id, {
       username: username ?? userSelected.username,
-      userlastname: userlastname ?? userSelected.userlastname,
+      userlastname: lastname ?? userSelected.userlastname,
       rut: rut ?? userSelected.rut,
       address: address ?? userSelected.address,
-      phoneNumber: phoneNumber ?? userSelected.phoneNumber,
-      communeId: communeId ?? userSelected.communeId,
+      phoneNumber: phone ?? userSelected.phoneNumber,
+      communeId: commune_id ?? userSelected.communeId,
       userStatusId: userStatusId ?? userSelected.userStatusId,
       userRoleId: userRoleId ?? userSelected.userRoleId,
     });

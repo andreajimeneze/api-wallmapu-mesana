@@ -3,8 +3,10 @@ import { getUserByEmailService,  createUserService} from "../users/user.service.
 import { verifyToken } from "./google.service.js";
 import { authResponseDTO } from "./auth.dto.js";
 import { env } from "../../config/env.js";
+import { isProfileComplete } from "../../helper/profileComplete.js";
 
 export const loginWithGoogleService = async (googleToken) => {
+   
   const googleUser = await verifyToken(googleToken);
 
   let user = await getUserByEmailService(googleUser.email);
@@ -12,34 +14,42 @@ export const loginWithGoogleService = async (googleToken) => {
   if (!user) {
     user = await createUserService({
       email: googleUser.email,
-      name: googleUser.username,
-      picture: googleUser.picture,
-      profileComplete: false,
+      username: googleUser.name,
       userRoleId: 3,
       userStatusId: 1
     });
+    user = await getUserByEmailService(googleUser.email);
+
+  } else {
+    if(!user.username) {
+      user.username = googleUser.name;
+      await user.save();
+    }
   }
 
   const token = jwt.sign(
     {
-      id: user.id_user,
+      id: user.idUser,
       email: user.email,
-      role: user.role,
+      role: user.userRole?.role,
     },
     env.jwt.jwt_secret,
     {
       expiresIn: "7d",
     },
   );
+
+  const profileComplete = isProfileComplete(user) ?? false;
+  console.log('Perfil completo?: ', profileComplete);
   return authResponseDTO({
     token,
     user: {
-      id_user: user.id_user,
+      id_user: user.idUser,
       email: user.email,
-      name: user.username,
-      picture: user.picture,
-      profileComplete: user.profileComplete,
-      role: user.role,
+      username: user.username,
+      picture: googleUser.picture,
+      profileComplete,
+      role: user.userRole?.role,
     },
   });
 };

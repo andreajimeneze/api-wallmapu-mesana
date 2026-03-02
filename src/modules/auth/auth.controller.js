@@ -4,6 +4,7 @@ import {
   succesGetResponse,
 } from "../../shared/apiResponse.js";
 import { loginWithGoogleService } from "./auth.service.js";
+import { authResponseDTO } from "./auth.dto.js";
 
 export const loginWithGoogle = async (req, res) => {
   const { googleToken } = req.body;
@@ -19,8 +20,12 @@ export const loginWithGoogle = async (req, res) => {
 
     return res
       .status(200)
-      .json(succesGetResponse({ message: "Logue exitoso", result: login}));
-      
+      .json(
+        succesGetResponse({
+          message: "Logueo exitoso",
+          result: login
+        }),
+      );
   } catch (error) {
     return res.status(400).json(
       internalServerResponse({

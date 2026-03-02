@@ -8,7 +8,6 @@ import {
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
 import { userResponseDTO } from "./user.dto.js";
 
-
 export const getUsersPaginationSearchService = async ({
   page,
   limit,
@@ -108,14 +107,49 @@ export const getUsersPaginationSearchService = async ({
 };
 
 export const getUserByIdService = async (id) => {
-    return await UserModel.findByPk(id);
+  return await UserModel.findByPk(id, {
+    include: [
+      {
+        model: CommuneModel,
+        as: "commune",
+        attributes: ["idCommune", "commune"],
+      },
+      {
+        model: UserStatusModel,
+        as: "userStatus",
+        attributes: ["idUserStatus", "status"],
+      },
+      {
+        model: UserRoleModel,
+        as: "userRole",
+        attributes: ["idUserRole", "role"],
+      },
+    ],
+  });
 };
 
 export const getUserByEmailService = async (email) => {
   return await UserModel.findOne({
-    where: { email }
-  })
-}
+    where: { email },
+    include: [
+      {
+        model: CommuneModel,
+        as: "commune",
+        attributes: ["idCommune", "commune", "provinceId"],
+      },
+      {
+        model: UserStatusModel,
+        as: "userStatus",
+        attributes: ["idUserStatus", "status"],
+      },
+      {
+        model: UserRoleModel,
+        as: "userRole",
+        attributes: ["idUserRole", "role"],
+      },
+    ],
+  });
+};
 
 export const createUserService = async (user) => {
   const userCreated = await UserModel.create({
@@ -123,20 +157,19 @@ export const createUserService = async (user) => {
     userRoleId: 3,
     userStatusId: 1,
     createdAt: now(),
-    updatedAt: now()
-  })
+    updatedAt: now(),
+  });
 
   return userCreated;
-}
+};
 
 export const updateUserService = async (id, userData) => {
-    const userSelected = await UserModel.findByPk(id);
+  const userSelected = await UserModel.findByPk(id);
 
-    if(!userSelected) return null;
+  if (!userSelected) return null;
 
-    return await userSelected.update({
-        ... userData,
-        updatedAt: new Date()
-    })
-}
-
+  return await userSelected.update({
+    ...userData,
+    updatedAt: new Date(),
+  });
+};

@@ -8,7 +8,7 @@ export const getAllCommuneService = async () => {
             attributes: ['idProvince', 'province', 'regionId']
         }]
     });
-    console.log('comunas desde service: ', communes)
+   
     return communes;
 }
 

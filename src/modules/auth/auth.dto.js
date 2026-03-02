@@ -1,5 +1,5 @@
 export const authResponseDTO = (auth) => ({
-    accessToken: auth.accessToken, 
+    token: auth.token, 
     //refreshToken: auth.refreshToken,
     user: {
         id_user: auth.user.id_user,

@@ -12,11 +12,11 @@ const router = Router();
 
 router.use('/api/news', news_routes);
 router.use('/api/news-gallery', news_gallery_routes);
-router.use('/api/communes', communes_routes);
+router.use('/api/division-commune', communes_routes);
 router.use('/api/provinces', provinces_routes);
 router.use('/api/regions', regions_routes);
-router.use('/api/roles', user_role_routes);
-router.use('/api/status', user_status_routes);
+router.use('/api/user-role', user_role_routes);
+router.use('/api/user-status', user_status_routes);
 router.use('/api/users', user_routes);
 router.use('/api/auth', auth_routes);
 

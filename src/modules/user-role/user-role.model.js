@@ -26,7 +26,7 @@ export const UserRole = (sequelize, DataTypes) => {
       },
     },
     {
-      tableName: "wm_user_role",
+      tableName: "wm_user_roles",
       timestamps: false,
     },
   );
