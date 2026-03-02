@@ -4,7 +4,7 @@ import {
   succesGetResponse,
 } from "../../shared/apiResponse.js";
 import { loginWithGoogleService } from "./auth.service.js";
-import { authResponseDTO } from "./auth.dto.js";
+
 
 export const loginWithGoogle = async (req, res) => {
   const { googleToken } = req.body;
