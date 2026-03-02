@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS wm_loans;
 DROP TABLE IF EXISTS wm_users;
 DROP TABLE IF EXISTS wm_books;
 DROP TABLE IF EXISTS wm_news_gallery;
-DROP TABLE IF EXISTS wm_communs;
+DROP TABLE IF EXISTS wm_communes;
 DROP TABLE IF EXISTS wm_provinces;
 DROP TABLE IF EXISTS wm_regions;
 DROP TABLE IF EXISTS wm_authors;
@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS wm_editorials;
 DROP TABLE IF EXISTS wm_loan_status;
 DROP TABLE IF EXISTS wm_return_status;
 DROP TABLE IF EXISTS wm_user_status;
-DROP TABLE IF EXISTS wm_user_types;
+DROP TABLE IF EXISTS wm_user_role;
 DROP TABLE IF EXISTS wm_news;
 
 
@@ -38,39 +38,49 @@ CREATE TABLE wm_loan_status (
 
 CREATE TABLE wm_user_status (
     id_user_status INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_status VARCHAR(45) NOT NULL
+    status VARCHAR(45) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE wm_user_types (
-    id_user_type INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_type VARCHAR(45) NOT NULL NOT NULL
+CREATE TABLE wm_user_roles (
+    id_user_role INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    role VARCHAR(45) NOT NULL NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE wm_regions (
     id_region INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    region VARCHAR(45) NOT NULL
+    region VARCHAR(45) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE wm_provinces (
     id_province INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     province VARCHAR(45) NOT NULL,
-    id_region INTEGER NOT NULL,
+    region_id INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT wm_provinces_wm_regions_fk
-        FOREIGN KEY (id_region) REFERENCES wm_regions(id_region)
+        FOREIGN KEY (region_id) REFERENCES wm_regions(id_region)
 );
 
-CREATE TABLE wm_communs (
-    id_commun INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+CREATE TABLE wm_communes (
+    id_commune INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     commun VARCHAR(45) NOT NULL,
-    id_province INTEGER NOT NULL,
-    CONSTRAINT wm_communs_wm_provinces_fk
-        FOREIGN KEY (id_province) REFERENCES wm_provinces(id_province)
+    province_id INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT wm_communes_wm_provinces_fk
+        FOREIGN KEY (province_id) REFERENCES wm_provinces(id_province)
 );
 
 CREATE TABLE wm_news (
     id_news INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     title VARCHAR(45) NOT NULL,
-    subtitle VARCHAR(45),
+    subtitle VARCHAR(45) NOT NULL,
 	body TEXT NOT NULL,
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -88,9 +98,9 @@ CREATE TABLE wm_return_status (
 CREATE TABLE wm_books (
     id_book INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     title VARCHAR(100),
-    id_category INTEGER,
-    id_author INTEGER,
-    id_editorial INTEGER,
+    category_id INTEGER,
+    author_id INTEGER,
+    editorial_id INTEGER,
     summary TEXT,
     ubication VARCHAR(45) NOT NULL,
     book_cover VARCHAR(45),
@@ -99,49 +109,51 @@ CREATE TABLE wm_books (
     year_publication INTEGER NOT NULL,
     edition_number VARCHAR(45) NOT NULL,
     CONSTRAINT wm_books_wm_categories_fk
-        FOREIGN KEY (id_category) REFERENCES wm_categories(id_category),
+        FOREIGN KEY (category_id) REFERENCES wm_categories(id_category),
     CONSTRAINT wm_books_wm_authors_fk
-        FOREIGN KEY (id_author) REFERENCES wm_authors(id_author),
+        FOREIGN KEY (author_id) REFERENCES wm_authors(id_author),
     CONSTRAINT wm_books_wm_editorials_fk
-        FOREIGN KEY (id_editorial) REFERENCES wm_editorials(id_editorial)
+        FOREIGN KEY (editorial_id) REFERENCES wm_editorials(id_editorial)
 );
 
 CREATE TABLE wm_users (
-    id_user INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_user UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(45),
     userlastname VARCHAR(45),
     rut VARCHAR(12),
     address VARCHAR(45),
-    id_commun INTEGER,
+    commune_id INTEGER,
     phone_number VARCHAR(10),
-    email VARCHAR(45),
+    email VARCHAR(45) NOT NULL,
     password VARCHAR(45),
-    id_user_type INTEGER,
-    id_user_status INTEGER,
-    CONSTRAINT wm_users_wm_communs_fk
-        FOREIGN KEY (id_commun) REFERENCES wm_communs(id_commun),
+    user_role_id INTEGER NOT NULL,
+    user_status_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT wm_users_wm_communes_fk
+        FOREIGN KEY (commune_id) REFERENCES wm_communes(id_commune),
     CONSTRAINT wm_users_wm_status_user_fk
-        FOREIGN KEY (id_user_status) REFERENCES wm_user_status(id_user_status),
-    CONSTRAINT wm_users_wm_user_types_fk
-        FOREIGN KEY (id_user_type) REFERENCES wm_user_types(id_user_type)
+        FOREIGN KEY (user_status_id) REFERENCES wm_user_status(id_user_status),
+    CONSTRAINT wm_users_wm_user_roles_fk
+        FOREIGN KEY (user_role_id) REFERENCES wm_user_roles(id_user_role)
 );
 
 CREATE TABLE wm_loans (
     id_loan INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_user INTEGER,
-    id_book INTEGER,
+    user_id UUID,
+    book_id INTEGER,
     loan_date DATE,
     return_date DATE,
-    id_loan_status INTEGER,
-    id_return_status INTEGER,
+    loan_status_id INTEGER,
+    return_status_id INTEGER,
     CONSTRAINT wm_loans_wm_users_fk
-        FOREIGN KEY (id_user) REFERENCES wm_users(id_user),
+        FOREIGN KEY (user_id) REFERENCES wm_users(id_user),
     CONSTRAINT wm_loans_wm_books_fk
-        FOREIGN KEY (id_book) REFERENCES wm_books(id_book),
+        FOREIGN KEY (book_id) REFERENCES wm_books(id_book),
     CONSTRAINT wm_loans_wm_loan_status_fk
-        FOREIGN KEY (id_loan_status) REFERENCES wm_loan_status(id_loan_status),
+        FOREIGN KEY (loan_status_id) REFERENCES wm_loan_status(id_loan_status),
 	CONSTRAINT wm_loans_wm_return_status_fk
-        FOREIGN KEY (id_return_status) REFERENCES wm_return_status(id_return_status)
+        FOREIGN KEY (return_status_id) REFERENCES wm_return_status(id_return_status)
 );
 
 

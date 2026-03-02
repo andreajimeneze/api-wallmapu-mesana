@@ -1,10 +1,17 @@
 "use strict";
 
-export const Loan_status = (sequelize, DataTypes) => {
-  const Loan_status = sequelize.define(
-    "Loan_status",
+export const LoanStatus = (sequelize, DataTypes) => {
+  const LoanStatus = sequelize.define(
+    "LoanStatus",
     {
-      loan_status: DataTypes.STRING,
+      idLoanStatus: DataTypes.INTEGER,
+      primaryKey: true,
+        autoIncrement: true,
+        field: 'id_loan_status'
+    },
+    {
+      loanStatus: DataTypes.STRING,
+      field: 'loan_status'
     },
     {
       tableName: "loan_status",
@@ -12,12 +19,13 @@ export const Loan_status = (sequelize, DataTypes) => {
     },
   );
 
-  Loan_status.associate = (models) => {
-    Loan_status.hasMany(models.LoanModel, {
-      foreignKey: "id_loan_status",
+  LoanStatus.associate = (models) => {
+    LoanStatus.hasMany(models.LoanModel, {
+      foreignKey: "loanStatusId",
+      sourceKey: 'idLoanStatus'   ,
       as: "loan",
     });
   };
 
-  return Loan_status;
+  return LoanStatus;
 };

@@ -5,65 +5,58 @@ export const User = (sequelize, DataTypes) => {
     "User",
     {
       idUser: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
-        field: 'id_user'
+        field: "id_user",
       },
       username: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: DataTypes.STRING
       },
       userlastname: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: DataTypes.STRING
       },
       rut: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: DataTypes.STRING
       },
       address: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: DataTypes.STRING
       },
       communeId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        field: 'commune_id'
+        field: "commune_id"
       },
       phoneNumber: {
         type: DataTypes.STRING,
-        allowNull: false,
-        field: 'phone_number'
+        field: "phone_number"
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
       },
       password: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: DataTypes.STRING
       },
       userRoleId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        field: 'user_role_id'
+        field: "user_role_id"
       },
       userStatusId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        field: 'user_status_id'
+        field: "user_status_id"
       },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
-        field: "created_at",
+        field: "created_at"
       },
       updatedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: "updated_at",
-      }
+        field: "updated_at"
+      },
     },
     {
       tableName: "wm_users",
@@ -73,7 +66,7 @@ export const User = (sequelize, DataTypes) => {
 
   User.associate = (models) => {
     User.belongsTo(models.UserStatusModel, {
-      foreignKey: 'userStatusId' ,
+      foreignKey: "userStatusId",
       targetKey: "idUserStatus",
       as: "userStatus",
     });
@@ -85,10 +78,10 @@ export const User = (sequelize, DataTypes) => {
     });
 
     User.belongsTo(models.CommuneModel, {
-       foreignKey: 'communeId' ,
+      foreignKey: "communeId",
       targetKey: "idCommune",
       as: "commune",
-    })
+    });
   };
 
   return User;

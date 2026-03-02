@@ -2,15 +2,18 @@
 
 ```json
  "dependencies": {
+    "cloudinary": "^2.9.0",
     "cors": "^2.8.6",
-    "dotenv": "^17.2.3",
+    "dotenv": "^17.3.1",
     "express": "^4.22.1",
+    "jsonwebtoken": "^9.0.3",
     "multer": "^2.0.2",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
     "path": "^0.12.7",
     "pg": "^8.17.2",
     "sequelize": "^6.37.7",
-    "sequelize-cli": "^6.6.5",
-    "sharp": "^0.34.5"
+    "sequelize-cli": "^6.6.5"
   }
 ```
 

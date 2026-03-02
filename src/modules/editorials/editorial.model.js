@@ -4,10 +4,11 @@ export const Editorial = (sequelize, DataTypes) => {
   const Editorial = sequelize.define(
     "Editorials",
     {
-      id_editorial: {
+      idEditorial: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+        field: 'id_editorial'
       },
       editorial: {
         type: DataTypes.STRING,
@@ -21,7 +22,8 @@ export const Editorial = (sequelize, DataTypes) => {
 
   Editorial.associate = (models) => {
     Editorial.hasMany(models.BookModel, {
-      foreignKey: "id_editorial",
+      foreignKey: "idEditorial",
+      sourcekey: 'editorialId',
       as: "book",
     });
   };

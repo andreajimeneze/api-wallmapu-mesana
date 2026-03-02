@@ -2,10 +2,11 @@
 
 export const Author = ( sequelize, DataTypes ) => {
     const Author = sequelize.define('Author', {
-        id_author: {
+        idAuthor: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            autoIncrement: true
+            autoIncrement: true,
+            field: 'id_author'
         },
        name: {
         type: DataTypes.STRING,
@@ -21,7 +22,8 @@ export const Author = ( sequelize, DataTypes ) => {
 
     Author.associate = (models) => {
     Author.hasMany(models.BookModel, {
-      foreignKey: 'id_author',  
+      foreignKey: 'authorId',  
+      sourceKey: 'idAuthor',
       as: 'book'
     });
   };

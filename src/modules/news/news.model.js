@@ -2,10 +2,11 @@
 
 export const News = (sequelize, DataTypes) => {
   const News = sequelize.define('News', {
-    id_news: {
+    idNews: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
+      field: 'id_news'
     },
     title: {
       type: DataTypes.STRING, 
@@ -18,15 +19,17 @@ export const News = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
        allowNull: false
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
+      defaultValue: DataTypes.NOW,
+      field: 'created_at'
     },
-    updated_at: {
+    updatedAt: {
       type: DataTypes.DATE,
       allowNull: true,
-      defaultValue: DataTypes.NOW
+      defaultValue: DataTypes.NOW,
+      field: 'updated_at'
     }
   }, {
     tableName: 'wm_news',
@@ -36,7 +39,7 @@ export const News = (sequelize, DataTypes) => {
   News.associate = (models) => {
     News.hasMany(models.NewsGalleryModel, {
         foreignKey: 'newsId',
-        sourceKey: 'id_news',
+        sourceKey: 'idNews',
         as: 'images'
     });
 };

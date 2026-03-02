@@ -54,8 +54,8 @@ export const getNewsPaginationAndSearch = async (req, res) => {
 
 export const getNewsById = async (req, res) => {
   try {
-    const { id_news } = req.params;
-    const newsSelected = await getNewsByIdService(id_news);
+    const { idNews } = req.params;
+    const newsSelected = await getNewsByIdService(idNews);
 
     res.status(200).json(
       succesGetResponse({

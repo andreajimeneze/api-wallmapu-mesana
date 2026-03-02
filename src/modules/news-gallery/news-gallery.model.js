@@ -29,7 +29,7 @@ export const NewsGallery = ( sequelize, DataTypes ) => {
     NewsGallery.associate = (models) => {
         NewsGallery.belongsTo(models.NewsModel, {
             foreignKey: 'newsId', 
-            targetKey: 'id_news',
+            targetKey: 'idNews',
             as: 'news',
             onDelete: 'CASCADE'
         })

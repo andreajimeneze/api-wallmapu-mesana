@@ -7,29 +7,29 @@ export const createNewsDTO = ({ title, subtitle, body }) => {
     title: title.trim(),
     subtitle: subtitle?.trim() || null,
     body: body.trim(),
-    created_at: new Date(),
-    updated_at: new Date()
+    createdAt: new Date(),
+    updatedAt: new Date()
   };
 };
 
-export const updateNewsDTO = ({ id_news, title, subtitle, body, created_at }) => {
+export const updateNewsDTO = ({ idNews, title, subtitle, body, createdAt }) => {
   return {
-    id_news: Number(id_news),
+    id_news: Number(idNews),
     title: title.trim(),
     subtitle: subtitle?.trim() || null,
     body: body.trim(),
-    created_at,
-    updated_at: new Date()
+    createdAt,
+    updatedAt: new Date()
   };
 };
 
 export const newsResponseDTO = (news) => ({
-  id_news: news.id_news,
+  id_news: news.idNews,
   title: news.title,
   subtitle: news.subtitle,
   body: news.body,
-  created_at: news.created_at,
-  updated_at: news.updated_at,
+  created_at: news.createdAt,
+  updated_at: news.updatedAt,
   images: news.images
     ? news.images.map((g) => ({
         id_news_gallery: g.idNewsGallery,

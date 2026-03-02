@@ -2,6 +2,7 @@ export const userResponseDTO = (user) => ({
     id_user: user.idUser,
     username: user.username,
     userlastname: user.userlastname,
+    email: user.email,
     rut: user.rut,
     address: user.address,
     commune_id: user.communeId,

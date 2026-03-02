@@ -1,3 +1,4 @@
+import { now } from "sequelize/lib/utils";
 import {
   CommuneModel,
   UserModel,
@@ -110,6 +111,24 @@ export const getUserByIdService = async (id) => {
     return await UserModel.findByPk(id);
 };
 
+export const getUserByEmailService = async (email) => {
+  return await UserModel.findOne({
+    where: { email }
+  })
+}
+
+export const createUserService = async (user) => {
+  const userCreated = await UserModel.create({
+    email: user.email,
+    userRoleId: 3,
+    userStatusId: 1,
+    createdAt: now(),
+    updatedAt: now()
+  })
+
+  return userCreated;
+}
+
 export const updateUserService = async (id, userData) => {
     const userSelected = await UserModel.findByPk(id);
 
@@ -117,6 +136,7 @@ export const updateUserService = async (id, userData) => {
 
     return await userSelected.update({
         ... userData,
-        updated_at: new Date()
+        updatedAt: new Date()
     })
 }
+

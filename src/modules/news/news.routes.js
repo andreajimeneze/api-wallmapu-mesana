@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.get('/', getNewsPaginationAndSearch);
 
-router.get('/:id_news', getNewsById);
+router.get('/:idNews', getNewsById);
 
 router.post('/', createNews);
 

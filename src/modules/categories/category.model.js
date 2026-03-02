@@ -2,10 +2,11 @@
 
 export const Category = (sequelize, DataTypes) => {
   const Category = sequelize.define("Categories", {
-    id_category: {
+    idCategory: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      field: 'id_category'
     },
     category: {
       type: DataTypes.STRING,
@@ -17,7 +18,8 @@ export const Category = (sequelize, DataTypes) => {
 
   Category.associate = (models) => {
     Category.hasMany(models.BookModel, {
-      foreignKey: "id_category",
+      foreignKey: "categoryId",
+      sourceKey: 'idCategory',
       as: "book",
     });
   };

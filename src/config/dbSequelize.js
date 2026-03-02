@@ -7,11 +7,11 @@ import { Book } from "../modules/books/book.model.js";
 import { Category } from "../modules/categories/category.model.js";
 import { Commune } from "../modules/commune/commune.model.js";
 import { Editorial } from "../modules/editorials/editorial.model.js";
-import { Loan_status } from "../modules/loans-status/loan-status.model.js";
+import { LoanStatus } from "../modules/loans-status/loan-status.model.js";
 import { Loan } from "../modules/loans/loan.model.js";
 import { Province } from "../modules/province/province.model.js";
 import { Region } from "../modules/region/region.model.js";
-import { Return_status } from "../modules/return-status/return-status.model.js";
+import { ReturnStatus } from "../modules/return-status/return-status.model.js";
 import { UserStatus } from "../modules/user-status/user-status.model.js";
 import { UserRole } from "../modules/user-role/user-role.model.js";
 import { User } from "../modules/users/user.model.js";
@@ -49,11 +49,11 @@ export const getModels = () => {
       CategoryModel: Category(sequelize, DataTypes),
       CommuneModel: Commune(sequelize, DataTypes),
       EditorialModel: Editorial(sequelize, DataTypes),
-      Loan_statusModel: Loan_status(sequelize, DataTypes),
+      LoanStatusModel: LoanStatus(sequelize, DataTypes),
       LoanModel: Loan(sequelize, DataTypes),
       ProvinceModel: Province(sequelize, DataTypes),
       RegionModel: Region(sequelize, DataTypes),
-      Return_statusModel: Return_status(sequelize, DataTypes),
+      ReturnStatusModel: ReturnStatus(sequelize, DataTypes),
       UserStatusModel: UserStatus(sequelize, DataTypes),
       UserRoleModel: UserRole(sequelize, DataTypes),
       UserModel: User(sequelize, DataTypes),
@@ -80,11 +80,11 @@ export const {
   CategoryModel,
   CommuneModel,
   EditorialModel,
-  Loan_statusModel,
+  LoanStatusModel,
   LoanModel,
   ProvinceModel,
   RegionModel,
-  Return_statusModel,
+  ReturnStatusModel,
   UserStatusModel,
   UserRoleModel,
   UserModel,

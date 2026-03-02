@@ -1,4 +1,5 @@
 import {
+  createUserService,
   getUserByIdService,
   getUsersPaginationSearchService,
   updateUserService,
@@ -57,14 +58,12 @@ export const getUserById = async (req, res) => {
         .json(notFoundResponse({ message: "No existe usuario" }));
     }
 
-    return res
-      .status(200)
-      .json(
-        succesGetResponse({
-          message: "Usuario encontrado con éxito",
-          result: userResponseDTO(userSelected),
-        }),
-      );
+    return res.status(200).json(
+      succesGetResponse({
+        message: "Usuario encontrado con éxito",
+        result: userResponseDTO(userSelected),
+      }),
+    );
   } catch (error) {
     console.error(error);
     return res.status(500).json(
@@ -110,6 +109,29 @@ export const updateUser = async (req, res) => {
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar editar al usuario",
+      }),
+    );
+  }
+};
+
+export const createUser = async (req, res) => {
+  const { name, email } = req.body;
+  const data = { name, email };
+  try {
+    const createdUser = await createUserService(data);
+
+    return res
+      .status(201)
+      .json(
+        succesGetResponse({
+          message: "Usuario creado exitosamente",
+          result: createdUser,
+        }),
+      );
+  } catch (error) {
+    return res.status(500).json(
+      internalServerResponse({
+        message: "Error al intentar crear al usuario",
       }),
     );
   }

@@ -24,7 +24,7 @@ export const createNewsWithImagesService = async ({
       transaction,
     );
 
-    const newsId = createdNews.id_news;
+    const newsId = createdNews.idNews;
 
     if (files && files.length > 0) {
       await createGalleryByNewsIdService(

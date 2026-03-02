@@ -4,22 +4,26 @@ export const Book = (sequelize, DataTypes) => {
   const Book = sequelize.define(
     "Book",
     {
-      id_book: {
+      idBook: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+        field: 'id_book'
+
       },
       title: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      id_category: {
+      categoryId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'category_id'
       },
-      id_author: {
+      authorId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'author_id'
       },
       summary: {
         type: DataTypes.STRING,
@@ -28,22 +32,26 @@ export const Book = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      book_cover: {
+      bookCover: {
         type: DataTypes.STRING,
+        field: 'book_cover'
       },
       isbn: {
         type: DataTypes.STRING,
       },
-      number_page: {
+      numberPage: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'number_page'
       },
-      year_publication: {
+      yearPublication: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'year_publication'
       },
-      edition_number: {
+      editionNumber: {
         type: DataTypes.STRING,
+        field: 'edition_number'
       },
     },
     {
@@ -54,12 +62,14 @@ export const Book = (sequelize, DataTypes) => {
 
   Book.associate = (models) => {
     Book.belongsTo(models.CategoryModel, {
-      foreignKey: "id_category",
+      foreignKey: "categoryId",
+      targetKey: 'idCategory',
       as: "category",
     });
 
     Book.belongsTo(models.AuthorModel, {
-      foreignKey: "id_author",
+      foreignKey: "authorId",
+      targetKey: 'idAuthor',
       as: "author",
     });
   };

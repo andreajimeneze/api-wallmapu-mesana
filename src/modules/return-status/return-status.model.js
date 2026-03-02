@@ -1,17 +1,19 @@
 "use strict";
 
-export const Return_status = (sequelize, DataTypes) => {
-  const Return_status = sequelize.define(
-    "Return_status",
+export const ReturnStatus = (sequelize, DataTypes) => {
+  const ReturnStatus = sequelize.define(
+    "ReturnStatus",
     {
-      id_return_status: {
+      idReturnStatus: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+        field: 'id_return_status'
       },
-      return_status: {
+      returnStatus: {
         type: DataTypes.STRING,
         allowNull: false,
+        field: 'return_status'
       },
     },
     {
@@ -20,12 +22,13 @@ export const Return_status = (sequelize, DataTypes) => {
     },
   );
 
-  Return_status.associate = (models) => {
-    Return_status.hasMany(models.LoanModel, {
-      foreignKey: "id_return_status",
+  ReturnStatus.associate = (models) => {
+    ReturnStatus.hasMany(models.LoanModel, {
+      foreignKey: "returnStatusId",
+      targetKey: 'id_return_status',
       as: "loan",
     });
   };
 
-  return Return_status;
+  return ReturnStatus;
 };

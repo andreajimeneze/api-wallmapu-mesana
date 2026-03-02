@@ -4,34 +4,41 @@ export const Loan = (sequelize, DataTypes) => {
   const Loan = sequelize.define(
     "Loans",
     {
-      id_loan: {
+      idLoan: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+        field: 'id_loan'
       },
-      id_user: {
+      userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'user_id'
       },
-      id_book: {
+      bookId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'book_id'
       },
-      loan_date: {
+      loanDate: {
         type: DataTypes.DATE,
         allowNull: false,
+        field: 'loan_date'
       },
-      return_date: {
+      returnDate: {
         type: DataTypes.DATE,
         allowNull: false,
+        field: 'return_date'
       },
-      id_loan_status: {
+      loanStatusId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'loan_status_id'
       },
-      id_return_status: {
+      returnStatusId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'return_status_id'
       },
     },
     {
@@ -42,23 +49,27 @@ export const Loan = (sequelize, DataTypes) => {
 
   Loan.associate = (models) => {
     Loan.belongsTo(models.UserModel, {
-      foreignKey: "id_user",
+      foreignKey: "userId",
+      sourceKey: 'idUser',
       as: "user",
     });
 
     Loan.belongsTo(models.BookModel, {
-      foreignKey: "id_book",
+      foreignKey: "bookId",
+      sourceKey: 'idBook',
       as: "book",
     });
 
-    Loan.belongsTo(models.Loan_statusModel, {
-      foreignKey: "id_loan_status",
-      as: "loan_status",
+    Loan.belongsTo(models.LoanStatusModel, {
+      foreignKey: "loanStatusId",
+      sourceKey: 'idLoanStatus',
+      as: "loanStatus",
     });
 
-    Loan.belongsTo(models.Return_statusModel, {
-      foreignKey: "id_return_status",
-      as: "return_status",
+    Loan.belongsTo(models.ReturnStatusModel, {
+      foreignKey: "returnStatusId",
+      sourceKey: 'idReturnStatus',
+      as: "returnStatus",
     });
   };
 

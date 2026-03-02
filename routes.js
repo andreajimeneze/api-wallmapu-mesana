@@ -7,17 +7,17 @@ import regions_routes from './src/modules/region/region.routes.js';
 import user_role_routes from './src/modules/user-role/user-role.routes.js';
 import user_status_routes from './src/modules/user-status/user-status.routes.js';
 import user_routes from './src/modules/users/user.routes.js';
-import { getUsersPaginationSearch } from './src/modules/users/user.controller.js';
-
+import auth_routes from './src/modules/auth/auth.routes.js';
 const router = Router();
 
 router.use('/api/news', news_routes);
-router.use('/api/gallery', news_gallery_routes);
+router.use('/api/news-gallery', news_gallery_routes);
 router.use('/api/communes', communes_routes);
 router.use('/api/provinces', provinces_routes);
 router.use('/api/regions', regions_routes);
 router.use('/api/roles', user_role_routes);
 router.use('/api/status', user_status_routes);
 router.use('/api/users', user_routes);
+router.use('/api/auth', auth_routes);
 
 export default router;
