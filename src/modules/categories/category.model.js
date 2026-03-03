@@ -6,11 +6,21 @@ export const Category = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      field: 'id_category'
+      field: "id_category",
     },
     category: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: "created_at",
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: "updated_at",
     },
     tableNames: "wm_categories",
     timestamps: false,
@@ -19,10 +29,10 @@ export const Category = (sequelize, DataTypes) => {
   Category.associate = (models) => {
     Category.hasMany(models.BookModel, {
       foreignKey: "categoryId",
-      sourceKey: 'idCategory',
+      sourceKey: "idCategory",
       as: "book",
     });
   };
-  
+
   return Category;
 };

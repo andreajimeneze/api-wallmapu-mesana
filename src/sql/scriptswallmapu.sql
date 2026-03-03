@@ -8,32 +8,47 @@ DROP TABLE IF EXISTS wm_regions;
 DROP TABLE IF EXISTS wm_authors;
 DROP TABLE IF EXISTS wm_categories;
 DROP TABLE IF EXISTS wm_editorials;
+DROP TABLE IF EXISTS wm_subjects;
 DROP TABLE IF EXISTS wm_loan_status;
 DROP TABLE IF EXISTS wm_return_status;
 DROP TABLE IF EXISTS wm_user_status;
-DROP TABLE IF EXISTS wm_user_role;
+DROP TABLE IF EXISTS wm_user_roles;
 DROP TABLE IF EXISTS wm_news;
 
 
 CREATE TABLE wm_authors (
     id_author INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(45) NOT NULL,
-    lastname VARCHAR(45) NOT NULL
+    name VARCHAR(200) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE wm_categories (
     id_category INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    category VARCHAR(45) NOT NULL
+    category VARCHAR(200) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE wm_editorials (
     id_editorial INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    editorial VARCHAR(45) NOT NULL
+    editorial VARCHAR(45) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS wm_subjects (
+  id_subject INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR(200) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE wm_loan_status (
     id_loan_status INTEGER PRIMARY KEY,
-    loan_status VARCHAR(45) NOT NULL
+    loan_status VARCHAR(45) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE wm_user_status (
@@ -79,8 +94,8 @@ CREATE TABLE wm_communes (
 
 CREATE TABLE wm_news (
     id_news INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    title VARCHAR(45) NOT NULL,
-    subtitle VARCHAR(45) NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    subtitle VARCHAR(256) NOT NULL,
 	body TEXT NOT NULL,
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -88,7 +103,9 @@ CREATE TABLE wm_news (
 
 CREATE TABLE wm_return_status (
 	id_return_status INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	return_status VARCHAR(45) NOT NULL
+	return_status VARCHAR(45) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- =========================
@@ -108,6 +125,8 @@ CREATE TABLE wm_books (
     number_page INTEGER NOT NULL,
     year_publication INTEGER NOT NULL,
     edition_number VARCHAR(45) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT wm_books_wm_categories_fk
         FOREIGN KEY (category_id) REFERENCES wm_categories(id_category),
     CONSTRAINT wm_books_wm_authors_fk
@@ -146,6 +165,8 @@ CREATE TABLE wm_loans (
     return_date DATE,
     loan_status_id INTEGER,
     return_status_id INTEGER,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT wm_loans_wm_users_fk
         FOREIGN KEY (user_id) REFERENCES wm_users(id_user),
     CONSTRAINT wm_loans_wm_books_fk
@@ -159,7 +180,7 @@ CREATE TABLE wm_loans (
 
 CREATE TABLE wm_news_gallery (
     id_news_gallery INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    alt VARCHAR(45) NOT NULL,
+    alt VARCHAR(100) NOT NULL,
 	url VARCHAR(256) NOT NULL,
 	news_id INTEGER NOT NULL,
 	CONSTRAINT wm_news_gallery_wm_news_fk

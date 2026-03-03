@@ -29,18 +29,18 @@ export const loginWithGoogleService = async (googleToken) => {
 
   const token = jwt.sign(
     {
-      id: user.idUser,
-      email: user.email,
+      sub: user.idUser,
       role: user.userRole?.role,
     },
     env.jwt.jwt_secret,
     {
-      expiresIn: "7d",
+      expiresIn: "1d"   
     },
   );
+ console.log('token: ', token);
 
   const profileComplete = isProfileComplete(user) ?? false;
-  console.log('Perfil completo?: ', profileComplete);
+  
   return authResponseDTO({
     token,
     user: {

@@ -28,8 +28,9 @@ export const getUsersPaginationSearchService = async ({
   const where = search
     ? {
         [Op.or]: [
-          { title: { [Op.iLike]: `%${search}%` } },
-          { subtitle: { [Op.iLike]: `%${search}%` } },
+          { username: { [Op.iLike]: `%${search}%` } },
+          { lastname: { [Op.iLike]: `%${search}%` } },
+          { email: { [Op.iLike]: `%${search}%` } }
         ],
       }
     : {};
@@ -40,7 +41,7 @@ export const getUsersPaginationSearchService = async ({
 
   if (items === 0) {
     return {
-      response: "No se encontraron comunas",
+      response: "No se encontraron usuarios",
       result: paginationResponseDTO({
         page: 0,
         pages: 0,

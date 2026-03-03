@@ -8,12 +8,23 @@ export const ReturnStatus = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-        field: 'id_return_status'
+        field: "id_return_status",
       },
       returnStatus: {
         type: DataTypes.STRING,
         allowNull: false,
-        field: 'return_status'
+        field: "return_status",
+      },
+
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        field: "created_at",
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: "updated_at",
       },
     },
     {
@@ -25,7 +36,7 @@ export const ReturnStatus = (sequelize, DataTypes) => {
   ReturnStatus.associate = (models) => {
     ReturnStatus.hasMany(models.LoanModel, {
       foreignKey: "returnStatusId",
-      targetKey: 'id_return_status',
+      targetKey: "id_return_status",
       as: "loan",
     });
   };

@@ -4,14 +4,28 @@ export const LoanStatus = (sequelize, DataTypes) => {
   const LoanStatus = sequelize.define(
     "LoanStatus",
     {
-      idLoanStatus: DataTypes.INTEGER,
-      primaryKey: true,
+      idLoanStatus: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
         autoIncrement: true,
-        field: 'id_loan_status'
-    },
-    {
-      loanStatus: DataTypes.STRING,
-      field: 'loan_status'
+        field: "id_loan_status",
+      },
+
+      loanStatus: {
+        type: DataTypes.STRING,
+        field: "loan_status",
+      },
+
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        field: "created_at",
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: "updated_at",
+      },
     },
     {
       tableName: "loan_status",
@@ -22,7 +36,7 @@ export const LoanStatus = (sequelize, DataTypes) => {
   LoanStatus.associate = (models) => {
     LoanStatus.hasMany(models.LoanModel, {
       foreignKey: "loanStatusId",
-      sourceKey: 'idLoanStatus'   ,
+      sourceKey: "idLoanStatus",
       as: "loan",
     });
   };

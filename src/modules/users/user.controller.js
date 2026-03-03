@@ -104,7 +104,7 @@ export const getUserByIdAdmin = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { username, lastname, rut, address, phone } = req.body;
+  const { name, lastname, rut, address, phone } = req.body;
   const { commune_id, userStatusId, userRoleId } = req.body;
 
   try {
@@ -117,7 +117,7 @@ export const updateUser = async (req, res) => {
     }
 
     const updatedUser = await updateUserService(id, {
-      username: username ?? userSelected.username,
+      username: name ?? userSelected.username,
       userlastname: lastname ?? userSelected.userlastname,
       rut: rut ?? userSelected.rut,
       address: address ?? userSelected.address,

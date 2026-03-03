@@ -13,6 +13,16 @@ export const Editorial = (sequelize, DataTypes) => {
       editorial: {
         type: DataTypes.STRING,
       },
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        field: "created_at",
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: "updated_at",
+      }
     },
     {
       tableName: "wm_editorials",
