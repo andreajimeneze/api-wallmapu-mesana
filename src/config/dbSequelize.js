@@ -4,7 +4,6 @@ import { env } from "./env.js";
 
 import { Author } from "../modules/authors/author.model.js";
 import { Book } from "../modules/books/book.model.js";
-import { Category } from "../modules/categories/category.model.js";
 import { Commune } from "../modules/commune/commune.model.js";
 import { Editorial } from "../modules/editorials/editorial.model.js";
 import { LoanStatus } from "../modules/loans-status/loan-status.model.js";
@@ -18,6 +17,11 @@ import { User } from "../modules/users/user.model.js";
 import { News } from "../modules/news/news.model.js";
 import { NewsGallery } from "../modules/news-gallery/news-gallery.model.js";
 import { Subject } from "../modules/subjects/subject.model.js";
+import { Copy } from '../modules/copies/copy.model.js';
+import { CopyStatus } from '../modules/copy_status/copy-status.model.js';
+import { Genre } from '../modules/genres/genre.model.js';
+import { Edition } from '../modules/editions/edition.model.js';
+
 
 let sequelize = new Sequelize(
   env.database.name,
@@ -47,7 +51,6 @@ export const getModels = () => {
     models = {
       AuthorModel: Author(sequelize, DataTypes),
       BookModel: Book(sequelize, DataTypes),
-      CategoryModel: Category(sequelize, DataTypes),
       CommuneModel: Commune(sequelize, DataTypes),
       EditorialModel: Editorial(sequelize, DataTypes),
       LoanStatusModel: LoanStatus(sequelize, DataTypes),
@@ -60,7 +63,11 @@ export const getModels = () => {
       UserModel: User(sequelize, DataTypes),
       NewsModel: News(sequelize, DataTypes),
       NewsGalleryModel: NewsGallery(sequelize, DataTypes),
-      SubjectModel: Subject(sequelize, DataTypes)
+      SubjectModel: Subject(sequelize, DataTypes),
+      CopyModel: Copy(sequelize, DataTypes),
+      CopyStatusModel: CopyStatus(sequelize, DataTypes),
+      GenreModel: Genre(sequelize, DataTypes),
+      EditionModel: Edition(sequelize, DataTypes)
     };
 
     // Asociaciones
@@ -78,7 +85,6 @@ export const getModels = () => {
 export const {
   AuthorModel,
   BookModel,
-  CategoryModel,
   CommuneModel,
   EditorialModel,
   LoanStatusModel,
@@ -91,7 +97,11 @@ export const {
   UserModel,
   NewsModel,
   NewsGalleryModel,
-  SubjectModel
+  SubjectModel,
+  CopyModel,
+  CopyStatusModel,
+  GenreModel,
+  EditionModel
 } = getModels();
 
 export { sequelize };

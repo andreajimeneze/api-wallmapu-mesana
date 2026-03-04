@@ -12,6 +12,7 @@ export const Editorial = (sequelize, DataTypes) => {
       },
       name: {
         type: DataTypes.STRING,
+        allowNull: false
       }
     },
     {

@@ -12,6 +12,7 @@ export const Subject = (sequelize, DataTypes) => {
       },
       name: {
         type: DataTypes.STRING,
+        allowNull: false
       },
     },
     {
