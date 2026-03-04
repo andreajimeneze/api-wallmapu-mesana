@@ -7,3 +7,4 @@ export const getAllSubjectsService = async () => {
 export const getSubjectByIdService = async (id) => {
     return await SubjectModel.findByPk(id);
 }
+
