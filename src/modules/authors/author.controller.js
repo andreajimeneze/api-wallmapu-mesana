@@ -4,7 +4,11 @@ import {
   succesGetResponse,
 } from "../../shared/apiResponse.js";
 import { authorResponseDTO } from "./author.dto.js";
-import { getAllAuthorsService } from "./author.service.js";
+import {
+  createAuthorService,
+  getAllAuthorsService,
+  getAuthorByIdService,
+} from "./author.service.js";
 
 export const getAllAuthors = async (req, res) => {
   try {
@@ -33,3 +37,64 @@ export const getAllAuthors = async (req, res) => {
       );
   }
 };
+
+export const getAuthorById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const author = getAuthorByIdService(id);
+
+    if (!author) {
+      return res
+        .status(404)
+        .json(notFoundResponse({ message: "Autor no existe" }));
+    }
+
+    return res
+      .status(200)
+      .json(
+        succesGetResponse({
+          message: "Autor obtenido exitosamente",
+          result: authorResponseDTO(author),
+        }),
+      );
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        internalServerResponse({
+          message: "Error al intentar obtener al autor",
+        }),
+      );
+  }
+};
+
+export const createAuthor = async (req, res) => {
+  const { name } = req.body;
+
+  try {
+    const createdAuthor = await createAuthorService(name);
+
+    res.status(201).json(
+          successCreateResponse({
+            message: "Author creado exitosamente",
+            result: authorResponseDTO(createdAuthor),
+          }),
+        );
+      } catch (error) {
+        console.error(error);
+        if (error.code === "CONFLICT") {
+          res.status(409).json(
+            conflictResponse({
+              message: error.message || "Nombre del autor ya existe",
+            }),
+          );
+        } else {
+          res.status(500).json(
+            internalServerResponse({
+              message: error.message || "Error al crear al autor",
+            }),
+          );
+        }
+      }
+}

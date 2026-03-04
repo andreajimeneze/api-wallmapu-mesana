@@ -46,21 +46,13 @@ export const User = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         field: "user_status_id"
-      },
-      createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        field: "created_at"
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: "updated_at"
-      },
+      }
     },
     {
       tableName: "wm_users",
-      timestamp: false,
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at'
     },
   );
 

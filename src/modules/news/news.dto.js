@@ -6,9 +6,7 @@ export const createNewsDTO = ({ title, subtitle, body }) => {
   return {
     title: title.trim(),
     subtitle: subtitle?.trim() || null,
-    body: body.trim(),
-    createdAt: new Date(),
-    updatedAt: new Date()
+    body: body.trim()
   };
 };
 
@@ -17,9 +15,7 @@ export const updateNewsDTO = ({ idNews, title, subtitle, body, createdAt }) => {
     id_news: Number(idNews),
     title: title.trim(),
     subtitle: subtitle?.trim() || null,
-    body: body.trim(),
-    createdAt,
-    updatedAt: new Date()
+    body: body.trim()
   };
 };
 
@@ -28,8 +24,8 @@ export const newsResponseDTO = (news) => ({
   title: news.title,
   subtitle: news.subtitle,
   body: news.body,
-  created_at: news.createdAt,
-  updated_at: news.updatedAt,
+  created_at: news.created_at,
+  updated_at: news.updated_at,
   images: news.images
     ? news.images.map((g) => ({
         id_news_gallery: g.idNewsGallery,

@@ -13,21 +13,13 @@ export const Author = (sequelize, DataTypes) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
-      },
-      createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        field: "created_at",
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: "updated_at",
-      },
+      }  
     },
     {
       tableName: "wm_authors",
-      timestamps: false,
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at'
     },
   );
 

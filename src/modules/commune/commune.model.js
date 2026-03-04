@@ -18,21 +18,13 @@ export const Commune = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         field: "province_id",
-      },
-      createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        field: "created_at",
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: "updated_at",
-      },
+      }
     },
     {
       tableName: "wm_communes",
-      timestamps: false,
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at'
     },
   );
 

@@ -11,50 +11,15 @@ import {
   createEditorialService,
   getAllEditorialsService,
   getEditorialByIdService,
-  getEditorialsPaginationService,
   updateEditorialService,
 } from "./editorial.service.js";
-
-export const getEditorialsPagination = async (req, res) => {
-  let page = parseInt(req.query.page ?? 1);
-  let items = parseInt(req.query.items ?? 10);
-
-  if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
-    return res.status(400).json(
-      badRequestResponse({
-        message: "El número de página o items debe ser mayor a 0",
-      }),
-    );
-  }
-
-  try {
-    const result = await getEditorialsPaginationService({
-      page,
-      limit: items,
-      search: req.query.search ?? "",
-    });
-
-    return res.status(200).json(
-      succesGetResponse({
-        message: "Editoriales obtenidas exitosamente",
-        result: result.result,
-      }),
-    );
-  } catch (error) {
-    return res
-      .status(500)
-      .json(
-        internalServerResponse({ message: "Error al obtener las editoriales" }),
-      );
-  }
-};
 
 export const getAllEditorials = async (req, res) => {
   try {
     const editorials = await getAllEditorialsService();
 
    
-    if (!editorials || !editorials.length > 0) {
+    if (!editorials || editorials.length === 0) {
       return res
         .status(404)
         .json(notFoundResponse({ message: "No hay editoriales cargadas" }));

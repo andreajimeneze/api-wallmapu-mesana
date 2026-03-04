@@ -1,14 +1,12 @@
-export const editorialResponseDTO = (editorial) => ({
-  id_editorial: editorial.idEditorial,
-  editorial: editorial.editorial,
-  created_at: editorial.createdAt,
-  updated_at: editorial.updatedAt
+export const editorialResponseDTO = (res) => ({
+  id_editorial: res.idEditorial,
+  editorial: res.editorial,
+  created_at: res.created_at,
+  updated_at: res.updated_at
 });
 
-export const createEditorialResponseDTO = ({ editorial }) => {
+export const createEditorialResponseDTO = ( editorial ) => {
   return {
-    editorial: editorial.trim(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    editorial: editorial.trim()
   };
 };

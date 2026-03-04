@@ -15,21 +15,12 @@ export const ReturnStatus = (sequelize, DataTypes) => {
         allowNull: false,
         field: "return_status",
       },
-
-      createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        field: "created_at",
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: "updated_at",
-      },
     },
     {
       tableName: "wm_return_status",
-      timestamps: false,
+      timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at",
     },
   );
 

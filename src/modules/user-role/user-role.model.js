@@ -13,21 +13,13 @@ export const UserRole = (sequelize, DataTypes) => {
       role: {
         type: DataTypes.STRING,
         allowNull: false,
-      },
-      createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        field: "created_at",
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: "updated_at",
-      },
+      }
     },
     {
       tableName: "wm_user_roles",
-      timestamps: false,
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at'
     },
   );
 

@@ -2,7 +2,7 @@
 
 export const Editorial = (sequelize, DataTypes) => {
   const Editorial = sequelize.define(
-    "Editorials",
+    "Editorial",
     {
       idEditorial: {
         type: DataTypes.INTEGER,
@@ -12,21 +12,13 @@ export const Editorial = (sequelize, DataTypes) => {
       },
       editorial: {
         type: DataTypes.STRING,
-      },
-      createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        field: "created_at",
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: "updated_at",
       }
     },
     {
       tableName: "wm_editorials",
-      timestamps: false,
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at'
     },
   );
 

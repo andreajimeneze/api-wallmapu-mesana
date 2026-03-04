@@ -17,6 +17,7 @@ import { UserRole } from "../modules/user-role/user-role.model.js";
 import { User } from "../modules/users/user.model.js";
 import { News } from "../modules/news/news.model.js";
 import { NewsGallery } from "../modules/news-gallery/news-gallery.model.js";
+import { Subject } from "../modules/subjects/subject.model.js";
 
 let sequelize = new Sequelize(
   env.database.name,
@@ -42,7 +43,7 @@ let models = {};
 
 export const getModels = () => {
   if (!initialized) {
-    // Inicializa los modelos
+    
     models = {
       AuthorModel: Author(sequelize, DataTypes),
       BookModel: Book(sequelize, DataTypes),
@@ -59,12 +60,13 @@ export const getModels = () => {
       UserModel: User(sequelize, DataTypes),
       NewsModel: News(sequelize, DataTypes),
       NewsGalleryModel: NewsGallery(sequelize, DataTypes),
+      SubjectModel: Subject(sequelize, DataTypes)
     };
 
     // Asociaciones
     Object.values(models).forEach((model) => {
       if (model.associate) {
-        model.associate(models); // aquí usamos los modelos "Model" (AuthorModel, BookModel...)
+        model.associate(models); 
       }
     });
 
@@ -73,7 +75,6 @@ export const getModels = () => {
   return models;
 };
 
-// Exporta los modelos listos para usar
 export const {
   AuthorModel,
   BookModel,
@@ -90,6 +91,7 @@ export const {
   UserModel,
   NewsModel,
   NewsGalleryModel,
+  SubjectModel
 } = getModels();
 
 export { sequelize };

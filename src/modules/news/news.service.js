@@ -67,7 +67,7 @@ export const getNewsPaginationAndSearchService = async ({
     offset,
     distinct: true,
     order: [
-      ["createdAt", "DESC"],
+      ["created_at", "DESC"],
       [{ model: NewsGalleryModel, as: "images" }, "idNewsGallery", "ASC"],
     ],
     include: [
@@ -133,10 +133,7 @@ export const createNewsService = async ({ title, subtitle, body}) => {
   const createdNews = await NewsModel.create({
     title,
     subtitle,
-    body,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    
+    body    
   });
   
   return createdNews
@@ -147,8 +144,7 @@ export const updateNewsService = async (id, newsData) => {
 
   if (!newsSelected) return null;
   return await newsSelected.update({
-    ...newsData,
-    updatedAt: new Date(),
+    ...newsData
   });
 };
 

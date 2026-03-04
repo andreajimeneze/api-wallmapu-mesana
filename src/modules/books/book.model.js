@@ -51,21 +51,13 @@ export const Book = (sequelize, DataTypes) => {
       editionNumber: {
         type: DataTypes.STRING,
         field: "edition_number",
-      },
-      createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        field: "created_at",
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: "updated_at",
-      },
+      }
     },
     {
       tableName: "wm_books",
-      timestamps: false,
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at'
     },
   );
 

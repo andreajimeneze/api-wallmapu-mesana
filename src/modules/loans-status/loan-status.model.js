@@ -14,22 +14,13 @@ export const LoanStatus = (sequelize, DataTypes) => {
       loanStatus: {
         type: DataTypes.STRING,
         field: "loan_status",
-      },
-
-      createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        field: "created_at",
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: "updated_at",
-      },
+      }
     },
     {
       tableName: "loan_status",
-      timestamps: false,
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at'
     },
   );
 

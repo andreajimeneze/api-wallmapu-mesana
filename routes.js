@@ -10,6 +10,8 @@ import user_routes from './src/modules/users/user.routes.js';
 import auth_routes from './src/modules/auth/auth.routes.js';
 import editorial_routes from './src/modules/editorials/editorial.routes.js';
 import authors_routes from './src/modules/authors/author.routes.js';
+import subjects_routes from './src/modules/subjects/subject.routes.js';
+import stat_routes from './src/modules/stats/stat.routes.js';
 
 const router = Router();
 
@@ -24,5 +26,7 @@ router.use('/api/users', user_routes);
 router.use('/api/auth', auth_routes);
 router.use('/api/editorial', editorial_routes);
 router.use('/api/author', authors_routes);
+router.use('/api/subject', subjects_routes);
+router.use('/api/stat', stat_routes);
 
 export default router;
