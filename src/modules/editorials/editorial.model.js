@@ -10,7 +10,7 @@ export const Editorial = (sequelize, DataTypes) => {
         autoIncrement: true,
         field: 'id_editorial'
       },
-      editorial: {
+      name: {
         type: DataTypes.STRING,
       }
     },

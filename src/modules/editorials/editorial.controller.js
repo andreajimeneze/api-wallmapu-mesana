@@ -17,7 +17,7 @@ import {
 export const getAllEditorials = async (req, res) => {
   try {
     const editorials = await getAllEditorialsService();
-
+  console.log("editoriales length en controlador: ", editorials.length);
    
     if (!editorials || editorials.length === 0) {
       return res
@@ -32,6 +32,7 @@ export const getAllEditorials = async (req, res) => {
       }),
     );
   } catch (error) {
+    //console.error(error)
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar obtener las editoriales",

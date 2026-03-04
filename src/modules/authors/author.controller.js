@@ -13,7 +13,7 @@ import {
 export const getAllAuthors = async (req, res) => {
   try {
     const allAuthors = await getAllAuthorsService();
-    console.log("autores en controlador: ", allAuthors);
+    //console.log("autores en controlador: ", allAuthors);
     if (!allAuthors || allAuthors.length === 0) {
       return res
         .status(404)
@@ -29,7 +29,7 @@ export const getAllAuthors = async (req, res) => {
       }),
     );
   } catch (error) {
-    console.error(error);
+    //console.error(error);
     return res
       .status(500)
       .json(

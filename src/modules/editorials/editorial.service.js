@@ -1,7 +1,12 @@
 import { EditorialModel } from "../../config/dbSequelize.js";
 
 export const getAllEditorialsService = async () => {
-    return await EditorialModel.findAll();
+    const editorials = await EditorialModel.findAll({
+       order: [['name', 'ASC']]
+    });
+
+    console.log('editoriales en servicio: ', editorials);
+    return editorials;
 }
 
 export const getEditorialByIdService = async (id) => {
