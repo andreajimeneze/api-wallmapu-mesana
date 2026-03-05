@@ -13,6 +13,7 @@ import authors_routes from './src/modules/authors/author.routes.js';
 import subjects_routes from './src/modules/subjects/subject.routes.js';
 import stat_routes from './src/modules/stats/stat.routes.js';
 import copy_routes from './src/modules/copies/copy.routes.js';
+import status_copy_routes from './src/modules/copy_status/copy_status.routes.js';
 
 const router = Router();
 
@@ -30,5 +31,6 @@ router.use('/api/author', authors_routes);
 router.use('/api/subject', subjects_routes);
 router.use('/api/stat', stat_routes);
 router.use('/api/copy', copy_routes);
+router.use('/api/status-copy', status_copy_routes);
 
 export default router;
