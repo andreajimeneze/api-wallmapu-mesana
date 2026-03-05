@@ -24,11 +24,11 @@ export const Editorial = (sequelize, DataTypes) => {
   );
 
   Editorial.associate = (models) => {
-    Editorial.hasMany(models.BookModel, {
-      foreignKey: "idEditorial",
-      sourcekey: 'editorialId',
-      as: "book",
-    });
+    Editorial.hasMany(models.EditionModel, {
+      foreignKey: 'editorialId',
+      sourceKey: 'idEditorial',
+      as: 'edition'
+    })
   };
 
   return Editorial;

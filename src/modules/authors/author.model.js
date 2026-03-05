@@ -24,11 +24,10 @@ export const Author = (sequelize, DataTypes) => {
   );
 
   Author.associate = (models) => {
-    Author.hasMany(models.BookModel, {
-      foreignKey: "authorId",
-      sourceKey: "idAuthor",
-      as: "book",
-    });
+    Author.belongsToMany(models.BookModel, {
+      through: 'book_author',
+      as: 'book'
+    })
   };
 
   return Author;

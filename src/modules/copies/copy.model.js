@@ -41,5 +41,19 @@ export const Copy = (sequelize, DataTypes) => {
       updatedAt: 'updated_at'
   }
 );
+
+Copy.associate = (models) => {
+  Copy.belongsTo(models.EditionModel, {
+    foreignKey: 'editionId',
+    targetKey: 'idEdition',
+    as: 'edition'
+  });
+
+  Copy.belongsTo(models.CopyStatusModel, {
+    foreignKey: 'statusId',
+    targetKey: 'idStatus',
+    as: 'status'
+  })
+}
 return Copy;
 };

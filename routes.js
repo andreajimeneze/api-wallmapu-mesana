@@ -12,6 +12,7 @@ import editorial_routes from './src/modules/editorials/editorial.routes.js';
 import authors_routes from './src/modules/authors/author.routes.js';
 import subjects_routes from './src/modules/subjects/subject.routes.js';
 import stat_routes from './src/modules/stats/stat.routes.js';
+import copy_routes from './src/modules/copies/copy.routes.js';
 
 const router = Router();
 
@@ -28,5 +29,6 @@ router.use('/api/editorial', editorial_routes);
 router.use('/api/author', authors_routes);
 router.use('/api/subject', subjects_routes);
 router.use('/api/stat', stat_routes);
+router.use('/api/copy', copy_routes);
 
 export default router;
