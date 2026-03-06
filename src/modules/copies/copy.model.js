@@ -46,7 +46,7 @@ Copy.associate = (models) => {
   Copy.belongsTo(models.EditionModel, {
     foreignKey: 'editionId',
     targetKey: 'idEdition',
-    as: 'edition'
+    as: 'editions'
   });
 
   Copy.belongsTo(models.CopyStatusModel, {

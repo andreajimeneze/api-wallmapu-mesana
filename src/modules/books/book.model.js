@@ -1,5 +1,7 @@
 "use strict";
 
+
+
 export const Book = (sequelize, DataTypes) => {
   const Book = sequelize.define(
     "Book",
@@ -40,12 +42,21 @@ export const Book = (sequelize, DataTypes) => {
     Book.hasMany(models.EditionModel, {
       foreignKey: "bookId",
       sourceKey: "idBook",
-      as: "edition",
+      as: "editions",
     });
 
     Book.belongsToMany(models.AuthorModel, {
-      through: 'book_author',
-      as: 'author'
+      through: models.BookAuthorModel,
+      foreignKey: 'idBook',
+      otherKey: 'idAuthor',
+      as: 'authors'
+    });
+
+    Book.belongsToMany(models.SubjectModel, {
+      through: models.BookSubjectModel,
+      foreignKey: 'idBook',
+      otherKey: 'idSubject',
+      as: 'subjects'
     })
   };
   

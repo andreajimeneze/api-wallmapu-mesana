@@ -5,29 +5,29 @@ export const copyResponseDTO = (res) => ({
   copy_number: res.copyNumber,
   created_at: res.created_at,
   updated_at: res.updated_at,
-  edition: res.edition
+  editions: res.editions
     ? {
-        id_edition: res.edition.idEdition,
-        isbn: res.edition.isbn,
-        publication_year: res.edition.publicationYear,
-        pages: res.edition.pages,
-        cover_image: res.edition.coverImage,
-        book: res.edition.book
+        id_editions: res.editions.ideditions,
+        isbn: res.editions.isbn,
+        publication_year: res.editions.publicationYear,
+        pages: res.editions.pages,
+        cover_image: res.editions.coverImage,
+        book: res.editions.book
           ? {
-              id_book: res.edition.book.idBook,
-              title: res.edition.book.title,
-              summary: res.edition.book.summary,
-              genre: res.edition.book.genre
+              id_book: res.editions.book.idBook,
+              title: res.editions.book.title,
+              summary: res.editions.book.summary,
+              genre: res.editions.book.genre
               ? {
-                id_genre: res.edition.book.genre.idGenre,
-                name: res.edition.book.genre.name
+                id_genre: res.editions.book.genre.idGenre,
+                name: res.editions.book.genre.name
               } : null,
             }
           : null,
-        editorial: res.edition.editorial
+        editorial: res.editions.editorial
           ? {
-              id_editorial: res.edition.editorial.idEditorial,
-              name: res.edition.editorial.name,
+              id_editorial: res.editions.editorial.idEditorial,
+              name: res.editions.editorial.name,
             }
           : null,
       }

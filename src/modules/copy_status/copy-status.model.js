@@ -26,7 +26,7 @@ export const CopyStatus = (sequelize, DataTypes) => {
     CopyStatus.hasMany(models.CopyModel, {
       foreignKey: "statusId",
       sourceKey: "idStatus",
-      as: "copy",
+      as: "copies",
     });
   };
   return CopyStatus;

@@ -2,7 +2,7 @@
 
 export const Subject = (sequelize, DataTypes) => {
   const Subject = sequelize.define(
-    "Subject",
+    "Subjects",
     {
       idSubject: {
         type: DataTypes.INTEGER,
@@ -23,13 +23,14 @@ export const Subject = (sequelize, DataTypes) => {
     },
   );
 
-  //   Subject.associate = (models) => {
-  //     Subject.hasMany(models.BookModel, {
-  //       foreignKey: "subjectId",
-  //       sourceKey: "idSubject",
-  //       as: "book",
-  //     });
-  //  };
+    Subject.associate = (models) => {
+      Subject.belongsToMany(models.BookModel, {
+        through: "wm_book_subject",
+        foreignKey: 'subject_id',
+        otherKey: 'book_id',
+        as: "books",
+      });
+   };
 
   return Subject;
 };

@@ -4,10 +4,53 @@ export const bookResponseDTO = (res) => ({
   summary: res.summary,
   created_at: res.created_at,
   updated_at: res.updated_at,
+
   genre: res.genre
     ? {
         id_genre: res.genre.idGenre,
         name: res.genre.name,
       }
     : null,
+
+  authors: res.authors
+    ? res.authors.map((author) => ({
+        id_author: author.idAuthor,
+        name: author.name,
+      }))
+    : [],
+
+  subjects: res.subjects
+    ? res.subjects.map((subject) => ({
+        id_subject: subject.idSubject,
+        name: subject.name,
+      }))
+    : [],
+
+  editions: res.editions
+    ? res.editions.map((editions) => ({
+        id_editions: editions.ideditions,
+        isbn: editions.isbn,
+        publication_year: editions.publicationYear,
+        pages: editions.pages,
+        cover_image: editions.coverImage,
+        editorial: editions.editorial
+          ? {
+              id_editorial: editions.editorial.idEditorial,
+              name: editions.editorial.name,
+            }
+          : null,
+          copies: editions.copies
+          ? editions.copies.map((copies) => ({
+            id_copies: copies.idcopies,
+            barcode: copies.barcode,
+            signature_topography: copies.signatureTopography,
+            copies_number: copies.copiesNumber,
+            status: copies.status
+            ? {
+              id_status: copies.status.idStatus,
+              name: copies.status.name
+            } : null
+          })) : []
+      }))
+    : [],
 });

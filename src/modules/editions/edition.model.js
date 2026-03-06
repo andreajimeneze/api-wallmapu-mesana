@@ -51,12 +51,12 @@ export const Edition = (sequelize, DataTypes) => {
     Edition.hasMany(models.CopyModel, {
       foreignKey: 'editionId',
       sourceKey: 'idEdition',
-      as: 'copy'
+      as: 'copies'
     })
     Edition.belongsTo(models.BookModel, {
       foreignKey: 'bookId',
       targetKey: 'idBook',
-      as: 'book'
+      as: 'books'
     })
     Edition.belongsTo(models.EditorialModel, {
       foreignKey: 'editorialId',

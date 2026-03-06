@@ -27,7 +27,7 @@ export const Editorial = (sequelize, DataTypes) => {
     Editorial.hasMany(models.EditionModel, {
       foreignKey: 'editorialId',
       sourceKey: 'idEditorial',
-      as: 'edition'
+      as: 'editions'
     })
   };
 

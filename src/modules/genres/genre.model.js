@@ -27,7 +27,7 @@ export const Genre = (sequelize, DataTypes) => {
     Genre.hasMany(models.BookModel, {
         foreignKey: 'genreId',
         sourceKey: 'idGenre',
-        as: 'book'
+        as: 'books'
     })
   }
   return Genre;

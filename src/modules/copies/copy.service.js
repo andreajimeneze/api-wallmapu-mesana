@@ -12,11 +12,11 @@ export const getAllCopiesService = async () => {
     include: [
       {
         model: EditionModel,
-        as: "edition",
+        as: "editions",
         include: [
           {
             model: BookModel,
-            as: "book",
+            as: "books",
             include: [
               {
                 model: GenreModel,
@@ -37,11 +37,11 @@ export const getCopyByIdService = async (id) => {
     include: [
       {
         model: EditionModel,
-        as: "edition",
+        as: "editions",
         include: [
           {
             model: BookModel,
-            as: "book",
+            as: "books",
             include: [
               {
                 model: GenreModel,

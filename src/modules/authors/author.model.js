@@ -2,7 +2,7 @@
 
 export const Author = (sequelize, DataTypes) => {
   const Author = sequelize.define(
-    "Author",
+    "Authors",
     {
       idAuthor: {
         type: DataTypes.INTEGER,
@@ -25,8 +25,10 @@ export const Author = (sequelize, DataTypes) => {
 
   Author.associate = (models) => {
     Author.belongsToMany(models.BookModel, {
-      through: 'book_author',
-      as: 'book'
+      through: models.BookAuthorModel,
+      foreignKey: 'idAuthor',
+      otherKey: 'idBook',
+      as: 'books'
     })
   };
 

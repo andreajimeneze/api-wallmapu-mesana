@@ -34,9 +34,9 @@ router.use('/api/author', authors_routes);
 router.use('/api/subject', subjects_routes);
 router.use('/api/stat', stat_routes);
 router.use('/api/copy', copy_routes);
-router.use('/api/status-copy', status_copy_routes);
+router.use('/api/copy-status', status_copy_routes);
 router.use('/api/genre', genre_routes);
 router.use('/api/edition', edition_routes);
-router.use('/api/book', book_routes);
+router.use('/api/books', book_routes);
 
 export default router;

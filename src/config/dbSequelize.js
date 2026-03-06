@@ -21,6 +21,9 @@ import { Copy } from '../modules/copies/copy.model.js';
 import { CopyStatus } from '../modules/copy_status/copy-status.model.js';
 import { Genre } from '../modules/genres/genre.model.js';
 import { Edition } from '../modules/editions/edition.model.js';
+import { BookAuthor } from "../database/models/book_author.model.js";
+import { BookSubject } from '../database/models/book_subject.model.js';
+
 
 
 let sequelize = new Sequelize(
@@ -67,7 +70,9 @@ export const getModels = () => {
       CopyModel: Copy(sequelize, DataTypes),
       CopyStatusModel: CopyStatus(sequelize, DataTypes),
       GenreModel: Genre(sequelize, DataTypes),
-      EditionModel: Edition(sequelize, DataTypes)
+      EditionModel: Edition(sequelize, DataTypes),
+      BookAuthorModel: BookAuthor(sequelize, DataTypes),
+      BookSubjectModel: BookSubject(sequelize, DataTypes)
     };
 
     // Asociaciones
@@ -101,7 +106,9 @@ export const {
   CopyModel,
   CopyStatusModel,
   GenreModel,
-  EditionModel
+  EditionModel,
+  BookAuthorModel,
+  BookSubjectModel
 } = getModels();
 
 export { sequelize };

@@ -1,7 +1,17 @@
-import { BookModel, GenreModel } from "../../config/dbSequelize.js";
+import {
+  BookModel,
+  EditionModel,
+  EditorialModel,
+  GenreModel,
+  SubjectModel,
+  AuthorModel,
+  CopyModel,
+  CopyStatusModel
+} from "../../config/dbSequelize.js";
 import { bookResponseDTO } from "./book.dto.js";
 import { Op } from "sequelize";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
+
 
 export const getBooksPaginationAndSearchService = async ({
   page,
@@ -11,16 +21,16 @@ export const getBooksPaginationAndSearchService = async ({
   limit = Number.isInteger(Number(limit)) ? Number(limit) : 10;
   page = Number.isInteger(Number(page)) ? Number(page) : 1;
 
-   console.log('página en service', page)
+  console.log("página en service", page);
 
-  const DEFAULT_LIMIT = 1;
-  const MAX_LIMIT = 100;
+const DEFAULT_LIMIT = 10;
+const MAX_LIMIT = 100;
 
-  if (limit < 1) {
-    limit = DEFAULT_LIMIT;
-  } else if (limit > MAX_LIMIT) {
-    limit = MAX_LIMIT;
-  }
+limit = Number(limit) || DEFAULT_LIMIT;
+page = Number(page) || 1;
+
+if (limit < 1) limit = DEFAULT_LIMIT;
+if (limit > MAX_LIMIT) limit = MAX_LIMIT;
 
   const where = search
     ? {
@@ -74,7 +84,49 @@ export const getBooksPaginationAndSearchService = async ({
       {
         model: GenreModel,
         as: "genre",
-        attributes: ["idGenre", "name"],
+        attributes: ["idGenre", "name"]
+      },
+      {
+        model: AuthorModel,
+        as: "authors",
+        attributes: ["idAuthor", "name"],
+        through: {attributes: []}
+      },
+      {
+        model: SubjectModel,
+        as: "subjects",
+        attributes: ["idSubject", "name"],
+        through: {attributes: []}
+      },
+      {
+        model: EditionModel,
+        as: "editions",
+        attributes: [
+          "idEdition",
+          "isbn",
+          "publicationYear",
+          "pages",
+          "coverImage"
+        ],
+        include: [
+          {
+            model: EditorialModel,
+            as: "editorial",
+            attributes: ["idEditorial", "name"],
+          },
+          {
+            model: CopyModel,
+            as: 'copies',
+            attributes: ['idCopy', 'barcode', 'signatureTopography', 'copyNumber'],
+            include: [
+              {
+                model: CopyStatusModel,
+                as: 'status',
+                attributes: ['idStatus', 'name']
+              }
+            ]
+          }
+        ],
       },
     ],
   });
@@ -87,11 +139,11 @@ export const getBooksPaginationAndSearchService = async ({
       items,
       next:
         page < pages
-          ? `/book?page=${page + 1}&items=${limit}&search=${search}`
+          ? `/books?page=${page + 1}&items=${limit}&search=${search}`
           : null,
       prev:
         page > 1
-          ? `/book?page=${page - 1}&items=${limit}&search=${search}`
+          ? `/books?page=${page - 1}&items=${limit}&search=${search}`
           : null,
       result: result.map(bookResponseDTO),
     }),
@@ -99,19 +151,66 @@ export const getBooksPaginationAndSearchService = async ({
 };
 
 export const getAllBooksService = () => {
-    return BookModel.findAll({
-        include: [{
-            model: GenreModel,
-            as: 'genre'
-        }]
-    });
-}
+  return BookModel.findAll({
+    include: [
+      {
+        model: GenreModel,
+        as: "genre",
+      },
+    ],
+  });
+};
 
 export const getBookByIdService = (id) => {
-    return BookModel.findByPk(id, {
-        include: [{
-            model: GenreModel,
-            as: 'genre'
-        }]
-    });
-}
+  return BookModel.findByPk(id, {
+    include: [
+      {
+        model: GenreModel,
+        as: "genre",
+        attributes: ["idGenre", "name"]
+      },
+      {
+        model: AuthorModel,
+        as: "authors",
+        attributes: ["idAuthor", "name"],
+        through: {attributes: []}
+      },
+      {
+        model: SubjectModel,
+        as: "subjects",
+        attributes: ["idSubject", "name"],
+        through: {attributes: []}
+      },
+      {
+        model: EditionModel,
+        as: "editions",
+        attributes: [
+          "idEdition",
+          "isbn",
+          "publicationYear",
+          "pages",
+          "coverImage"
+        ],
+        include: [
+          {
+            model: EditorialModel,
+            as: "editorial",
+            attributes: ["idEditorial", "name"],
+          },
+          {
+            model: CopyModel,
+            as: 'copies',
+            attributes: ['idCopy', 'barcode', 'signatureTopography', 'copyNumber'],
+            include: [
+              {
+                model: CopyStatusModel,
+                as: 'status',
+                attributes: ['idStatus', 'name']
+              }
+            ]
+          }
+        ],
+      },
+    ]
+  });
+};
