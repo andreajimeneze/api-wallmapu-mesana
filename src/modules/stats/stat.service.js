@@ -1,5 +1,6 @@
 import {
   AuthorModel,
+  BookModel,
   CommuneModel,
   EditorialModel,
   NewsModel,
@@ -19,6 +20,7 @@ export const getAllStatesAdminService = async () => {
     authors,
     editorials,
     subjects,
+    books
   ] = await Promise.all([
     UserModel.count(),
     NewsModel.count(),
@@ -28,6 +30,7 @@ export const getAllStatesAdminService = async () => {
     AuthorModel.count(),
     EditorialModel.count(),
     SubjectModel.count(),
+    BookModel.count()
   ]);
 
   return {
@@ -39,5 +42,6 @@ export const getAllStatesAdminService = async () => {
     authors,
     editorials,
     subjects,
+    books
   };
 };
