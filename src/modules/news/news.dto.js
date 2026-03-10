@@ -1,20 +1,20 @@
 export const createNewsDTO = ({ title, subtitle, body }) => {
-  if (!title.trim() || !body.trim()) {
-    throw new Error("Título y cuerpo de la noticia son obligatorios");
+  if (!title?.trim() || !body?.trim() || !subtitle?.trim()) {
+    throw new Error("Título, subtítulo y cuerpo de la noticia son obligatorios");
   }
 
   return {
     title: title.trim(),
-    subtitle: subtitle?.trim() || null,
+    subtitle: subtitle.trim(),
     body: body.trim()
   };
 };
 
-export const updateNewsDTO = ({ idNews, title, subtitle, body, createdAt }) => {
+export const updateNewsDTO = ({ idNews, title, subtitle, body }) => {
   return {
     id_news: Number(idNews),
     title: title.trim(),
-    subtitle: subtitle?.trim() || null,
+    subtitle: subtitle.trim(),
     body: body.trim()
   };
 };

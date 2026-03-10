@@ -54,3 +54,30 @@ export const bookResponseDTO = (res) => ({
       }))
     : [],
 });
+
+export const createBookDTO = ({title,
+  summary,
+  genreId,
+  authors = [],
+  subjects = []}) => {
+    if(!title?.trim() || !genre_id || authors.length === 0 || subjects.length === 0 ) {
+      throw new Error('Debe completar los campos título, género, autores y descriptores');
+    }
+
+    return {
+      title: title.trim(),
+      summary,
+      genreId: Number(genreId),
+      authors,
+      subjects
+    }
+};
+
+export const updateBookDTO = ({ title, summary, genreId}) => {
+  return {
+    idBook: Number(idBook),
+    title: title.trim(),
+    summary,
+    genreId: Number(genreId)
+  }
+}

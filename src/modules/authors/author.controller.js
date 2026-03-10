@@ -8,12 +8,13 @@ import {
   createAuthorService,
   getAllAuthorsService,
   getAuthorByIdService,
+  getAuthorByNameService,
 } from "./author.service.js";
 
 export const getAllAuthors = async (req, res) => {
   try {
     const allAuthors = await getAllAuthorsService();
-    //console.log("autores en controlador: ", allAuthors);
+    
     if (!allAuthors || allAuthors.length === 0) {
       return res
         .status(404)
@@ -43,6 +44,37 @@ export const getAuthorById = async (req, res) => {
 
   try {
     const author = getAuthorByIdService(id);
+
+    if (!author) {
+      return res
+        .status(404)
+        .json(notFoundResponse({ message: "Autor no existe" }));
+    }
+
+    return res
+      .status(200)
+      .json(
+        succesGetResponse({
+          message: "Autor obtenido exitosamente",
+          result: authorResponseDTO(author),
+        }),
+      );
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        internalServerResponse({
+          message: "Error al intentar obtener al autor",
+        }),
+      );
+  }
+};
+
+export const getAuthorByName = async (req, res) => {
+  const { name } = req.query;
+
+  try {
+    const author = await getAuthorByNameService(name);
 
     if (!author) {
       return res

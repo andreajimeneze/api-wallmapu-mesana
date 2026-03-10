@@ -6,12 +6,22 @@ import {
   SubjectModel,
   AuthorModel,
   CopyModel,
-  CopyStatusModel
+  CopyStatusModel,
+  sequelize,
+  BookAuthorModel,
+  BookSubjectModel,
 } from "../../config/dbSequelize.js";
-import { bookResponseDTO } from "./book.dto.js";
+import { bookResponseDTO, createBookDTO, updateBookDTO } from "./book.dto.js";
 import { Op } from "sequelize";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
-
+import {
+  createAuthorService,
+  getAuthorByNameService,
+} from "../authors/author.service.js";
+import {
+  getSubjectByNameService,
+  createSubjectService,
+} from "../subjects/subject.service.js";
 
 export const getBooksPaginationAndSearchService = async ({
   page,
@@ -23,14 +33,14 @@ export const getBooksPaginationAndSearchService = async ({
 
   console.log("página en service", page);
 
-const DEFAULT_LIMIT = 10;
-const MAX_LIMIT = 100;
+  const DEFAULT_LIMIT = 10;
+  const MAX_LIMIT = 100;
 
-limit = Number(limit) || DEFAULT_LIMIT;
-page = Number(page) || 1;
+  limit = Number(limit) || DEFAULT_LIMIT;
+  page = Number(page) || 1;
 
-if (limit < 1) limit = DEFAULT_LIMIT;
-if (limit > MAX_LIMIT) limit = MAX_LIMIT;
+  if (limit < 1) limit = DEFAULT_LIMIT;
+  if (limit > MAX_LIMIT) limit = MAX_LIMIT;
 
   const where = search
     ? {
@@ -84,19 +94,19 @@ if (limit > MAX_LIMIT) limit = MAX_LIMIT;
       {
         model: GenreModel,
         as: "genre",
-        attributes: ["idGenre", "name"]
+        attributes: ["idGenre", "name"],
       },
       {
         model: AuthorModel,
         as: "authors",
         attributes: ["idAuthor", "name"],
-        through: {attributes: []}
+        through: { attributes: [] },
       },
       {
         model: SubjectModel,
         as: "subjects",
         attributes: ["idSubject", "name"],
-        through: {attributes: []}
+        through: { attributes: [] },
       },
       {
         model: EditionModel,
@@ -106,7 +116,7 @@ if (limit > MAX_LIMIT) limit = MAX_LIMIT;
           "isbn",
           "publicationYear",
           "pages",
-          "coverImage"
+          "coverImage",
         ],
         include: [
           {
@@ -116,16 +126,21 @@ if (limit > MAX_LIMIT) limit = MAX_LIMIT;
           },
           {
             model: CopyModel,
-            as: 'copies',
-            attributes: ['idCopy', 'barcode', 'signatureTopography', 'copyNumber'],
+            as: "copies",
+            attributes: [
+              "idCopy",
+              "barcode",
+              "signatureTopography",
+              "copyNumber",
+            ],
             include: [
               {
                 model: CopyStatusModel,
-                as: 'status',
-                attributes: ['idStatus', 'name']
-              }
-            ]
-          }
+                as: "status",
+                attributes: ["idStatus", "name"],
+              },
+            ],
+          },
         ],
       },
     ],
@@ -150,36 +165,25 @@ if (limit > MAX_LIMIT) limit = MAX_LIMIT;
   };
 };
 
-export const getAllBooksService = () => {
-  return BookModel.findAll({
-    include: [
-      {
-        model: GenreModel,
-        as: "genre",
-      },
-    ],
-  });
-};
-
 export const getBookByIdService = (id) => {
   return BookModel.findByPk(id, {
     include: [
       {
         model: GenreModel,
         as: "genre",
-        attributes: ["idGenre", "name"]
+        attributes: ["idGenre", "name"],
       },
       {
         model: AuthorModel,
         as: "authors",
         attributes: ["idAuthor", "name"],
-        through: {attributes: []}
+        through: { attributes: [] },
       },
       {
         model: SubjectModel,
         as: "subjects",
         attributes: ["idSubject", "name"],
-        through: {attributes: []}
+        through: { attributes: [] },
       },
       {
         model: EditionModel,
@@ -189,7 +193,7 @@ export const getBookByIdService = (id) => {
           "isbn",
           "publicationYear",
           "pages",
-          "coverImage"
+          "coverImage",
         ],
         include: [
           {
@@ -199,18 +203,108 @@ export const getBookByIdService = (id) => {
           },
           {
             model: CopyModel,
-            as: 'copies',
-            attributes: ['idCopy', 'barcode', 'signatureTopography', 'copyNumber'],
+            as: "copies",
+            attributes: [
+              "idCopy",
+              "barcode",
+              "signatureTopography",
+              "copyNumber",
+            ],
             include: [
               {
                 model: CopyStatusModel,
-                as: 'status',
-                attributes: ['idStatus', 'name']
-              }
-            ]
-          }
+                as: "status",
+                attributes: ["idStatus", "name"],
+              },
+            ],
+          },
         ],
       },
-    ]
+    ],
   });
+};
+
+export const createBookService = async (bookData) => {
+  const bookDto = createBookDTO(bookData);
+
+  const exists = await BookModel.findOne({
+    where: { title: { [Op.iLike]: bookDto.title.trim() } },
+  });
+
+  if (exists) {
+    throw new Error("Ya existe un libro con ese título");
+  }
+
+  const transaction = await sequelize.transaction();
+  try {
+    const book = await BookModel.create(
+      {
+        title: bookDto.title,
+        summary: bookDto.summary,
+        genreId: bookDto.genreId,
+      },
+      { transaction },
+    );
+
+    const authorIds = [];
+
+    for (const authorName of bookDto.authors) {
+      let author = await getAuthorByNameService(authorName, { transaction });
+
+      if (!author) {
+        author = await createAuthorService(
+          { name: authorName },
+          { transaction },
+        );
+      }
+
+      authorIds.push(author.idAuthor);
+    }
+
+    const bookAuthors = authorIds.map((authorId) => ({
+      bookId: book.idBook,
+      authorId: authorId,
+    }));
+
+    const subjectIds = [];
+    for (const subjectName of bookDto.subjects) {
+      let subject = await getSubjectByNameService(subjectName, { transaction });
+
+      if (!subject) {
+        subject = await createSubjectService(
+          { name: subjectName },
+          { transaction },
+        );
+      }
+
+      subjectIds.push(subject.idSubject);
+    }
+
+    const bookSubjects = subjectIds.map((subjectId) => ({
+      bookId: book.idBook,
+      subjectId: subjectId,
+    }));
+
+    await BookAuthorModel.bulkCreate(bookAuthors, { transaction });
+    await BookSubjectModel.bulkCreate(bookSubjects, { transaction });
+
+    await transaction.commit();
+
+    return book;
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
+export const updateBookService = async (id, dto) => {
+  const searchedBook = await BookModel.findByPk(id);
+
+  if (!searchedBook) {
+    throw new Error("Libro no existe");
+  }
+
+  const bookDto = updateBookDTO(dto);
+
+  return await searchedBook.update(bookDto);
 };
