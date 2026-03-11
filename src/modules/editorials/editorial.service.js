@@ -5,7 +5,6 @@ export const getAllEditorialsService = async () => {
        order: [['name', 'ASC']]
     });
 
-    console.log('editoriales en servicio: ', editorials);
     return editorials;
 }
 

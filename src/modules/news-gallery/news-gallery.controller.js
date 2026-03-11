@@ -164,7 +164,6 @@ export const deleteGalleryByNewsId = async (req, res) => {
 
   try {
     const deletedImages = await deleteGallerybyNewsIdService(id);
-    console.log("imagenes borradas", deletedImages);
 
     if (!deletedImages) {
       return res

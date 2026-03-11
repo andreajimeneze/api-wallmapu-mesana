@@ -7,8 +7,7 @@ import { authorResponseDTO } from "./author.dto.js";
 import {
   createAuthorService,
   getAllAuthorsService,
-  getAuthorByIdService,
-  getAuthorByNameService,
+  getAuthorByIdService
 } from "./author.service.js";
 
 export const getAllAuthors = async (req, res) => {
@@ -70,36 +69,36 @@ export const getAuthorById = async (req, res) => {
   }
 };
 
-export const getAuthorByName = async (req, res) => {
-  const { name } = req.query;
+// export const getAuthorByName = async (req, res) => {
+//   const { name } = req.query;
 
-  try {
-    const author = await getAuthorByNameService(name);
+//   try {
+//     const author = await getAuthorByNameService(name);
 
-    if (!author) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "Autor no existe" }));
-    }
+//     if (!author) {
+//       return res
+//         .status(404)
+//         .json(notFoundResponse({ message: "Autor no existe" }));
+//     }
 
-    return res
-      .status(200)
-      .json(
-        succesGetResponse({
-          message: "Autor obtenido exitosamente",
-          result: authorResponseDTO(author),
-        }),
-      );
-  } catch (error) {
-    return res
-      .status(500)
-      .json(
-        internalServerResponse({
-          message: "Error al intentar obtener al autor",
-        }),
-      );
-  }
-};
+//     return res
+//       .status(200)
+//       .json(
+//         succesGetResponse({
+//           message: "Autor obtenido exitosamente",
+//           result: authorResponseDTO(author),
+//         }),
+//       );
+//   } catch (error) {
+//     return res
+//       .status(500)
+//       .json(
+//         internalServerResponse({
+//           message: "Error al intentar obtener al autor",
+//         }),
+//       );
+//   }
+// };
 
 export const createAuthor = async (req, res) => {
   const { name } = req.body;

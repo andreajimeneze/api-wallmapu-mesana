@@ -104,15 +104,12 @@ export const deleteGallerybyNewsIdService = async (id, transaction = null) => {
     ...(transaction && { transaction }),
   });
 
-  console.log("imagenes rescatadas", existingImages);
   if (!existingImages || existingImages.length === 0) {
     return true;
   }
   try {
     for (const image of existingImages) {
       const publicId = await extractPublicId(image.url);
-
-      console.log("ids públicos cloudinary", publicId);
 
       if (publicId) {
         await deleteImageCloud(publicId);

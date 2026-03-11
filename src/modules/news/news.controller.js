@@ -193,7 +193,6 @@ export const createNewsWithImages = async (req, res) => {
       files
     });
 
-    console.log('noticia creada', newsWithImages)
     return res.status(201).json(
       successCreateResponse({
         message: "Noticia con imagen creada exitosamente",

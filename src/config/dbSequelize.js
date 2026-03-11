@@ -21,8 +21,8 @@ import { Copy } from '../modules/copies/copy.model.js';
 import { CopyStatus } from '../modules/copy_status/copy-status.model.js';
 import { Genre } from '../modules/genres/genre.model.js';
 import { Edition } from '../modules/editions/edition.model.js';
-import { BookAuthor } from "../database/models/book_author.model.js";
-import { BookSubject } from '../database/models/book_subject.model.js';
+import { BookAuthor } from "../modules/book_authors/book_author.model.js";
+import { BookSubject } from '../modules/book_subjects/book_subject.model.js';
 
 
 

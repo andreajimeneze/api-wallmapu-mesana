@@ -37,7 +37,6 @@ export const loginWithGoogleService = async (googleToken) => {
       expiresIn: "1d"   
     },
   );
- console.log('token: ', token);
 
   const profileComplete = isProfileComplete(user) ?? false;
   

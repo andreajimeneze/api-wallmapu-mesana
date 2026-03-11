@@ -2,10 +2,10 @@
 
 export const BookAuthor = (sequelize, DataTypes) => {
     const BookAuthor = sequelize.define('BookAuthor', {
-        idBook: {
+        bookId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            field: 'id_book',
+            field: 'book_id',
             allowNull: false,
             references:
             {
@@ -13,10 +13,10 @@ export const BookAuthor = (sequelize, DataTypes) => {
                 key: 'id_book'
             }
         },
-        idAuthor: {
+        authorId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            field: 'id_author',
+            field: 'author_id',
             allowNull: false,
             references: {
                 model: 'wm_authors',
@@ -26,7 +26,8 @@ export const BookAuthor = (sequelize, DataTypes) => {
     }, {
         tableName: 'wm_book_author',
         timestamps: true,
-        created_at: 'created_at'
+        createdAt: 'created_at',
+        updatedAt: false
     })
     return BookAuthor;
 }

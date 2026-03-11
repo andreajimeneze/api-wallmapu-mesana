@@ -8,20 +8,12 @@ import {
   CopyModel,
   CopyStatusModel,
   sequelize,
-  BookAuthorModel,
-  BookSubjectModel,
 } from "../../config/dbSequelize.js";
 import { bookResponseDTO, createBookDTO, updateBookDTO } from "./book.dto.js";
 import { Op } from "sequelize";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
-import {
-  createAuthorService,
-  getAuthorByNameService,
-} from "../authors/author.service.js";
-import {
-  getSubjectByNameService,
-  createSubjectService,
-} from "../subjects/subject.service.js";
+import { createBookSubjectsService } from "../book_subjects/book_subject.service.js";
+import { createBookAuthorService } from "../book_authors/book_author.service.js";
 
 export const getBooksPaginationAndSearchService = async ({
   page,
@@ -30,8 +22,6 @@ export const getBooksPaginationAndSearchService = async ({
 }) => {
   limit = Number.isInteger(Number(limit)) ? Number(limit) : 10;
   page = Number.isInteger(Number(page)) ? Number(page) : 1;
-
-  console.log("página en service", page);
 
   const DEFAULT_LIMIT = 10;
   const MAX_LIMIT = 100;
@@ -241,56 +231,24 @@ export const createBookService = async (bookData) => {
       {
         title: bookDto.title,
         summary: bookDto.summary,
-        genreId: bookDto.genreId,
+        genreId: bookDto.genre_id,
       },
       { transaction },
     );
 
-    const authorIds = [];
+    await createBookSubjectsService(book.idBook, bookDto.subjects, {
+      transaction,
+    });
 
-    for (const authorName of bookDto.authors) {
-      let author = await getAuthorByNameService(authorName, { transaction });
-
-      if (!author) {
-        author = await createAuthorService(
-          { name: authorName },
-          { transaction },
-        );
-      }
-
-      authorIds.push(author.idAuthor);
-    }
-
-    const bookAuthors = authorIds.map((authorId) => ({
-      bookId: book.idBook,
-      authorId: authorId,
-    }));
-
-    const subjectIds = [];
-    for (const subjectName of bookDto.subjects) {
-      let subject = await getSubjectByNameService(subjectName, { transaction });
-
-      if (!subject) {
-        subject = await createSubjectService(
-          { name: subjectName },
-          { transaction },
-        );
-      }
-
-      subjectIds.push(subject.idSubject);
-    }
-
-    const bookSubjects = subjectIds.map((subjectId) => ({
-      bookId: book.idBook,
-      subjectId: subjectId,
-    }));
-
-    await BookAuthorModel.bulkCreate(bookAuthors, { transaction });
-    await BookSubjectModel.bulkCreate(bookSubjects, { transaction });
+    await createBookAuthorService(book.idBook, bookDto.authors, {
+      transaction,
+    });
 
     await transaction.commit();
 
-    return book;
+    const bookComplete = await getBookByIdService(book.idBook);
+
+    return bookResponseDTO(bookComplete);
   } catch (error) {
     await transaction.rollback();
     throw error;
@@ -304,7 +262,16 @@ export const updateBookService = async (id, dto) => {
     throw new Error("Libro no existe");
   }
 
-  const bookDto = updateBookDTO(dto);
+  const transaction = await sequelize.transaction();
 
-  return await searchedBook.update(bookDto);
+  try {
+    const bookDto = updateBookDTO(dto);
+
+    const updatedBook = await searchedBook.update(bookDto);
+    await transaction.commit();
+    return updatedBook;
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };

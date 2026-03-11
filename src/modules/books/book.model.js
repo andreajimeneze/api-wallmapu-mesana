@@ -20,7 +20,7 @@ export const Book = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       genreId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         field: "genre_id",
       },
     },
@@ -47,15 +47,15 @@ export const Book = (sequelize, DataTypes) => {
 
     Book.belongsToMany(models.AuthorModel, {
       through: models.BookAuthorModel,
-      foreignKey: 'idBook',
-      otherKey: 'idAuthor',
+      foreignKey: 'bookId',
+      otherKey: 'authorId',
       as: 'authors'
     });
 
     Book.belongsToMany(models.SubjectModel, {
       through: models.BookSubjectModel,
-      foreignKey: 'idBook',
-      otherKey: 'idSubject',
+      foreignKey: 'bookId',
+      otherKey: 'subjectId',
       as: 'subjects'
     })
   };

@@ -2,6 +2,7 @@ export const bookResponseDTO = (res) => ({
   id_book: res.idBook,
   title: res.title,
   summary: res.summary,
+  genre_id: res.genreId,
   created_at: res.created_at,
   updated_at: res.updated_at,
 
@@ -57,7 +58,7 @@ export const bookResponseDTO = (res) => ({
 
 export const createBookDTO = ({title,
   summary,
-  genreId,
+  genre_id,
   authors = [],
   subjects = []}) => {
     if(!title?.trim() || !genre_id || authors.length === 0 || subjects.length === 0 ) {
@@ -67,17 +68,19 @@ export const createBookDTO = ({title,
     return {
       title: title.trim(),
       summary,
-      genreId: Number(genreId),
+      genre_id: Number(genre_id),
       authors,
       subjects
     }
 };
 
-export const updateBookDTO = ({ title, summary, genreId}) => {
+export const updateBookDTO = ({ idBook, title, summary, genreId, authors = [], subjects = []}) => {
   return {
     idBook: Number(idBook),
     title: title.trim(),
     summary,
-    genreId: Number(genreId)
+    genreId: Number(genreId),
+    authors,
+    subjects
   }
 }

@@ -11,7 +11,6 @@ export const deleteNewsAndImages = async (id) => {
 
   try {
     const news = await getNewsByIdService(id, { transaction });
-    console.log('noticia encontrada en orquestador', news)
 
     if (!news) {
       await transaction.rollback();

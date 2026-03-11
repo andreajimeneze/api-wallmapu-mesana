@@ -26,8 +26,8 @@ export const Author = (sequelize, DataTypes) => {
   Author.associate = (models) => {
     Author.belongsToMany(models.BookModel, {
       through: models.BookAuthorModel,
-      foreignKey: 'idAuthor',
-      otherKey: 'idBook',
+      foreignKey: 'authorId',
+      otherKey: 'bookId',
       as: 'books'
     })
   };

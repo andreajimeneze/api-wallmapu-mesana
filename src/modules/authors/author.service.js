@@ -1,4 +1,3 @@
-import { Op } from "sequelize";
 import { AuthorModel } from "../../config/dbSequelize.js";
 import { createAuthorDTO } from "./author.dto.js";
 
@@ -10,16 +9,14 @@ export const getAuthorByIdService = async (id) => {
   return await AuthorModel.findByPk(id);
 };
 
-export const getAuthorByNameService = async (name) => {
-  return await AuthorModel.findOne({
-    where: { name: { [Op.iLike]: name.trim() } },
-  });
-};
+// export const getAuthorByNameService = async (name) => {
+//   return await AuthorModel.findOne({
+//     where: { name: { [Op.iLike]: name.trim() } },
+//   });
+// };
 
-export const createAuthorService = async ({ name }) => {
-  const existingAuthor = await AuthorModel.findOne({
-    where: { name: { [Op.iLike]: name.trim() } },
-  });
+export const createAuthorService = async ({ id }, options = {}) => {
+  const existingAuthor = await AuthorModel.findByPk(id);
 
   if (existingAuthor) {
     throw new Error("Autor ya existe");
@@ -29,5 +26,20 @@ export const createAuthorService = async ({ name }) => {
     name,
   });
 
-  return AuthorModel.create(dto);
+  return AuthorModel.create(dto, options);
 };
+
+// export const getOrCreateAuthorService = async (authorNames, options = {}) => {
+//   const authorIds = [];
+
+//   for (const name of authorNames) {
+//     let author = await getAuthorByNameService(name, options);
+
+//     if (!author) {
+//       author = await createAuthorService({ name }, options);
+//     }
+
+//     authorIds.push(author.idAuthor);
+//   }
+//   return authorIds;
+// };
