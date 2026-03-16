@@ -3,13 +3,18 @@ import {
   getBooksPaginationAndSearchService,
   getBookByIdService,
   createBookService,
+  updateBookService,
+  deleteBookService,
 } from "./book.service.js";
 import {
   notFoundResponse,
   succesGetResponse,
   internalServerResponse,
+  successCreateResponse,
+  successUpdateResponse,
+  successDeleteResponse,
+  conflictResponse,
 } from "../../shared/apiResponse.js";
-import { getAllGenresService } from "../genres/genre.service.js";
 
 export const getBooksPaginationAndSearch = async (req, res) => {
   try {
@@ -76,14 +81,12 @@ export const createBook = async (req, res) => {
   try {
     const book = await createBookService(bookData);
 
-    return res
-      .status(200)
-      .json(
-        succesGetResponse({
-          message: "Libro creado exitosamente",
-          result: bookResponseDTO(book),
-        }),
-      );
+    return res.status(201).json(
+      successCreateResponse({
+        message: "Libro creado exitosamente",
+        result: bookResponseDTO(book),
+      }),
+    );
   } catch (error) {
     console.error(error);
     return res
@@ -91,5 +94,78 @@ export const createBook = async (req, res) => {
       .json(
         internalServerResponse({ message: "Error al intentar crear el libro" }),
       );
+  }
+};
+
+export const updateBook = async (req, res) => {
+  const id = req.params.id;
+  const { title, summary } = req.body;
+  const genre_id = req.body.genre_id;
+  const authors = req.body.authors;
+  const subjects = req.body.subjects;
+
+  const genreId = parseInt(genre_id);
+  const idBook = parseInt(id);
+  const bookData = {
+    idBook,
+    title,
+    summary,
+    genreId,
+    authors,
+    subjects,
+  };
+
+  console.log("bookData en controller de book:", bookData);
+
+  try {
+    const updatedBook = await updateBookService(idBook, bookData);
+    console.log("libro editado en book controller: ", updatedBook);
+
+    return res.status(202).json(
+      successUpdateResponse({
+        message: "Libro modificado exitosamente",
+        result: bookResponseDTO(updatedBook),
+      }),
+    );
+  } catch (error) {
+    console.error(error);
+    if(error.message === 'No puede dejar un libro sin autores') {
+      return res.status(409).json(conflictResponse({message: error.message}));
+    }
+
+    if(error.message === 'No puede dejar un libro sin descriptores') {
+      return res.status(409).json(conflictResponse({message: error.message}));
+    }
+    return res.status(500).json(
+      internalServerResponse({
+        message: "Error al intentar modificar el libro",
+      }),
+    );
+  }
+};
+
+export const deleteBook = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await deleteBookService(id);
+    return res
+      .status(202)
+      .json(successDeleteResponse({ message: "Libro eliminado exitosamente" }));
+  } catch (error) {
+    if (
+      error.message ===
+      "El libro tiene autores, descriptores o ediciones asociadas"
+    ) {
+      return res.status(409).json(conflictResponse({ message: error.message }));
+    }
+
+    console.error(error);
+
+    return res.status(500).json(
+      internalServerResponse({
+        message: "Error al intentar eliminar el libro",
+      }),
+    );
   }
 };

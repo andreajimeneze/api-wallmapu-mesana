@@ -8,12 +8,20 @@ import {
   CopyModel,
   CopyStatusModel,
   sequelize,
+  BookAuthorModel,
+  BookSubjectModel,
 } from "../../config/dbSequelize.js";
 import { bookResponseDTO, createBookDTO, updateBookDTO } from "./book.dto.js";
 import { Op } from "sequelize";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
-import { createBookSubjectsService } from "../book_subjects/book_subject.service.js";
-import { createBookAuthorService } from "../book_authors/book_author.service.js";
+import {
+  createBookSubjectsService,
+  deleteBookSubjectService
+} from "../book_subjects/book_subject.service.js";
+import {
+  createBookAuthorService,
+  deleteBookAuthorService
+} from "../book_authors/book_author.service.js";
 
 export const getBooksPaginationAndSearchService = async ({
   page,
@@ -255,7 +263,7 @@ export const createBookService = async (bookData) => {
   }
 };
 
-export const updateBookService = async (id, dto) => {
+export const updateBookService = async (id, bookData) => {
   const searchedBook = await BookModel.findByPk(id);
 
   if (!searchedBook) {
@@ -265,13 +273,59 @@ export const updateBookService = async (id, dto) => {
   const transaction = await sequelize.transaction();
 
   try {
-    const bookDto = updateBookDTO(dto);
+    const bookDto = updateBookDTO(bookData);
 
-    const updatedBook = await searchedBook.update(bookDto);
+    if(!bookDto.authors || bookDto.authors.length === 0) {
+      throw new Error('No puede dejar un libro sin autores');
+    }
+
+    if(!bookDto.subjects || bookDto.subjects.length === 0) {
+       throw new Error('No puede dejar un libro sin descriptores');
+    }
+
+    const updatedBook = await searchedBook.update(bookDto, { transaction });
+    
+    await deleteBookAuthorService(id, { transaction });
+
+    await createBookAuthorService(id, bookDto.authors, { transaction });
+
+    await deleteBookSubjectService(id, { transaction });    
+
+    await createBookSubjectsService(id, bookDto.subjects, { transaction });
+
     await transaction.commit();
     return updatedBook;
   } catch (error) {
     await transaction.rollback();
+    throw error;
+  }
+};
+
+export const deleteBookService = async (id) => {
+  try {
+    const bookToDelete = await getBookByIdService(id);
+
+    const authorsExists = await BookAuthorModel.findOne({
+      where: { bookId: id },
+    });
+
+    const subjectsExists = await BookSubjectModel.findOne({
+      where: { bookId: id },
+    });
+
+    const editionsExists = await EditionModel.findOne({
+      where: { bookId: id },
+    });
+
+    if (authorsExists || subjectsExists || editionsExists) {
+      throw new Error(
+        "El libro tiene autores, descriptores o ediciones asociadas",
+      );
+    }
+
+    await bookToDelete.destroy(id);
+    return true;
+  } catch (error) {
     throw error;
   }
 };

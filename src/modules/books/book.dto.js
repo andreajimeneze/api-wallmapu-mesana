@@ -79,8 +79,8 @@ export const updateBookDTO = ({ idBook, title, summary, genreId, authors = [], s
     idBook: Number(idBook),
     title: title.trim(),
     summary,
-    genreId: Number(genreId),
-    authors,
-    subjects
+    genre_id: genreId ? Number(genreId) : undefined,
+    authors: authors.map(author => Number(author)),
+    subjects: subjects.map(subject => Number(subject))
   }
 }
