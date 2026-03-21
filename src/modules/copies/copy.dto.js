@@ -40,3 +40,24 @@ export const copyResponseDTO = (res) => ({
       }
     : null
 });
+
+export const createCopyDTO = ({barcode, signatureTopography, copyNumber, editionId, statusId}) => {
+  return {
+    barcode: barcode.trim(),
+    signatureTopography: signatureTopography.trim(),
+    copyNumber: copyNumber.trim(),
+    editionId: Number(editionId),
+    statusId: Number(statusId)
+  }
+};
+
+export const updateCopyDTO = (copy) => {
+  return {
+    id_copy: Number(copy.idCopy),
+    barcode: copy.barcode,
+    signatureTopography: copy.signatureTopography,
+    copy_number: copy.copyNumber,
+    edition_id: Number(copy.editionId),
+    status_id: Number(copy.statusId)
+  }
+}

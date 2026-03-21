@@ -6,6 +6,7 @@ import {
   EditorialModel,
   GenreModel,
 } from "../../config/dbSequelize.js";
+import { createCopyDTO } from "./copy.dto.js";
 
 export const getAllCopiesService = async () => {
   return await CopyModel.findAll({
@@ -56,3 +57,9 @@ export const getCopyByIdService = async (id) => {
     ],
   });
 };
+
+export const createCopyService = async (dto) => {
+  const copyDto = createCopyDTO(dto);
+
+  return await CopyModel.create(copyDto);
+} 

@@ -115,12 +115,9 @@ export const updateBook = async (req, res) => {
     subjects,
   };
 
-  console.log("bookData en controller de book:", bookData);
-
   try {
     const updatedBook = await updateBookService(idBook, bookData);
-    console.log("libro editado en book controller: ", updatedBook);
-
+ 
     return res.status(202).json(
       successUpdateResponse({
         message: "Libro modificado exitosamente",

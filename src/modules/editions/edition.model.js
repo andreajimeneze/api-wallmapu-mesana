@@ -10,6 +10,9 @@ export const Edition = (sequelize, DataTypes) => {
         autoIncrement: true,
         field: "id_edition",
       },
+      edition: {
+        type: DataTypes.STRING
+      },
       isbn: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -56,7 +59,7 @@ export const Edition = (sequelize, DataTypes) => {
     Edition.belongsTo(models.BookModel, {
       foreignKey: 'bookId',
       targetKey: 'idBook',
-      as: 'books'
+      as: 'book'
     })
     Edition.belongsTo(models.EditorialModel, {
       foreignKey: 'editorialId',

@@ -6,7 +6,7 @@ import { deleteBookAuthorService } from "./book_author.service.js";
 
 export const deleteBookAuthor = async (req, res) => {
   const { idBook, idAuthor } = req.params;
- console.log('PARAMS BOOK-AUTHOR CONTROLLER: ', req.params)
+
   try {
     await deleteBookAuthorService(idBook, idAuthor);
 

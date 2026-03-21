@@ -34,6 +34,7 @@ export const bookResponseDTO = (res) => ({
         publication_year: editions.publicationYear,
         pages: editions.pages,
         cover_image: editions.coverImage,
+        created_at: editions.createdAt,
         editorial: editions.editorial
           ? {
               id_editorial: editions.editorial.idEditorial,
@@ -69,8 +70,8 @@ export const createBookDTO = ({title,
       title: title.trim(),
       summary,
       genre_id: Number(genre_id),
-      authors,
-      subjects
+      authors: authors.map(author => Number(author.id_author)),
+      subjects: subjects.map(subject => Number(subject.id_subject))
     }
 };
 
@@ -80,7 +81,7 @@ export const updateBookDTO = ({ idBook, title, summary, genreId, authors = [], s
     title: title.trim(),
     summary,
     genre_id: genreId ? Number(genreId) : undefined,
-    authors: authors.map(author => Number(author)),
-    subjects: subjects.map(subject => Number(subject))
+    authors: authors.map(author => Number(author.id_author)),
+    subjects: subjects.map(subject => Number(subject.id_subject))
   }
 }

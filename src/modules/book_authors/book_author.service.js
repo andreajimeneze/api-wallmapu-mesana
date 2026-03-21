@@ -18,7 +18,7 @@ export const createBookAuthorService = async (
 };
 
 export const deleteBookAuthorService = async (idBook, transaction = null) => {
-  console.log('ID BOOK BOOK-AUTHOR SERVICE: ', idBook)
+
   try {
     await BookAuthorModel.destroy(
       {

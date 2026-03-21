@@ -8,6 +8,7 @@ import {
   deleteNews,
   createNewsWithImages
 } from './news.controller.js';
+import { jwtMiddleware, checkRole } from '../auth/auth.middleware.js';
 
 const router = express.Router();
 
@@ -16,17 +17,17 @@ router.get('/', getNewsPaginationAndSearch);
 
 router.get('/:idNews', getNewsById);
 
-router.post('/', createNews);
+router.post('/', jwtMiddleware, checkRole(['Admin']), createNews);
 
 router.post(
   '/images',
-  upload.array('files', 3),
+  upload.array('files', 3), jwtMiddleware, checkRole(['Admin']),
   createNewsWithImages
 );
 
-router.put('/:id', updateNews);
+router.put('/:id', jwtMiddleware, checkRole(['Admin']), updateNews);
 
-router.delete('/:id', deleteNews);
+router.delete('/:id', jwtMiddleware, checkRole(['Admin']), deleteNews);
 
 
 export default router;

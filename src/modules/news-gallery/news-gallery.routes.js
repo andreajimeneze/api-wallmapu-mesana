@@ -7,6 +7,7 @@ import {
   deleteGalleryByNewsId
 } from "./news-gallery.controller.js";
 import { upload } from "../../services/images/multer.js";
+import { jwtMiddleware, checkRole } from "../auth/auth.middleware.js";
 
 const router = express.Router();
 
@@ -16,12 +17,12 @@ router.get("/:id", getImageByIdGallery);
 
 router.post(
   "/news/:id",
-  upload.array("files", 3),
+  upload.array("files", 3), jwtMiddleware, checkRole(['Admin']),
   createGalleryByNewsId,
 );
 
-router.delete('/:id', deleteImageByIdGallery);
+router.delete('/:id', jwtMiddleware, checkRole(['Admin']), deleteImageByIdGallery);
 
-router.delete('/news/:id', deleteGalleryByNewsId);
+router.delete('/news/:id', jwtMiddleware, checkRole(['Admin']), deleteGalleryByNewsId);
 
 export default router;

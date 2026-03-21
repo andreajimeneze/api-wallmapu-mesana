@@ -10,3 +10,15 @@ export const paginationResponseDTO =
       result
     };
   };
+
+export const bookPaginationRequestDTO = ({ page, pages, items, search, id_author, id_editorial, id_genre}) => {
+  return {
+    page, 
+    pages, 
+    items, 
+    search, 
+    id_author, 
+    id_editorial, 
+    id_genre
+  };
+};

@@ -21,7 +21,7 @@ export const getAllAuthors = async (req, res) => {
           notFoundResponse({ message: "No hay autores cargados actualmente" }),
         );
     }
-
+    
     return res.status(200).json(
       succesGetResponse({
         message: "Autores cargados exitosamente",
