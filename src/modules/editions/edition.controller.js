@@ -106,9 +106,11 @@ export const getEditionById = async (req, res) => {
 
 export const getEditionByBookId = async (req, res) => {
   const { idBook } = req.params;
-
+  const { idEdition } = req.params;
   try {
-    const editionByBook = getEditionByBookIdService(idBook);
+    const editionByBook = getEditionByBookIdService(idBook, idEdition);
+
+    console.log('edición por libro edition controller: ', editionByBook);
 
     if (!editionByBook) {
       return res

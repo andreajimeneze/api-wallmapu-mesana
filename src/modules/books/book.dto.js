@@ -28,29 +28,30 @@ export const bookResponseDTO = (res) => ({
     : [],
 
   editions: res.editions
-    ? res.editions.map((editions) => ({
-        id_editions: editions.ideditions,
-        isbn: editions.isbn,
-        publication_year: editions.publicationYear,
-        pages: editions.pages,
-        cover_image: editions.coverImage,
-        created_at: editions.createdAt,
-        editorial: editions.editorial
+    ? res.editions.map((edition) => ({
+        id_edition: edition.idEdition,
+        edition: edition.edition,
+        isbn: edition.isbn,
+        publication_year: edition.publicationYear,
+        pages: edition.pages,
+        cover_image: edition.coverImage,
+        created_at: edition.createdAt,
+        editorial: edition.editorial
           ? {
-              id_editorial: editions.editorial.idEditorial,
-              name: editions.editorial.name,
+              id_editorial: edition.editorial.idEditorial,
+              name: edition.editorial.name,
             }
           : null,
-          copies: editions.copies
-          ? editions.copies.map((copies) => ({
-            id_copies: copies.idcopies,
-            barcode: copies.barcode,
-            signature_topography: copies.signatureTopography,
-            copies_number: copies.copiesNumber,
-            status: copies.status
+          copies: edition.copies
+          ? edition.copies.map((copy) => ({
+            id_copy: copy.idCopy,
+            barcode: copy.barcode,
+            signature_topography: copy.signatureTopography,
+            copies_number: copy.copiesNumber,
+            status: copy.status
             ? {
-              id_status: copies.status.idStatus,
-              name: copies.status.name
+              id_status: copy.status.idStatus,
+              name: copy.status.name
             } : null
           })) : []
       }))

@@ -188,6 +188,7 @@ export const getBookByIdService = (id) => {
         as: "editions",
         attributes: [
           "idEdition",
+          'edition',
           "isbn",
           "publicationYear",
           "pages",

@@ -7,9 +7,9 @@ router.get('/', getAllEditions);
 
 router.get('/pagination', getEditionPagination);
 
-router.get('/:id', getEditionByBookId);
+router.get('/:id', getEditionById);
 
-//router.get('/book/:idBook/edition/:idEdition', getEditionByBookId);
+router.get('/book/:idBook/edition/:idEdition', getEditionByBookId);
 
 router.post('/', jwtMiddleware, checkRole(['Admin']), createEdition);
 

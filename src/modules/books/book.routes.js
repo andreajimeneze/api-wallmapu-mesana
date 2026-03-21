@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', jwtMiddleware, checkRole(['Admin', 'Lector']), getBooksPaginationAndSearch);
 
-router.get('/:id', jwtMiddleware, checkRole(['Admin', 'Lector']), getBookById);
+router.get('/:id', getBookById);
 
 router.post('/', jwtMiddleware, checkRole(['Admin']), createBook);
 

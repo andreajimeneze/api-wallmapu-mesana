@@ -167,9 +167,11 @@ export const getEditionByIdService = async (id) => {
   });
 };
 
-export const getEditionByBookIdService = async (idBook) => {
+export const getEditionByBookIdService = async (idBook, idEdition) => {
   return EditionModel.findOne({
-    where: { bookId: idBook },
+    where: { bookId: idBook,
+      idEdition
+     },
   });
 };
 

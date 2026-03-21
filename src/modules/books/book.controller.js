@@ -53,7 +53,7 @@ export const getBookById = async (req, res) => {
   const { id } = req.params;
   try {
     const searchedBook = await getBookByIdService(id);
-
+    console.log('datos del libro encontrado por id en book controller: ', bookResponseDTO(searchedBook));
     if (!searchedBook) {
       return res
         .status(404)
