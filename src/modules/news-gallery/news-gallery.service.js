@@ -1,7 +1,7 @@
 import {
   deleteImageCloud,
   extractPublicId,
-  uploadImageCloud,
+  uploadImageCloud169,
 } from "../../services/images/cloudinary.service.js";
 import { NewsGalleryModel, NewsModel } from "../../config/dbSequelize.js";
 import { generateFileName } from "../../services/images/generateFileName.js";
@@ -33,10 +33,10 @@ export const createGalleryByNewsIdService = async (
 
   const uploadResults = await Promise.all(
     files.map((file, index) =>
-      uploadImageCloud(
+      uploadImageCloud169(
         file.buffer,
         path,
-        generateFileName(newsId, path) + "_" + index
+        generateFileName(path) + "_" + index
       )
     )
   );

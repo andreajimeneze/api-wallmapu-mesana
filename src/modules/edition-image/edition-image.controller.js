@@ -1,0 +1,30 @@
+import {
+  internalServerResponse,
+  successCreateResponse,
+} from "../../shared/apiResponse.js";
+import { createCoverImageService } from "./edition_image.service.js";
+
+export const createCoverImage = async (req, res) => {
+  try {
+    if(!req.file) {
+        return res.status(404).json({message: 'No se envió ninguna imagen'});
+    }
+    const coverImage = await createCoverImageService(req.file);
+
+    return res
+      .status(201)
+      .json(
+        successCreateResponse({
+          message: "Portada creada exitosamente",
+          result: coverImage,
+        }),
+      );
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json(
+        internalServerResponse({ message: "Error al intentar crear portada" }),
+      );
+  }
+};

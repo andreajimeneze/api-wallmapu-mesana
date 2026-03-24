@@ -2,7 +2,6 @@
 -- DROP TABLES (orden correcto por dependencias)
 -- =========================
 
-DROP TABLE IF EXISTS wm_loans;
 DROP TABLE IF EXISTS wm_news_gallery;
 DROP TABLE IF EXISTS wm_book_subject;
 DROP TABLE IF EXISTS wm_book_author;
@@ -140,9 +139,9 @@ CREATE TABLE wm_editions (
 
 CREATE TABLE wm_copies (
   id_copy INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  barcode VARCHAR(100) UNIQUE NOT NULL,
+  barcode UUID DEFAULT gen_random_uuid() UNIQUE,
   signature_topography VARCHAR(100) NOT NULL,
-  copy_number VARCHAR(20) NOT NULL,
+  copy_number INTEGER NOT NULL,
   edition_id INTEGER NOT NULL REFERENCES wm_editions(id_edition),
   status_id INTEGER NOT NULL REFERENCES wm_copy_status(id_status),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -184,21 +183,65 @@ CREATE TABLE wm_users (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE wm_loans (
-  id_loan INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  user_id UUID REFERENCES wm_users(id_user),
-  book_id INTEGER REFERENCES wm_books(id_book),
-  loan_date DATE,
-  return_date DATE,
-  loan_status_id INTEGER REFERENCES wm_loan_status(id_loan_status),
-  return_status_id INTEGER REFERENCES wm_return_status(id_return_status),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE wm_news_gallery (
   id_news_gallery INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   alt VARCHAR(100) NOT NULL,
   url VARCHAR(256) NOT NULL,
   news_id INTEGER NOT NULL REFERENCES wm_news(id_news)
+);
+
+CREATE TABLE IF NOT EXISTS wm_reservation_status (
+  id_status INTEGER PRIMARY KEY,
+  status VARCHAR(30) UNIQUE NOT NULL
+);
+
+INSERT INTO wm_reservation_status (id_status, status) VALUES
+(1, 'Pendiente de retiro'),
+(2, 'Completada'),
+(3, 'Cancelada'),
+(4, 'Vencida');
+ 
+CREATE TABLE IF NOT EXISTS wm_reservations (
+  id_reservation INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  reservation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  expiration_date TIMESTAMP NOT NULL,
+  user_id UUID NOT NULL,
+  book_id INTEGER NOT NULL,
+  reservation_status_id INTEGER NOT NULL DEFAULT 1,
+  CONSTRAINT fk_res_user FOREIGN KEY (user_id) REFERENCES wm_users(id_user),
+  CONSTRAINT fk_res_book FOREIGN KEY (book_id) REFERENCES wm_books(id_book),
+  CONSTRAINT fk_res_status FOREIGN KEY (reservation_status_id) REFERENCES wm_reservation_status(id_status)
+);
+ 
+CREATE TABLE IF NOT EXISTS wm_loans (
+  id_loan INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  loan_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  due_date DATE NOT NULL,
+  return_date DATE,
+  status VARCHAR(30) DEFAULT 'active',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  copy_id INTEGER NOT NULL,
+  user_id UUID NOT NULL,
+  CONSTRAINT loans_copies_fk FOREIGN KEY (copy_id) REFERENCES wm_copies(id_copy),
+  CONSTRAINT loans_users_fk FOREIGN KEY (user_id) REFERENCES wm_users(id_user)
+);
+
+CREATE TABLE IF NOT EXISTS wm_loan_policies (
+  id_policy INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR(100),
+  max_books INTEGER,
+  max_days INTEGER,
+  fine_per_day DECIMAL(10,2),
+  reservation_days INTEGER DEFAULT 3
+);
+ 
+CREATE TABLE IF NOT EXISTS wm_notifications (
+  id_notification INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  title VARCHAR(100) NOT NULL,
+  message TEXT NOT NULL,
+  is_read BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  user_id UUID NOT NULL,
+  CONSTRAINT fk_notif_user FOREIGN KEY (user_id) REFERENCES wm_users(id_user)
 );

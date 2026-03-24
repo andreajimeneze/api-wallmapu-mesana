@@ -1,6 +1,6 @@
 import cloudinary from "../../config/cloudinary.js";
 
-export const uploadImageCloud = (buffer, folder, publicId) => {
+export const uploadImageCloud169 = (buffer, folder, publicId) => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
@@ -12,6 +12,38 @@ export const uploadImageCloud = (buffer, folder, publicId) => {
           {
             width: 1280,
             height: 720,
+            crop: "fill",
+            gravity: "center",
+            quality: "auto",
+            fetch_format: "auto",
+          },
+        ],
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve({
+          url: result.secure_url,
+          publicId: result.public_id,
+        });
+      },
+    );
+
+    stream.end(buffer);
+  });
+};
+
+export const uploadImageCloud710 = (buffer, folder, publicId) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        public_id: publicId,
+        resource_type: "image",
+        format: "webp",
+        transformation: [
+          {
+            width: 700,
+            height: 1000,
             crop: "fill",
             gravity: "center",
             quality: "auto",

@@ -1,4 +1,4 @@
-export const copyResponseDTO = (res) => ({
+export const copyJoinResponseDTO = (res) => ({
   id_copy: res.idCopy,
   barcode: res.barcode,
   signature_topography: res.signatureTopography,
@@ -18,10 +18,11 @@ export const copyResponseDTO = (res) => ({
               title: res.editions.book.title,
               summary: res.editions.book.summary,
               genre: res.editions.book.genre
-              ? {
-                id_genre: res.editions.book.genre.idGenre,
-                name: res.editions.book.genre.name
-              } : null,
+                ? {
+                    id_genre: res.editions.book.genre.idGenre,
+                    name: res.editions.book.genre.name,
+                  }
+                : null,
             }
           : null,
         editorial: res.editions.editorial
@@ -38,26 +39,42 @@ export const copyResponseDTO = (res) => ({
         id_copy_status: res.status.idStatus,
         name: res.status.name,
       }
-    : null
+    : null,
 });
 
-export const createCopyDTO = ({barcode, signatureTopography, copyNumber, editionId, statusId}) => {
+export const copyResponseDTO = (res) => ({
+  id_copy: res.idCopy,
+  barcode: res.barcode,
+  signature_topography: res.signatureTopography,
+  copy_number: res.copyNumber,
+  created_at: res.created_at,
+  updated_at: res.updated_at,
+  edition_id: res.editionId,
+  status_id: res.statusId
+});
+
+export const createCopyDTO = ({
+  signature_topography,
+  copy_number,
+  edition_id,
+  status_id,
+}) => {
   return {
-    barcode: barcode.trim(),
-    signatureTopography: signatureTopography.trim(),
-    copyNumber: copyNumber.trim(),
-    editionId: Number(editionId),
-    statusId: Number(statusId)
-  }
+    signatureTopography: signature_topography,
+    copyNumber: Number(copy_number),
+    editionId: Number(edition_id),
+    statusId: Number(status_id),
+  };
 };
 
-export const updateCopyDTO = (copy) => {
+export const updateCopyDTO = ({ signature_topography,
+  copy_number,
+  edition_id,
+  status_id}) => {
   return {
-    id_copy: Number(copy.idCopy),
-    barcode: copy.barcode,
-    signatureTopography: copy.signatureTopography,
-    copy_number: copy.copyNumber,
-    edition_id: Number(copy.editionId),
-    status_id: Number(copy.statusId)
-  }
-}
+    signature_topography: signature_topography,
+    copy_number: Number(copy_number),
+    edition_id: Number(edition_id),
+    status_id: Number(status_id),
+  };
+};

@@ -3,17 +3,19 @@ import {
   notFoundResponse,
   succesGetResponse,
   successCreateResponse,
+  successDeleteResponse,
 } from "../../shared/apiResponse.js";
+import { updateCopyDTO } from "../copies/copy.dto.js";
 import { editionResponseDTO } from "./edition.dto.js";
 import {
   createEditionService,
+  deleteEditionWithImageService,
   getAllEditionPaginationService,
   getAllEditionsService,
   getEditionByBookIdService,
   getEditionByIdService,
   updateEditionService,
 } from "./edition.service.js";
-
 
 export const getEditionPagination = async (req, res) => {
   try {
@@ -36,7 +38,6 @@ export const getEditionPagination = async (req, res) => {
 
     const { result } = serviceResponse;
 
-   
     return res.status(200).json(
       succesGetResponse({
         message: "Ediciones obtenidas exitosamente",
@@ -47,7 +48,9 @@ export const getEditionPagination = async (req, res) => {
     console.error(error);
     return res
       .status(500)
-      .json(internalServerResponse({ message: "Error al obtener las ediciones" }));
+      .json(
+        internalServerResponse({ message: "Error al obtener las ediciones" }),
+      );
   }
 };
 
@@ -110,8 +113,6 @@ export const getEditionByBookId = async (req, res) => {
   try {
     const editionByBook = getEditionByBookIdService(idBook, idEdition);
 
-    console.log('edición por libro edition controller: ', editionByBook);
-
     if (!editionByBook) {
       return res
         .status(404)
@@ -134,7 +135,7 @@ export const getEditionByBookId = async (req, res) => {
 };
 
 export const createEdition = async (req, res) => {
-  const { dtoEdition } = req.body;
+  const dtoEdition  = req.body;
 
   try {
     const createdEdition = await createEditionService(dtoEdition);
@@ -146,6 +147,7 @@ export const createEdition = async (req, res) => {
       }),
     );
   } catch (error) {
+    console.error(error);
     return res
       .status(500)
       .json(
@@ -156,21 +158,20 @@ export const createEdition = async (req, res) => {
 
 export const updateEdition = async (req, res) => {
   const { id } = req.params;
-  const { dto } = req.body;
-
-  const updateDto = dto;
-
+  const { editionData } = req.body;
+  const dto = updateCopyDTO(editionData);
+  console.log('edición data: ', dto);
+  console.log('edición data req body', req.body);
+  
   try {
-    const editedEdition = await updateEditionService(updateDto);
+    const editedEdition = await updateEditionService(id, dto);
 
-    return res
-      .status(202)
-      .json(
-        editionResponseDTO({
-          message: "Edición modificada con éxito",
-          result: editionResponseDTO(updateEdition),
-        }),
-      );
+    return res.status(202).json(
+      editionResponseDTO({
+        message: "Edición modificada con éxito",
+        result: editionResponseDTO(editedEdition),
+      }),
+    );
   } catch (error) {
     console.error(error);
     return res.status(500).json(
@@ -178,5 +179,26 @@ export const updateEdition = async (req, res) => {
         message: "Error al intentar modificar la edición",
       }),
     );
+  }
+};
+
+export const deleteWithImageEdition = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await deleteEditionWithImageService(id);
+
+    return res
+      .status(202)
+      .json(successDeleteResponse({ message: "Edición eliminada con éxito" }));
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json(
+        internalServerResponse({
+          message: "Error al intentar eliminar la edición",
+        }),
+      );
   }
 };

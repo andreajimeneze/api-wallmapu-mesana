@@ -1,5 +1,5 @@
-export const generateFileName = (newsId, path) => {
+export const generateFileName = (path) => {
     const base36Time = Date.now().toString(36);
 
-    return  `${newsId}-${path}-${base36Time}`
+    return  `${path}-${base36Time}`
 }

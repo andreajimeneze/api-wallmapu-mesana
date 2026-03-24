@@ -6,7 +6,7 @@ import {
   EditorialModel,
   GenreModel,
 } from "../../config/dbSequelize.js";
-import { createCopyDTO } from "./copy.dto.js";
+import { createCopyDTO, updateCopyDTO } from "./copy.dto.js";
 
 export const getAllCopiesService = async () => {
   return await CopyModel.findAll({
@@ -17,7 +17,7 @@ export const getAllCopiesService = async () => {
         include: [
           {
             model: BookModel,
-            as: "books",
+            as: "book",
             include: [
               {
                 model: GenreModel,
@@ -34,6 +34,10 @@ export const getAllCopiesService = async () => {
 };
 
 export const getCopyByIdService = async (id) => {
+  return await CopyModel.findByPk(id);
+}
+
+export const getCopyByIdJoinService = async (id) => {
   return await CopyModel.findByPk(id, {
     include: [
       {
@@ -58,8 +62,19 @@ export const getCopyByIdService = async (id) => {
   });
 };
 
-export const createCopyService = async (dto) => {
-  const copyDto = createCopyDTO(dto);
+export const createCopyService = async (copyData) => {
+  const copyDto = createCopyDTO(copyData);
 
   return await CopyModel.create(copyDto);
-} 
+};
+
+export const updateCopyService = async (id, copyData) => {
+  const searchedCopy = await CopyModel.findByPk(id);
+
+  if(!searchedCopy || searchedCopy === 0) {
+    throw new Error('No existe copia');
+  };
+
+  const copyDto = updateCopyDTO(copyData);
+  return await searchedCopy.update(copyDto);
+}

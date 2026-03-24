@@ -48,31 +48,32 @@ export const editionResponseDTO = (res) => ({
 
 export const createEditionDTO = ({
   isbn,
-  publicationYear,
+  publication_year,
   pages,
-  coverImage,
-  bookId,
-  editorialId,
+  cover_image,
+  book_id,
+  editorial_id,
 }) => {
   return {
     isbn,
-    publicationYear: publicationYear.trim(),
-    pages: pages.trim(),
-    coverImage,
-    bookId: Number(bookId),
-    editorialId: Number(editorialId),
+    publicationYear: publication_year,
+    pages: pages,
+    coverImage: typeof cover_image === 'object' && cover_image !== null ?
+    cover_image.url : cover_image,
+    bookId: Number(book_id),
+    editorialId: Number(editorial_id),
   };
 };
 
-export const updateEditionDTO = (edition) => {
+export const updateEditionDTO = ({edition, isbn, publication_year, pages, cover_image, book_id, editorial_id}) => {
   return {
-    id_edition: Number(edition.idEdition),
-    isbn: edition.isbn,
-    publication_year: edition.publicationYear,
-    pages: edition.pages,
-    cover_image: edition.coverImage,
-    book_id: Number(edition.bookId),
-    editorial_id: Number(edition.editorialId),
+    edition: edition.trim(),
+    isbn: isbn.trim(),
+    publicationYear: publication_year.trim(),
+    pages: pages,
+    coverImage: cover_image.trim(),
+    bookId: Number(book_id),
+    editorialId: Number(editorial_id),
   };
 };
 

@@ -231,7 +231,9 @@ export const createBookService = async (bookData) => {
   });
 
   if (exists) {
-    throw new Error("Ya existe un libro con ese título");
+    const error = new Error("Ya existe un libro con ese título");
+    error.status = 409;
+    throw error;
   }
 
   const transaction = await sequelize.transaction();

@@ -53,7 +53,7 @@ export const getBookById = async (req, res) => {
   const { id } = req.params;
   try {
     const searchedBook = await getBookByIdService(id);
-    console.log('datos del libro encontrado por id en book controller: ', bookResponseDTO(searchedBook));
+
     if (!searchedBook) {
       return res
         .status(404)
@@ -89,11 +89,9 @@ export const createBook = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json(
-        internalServerResponse({ message: "Error al intentar crear el libro" }),
-      );
+    return res.status(error.status || 500).json({
+      message: error.message || "Error al intentar crear el libro",
+    });
   }
 };
 
@@ -117,7 +115,7 @@ export const updateBook = async (req, res) => {
 
   try {
     const updatedBook = await updateBookService(idBook, bookData);
- 
+
     return res.status(202).json(
       successUpdateResponse({
         message: "Libro modificado exitosamente",
@@ -126,12 +124,12 @@ export const updateBook = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    if(error.message === 'No puede dejar un libro sin autores') {
-      return res.status(409).json(conflictResponse({message: error.message}));
+    if (error.message === "No puede dejar un libro sin autores") {
+      return res.status(409).json(conflictResponse({ message: error.message }));
     }
 
-    if(error.message === 'No puede dejar un libro sin descriptores') {
-      return res.status(409).json(conflictResponse({message: error.message}));
+    if (error.message === "No puede dejar un libro sin descriptores") {
+      return res.status(409).json(conflictResponse({ message: error.message }));
     }
     return res.status(500).json(
       internalServerResponse({

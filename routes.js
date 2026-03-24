@@ -19,6 +19,7 @@ import edition_routes from './src/modules/editions/edition.routes.js';
 import book_routes from './src/modules/books/book.routes.js';
 import book_author_routes from './src/modules/book_authors/book_author.routes.js';
 import book_subject_routes from './src/modules/book_subjects/book_subject.routes.js';
+import edition_image_routes from './src/modules/edition-image/edition_image.routes.js';
 
 const router = Router();
 
@@ -35,11 +36,12 @@ router.use('/api/editorial', editorial_routes);
 router.use('/api/author', authors_routes);
 router.use('/api/subject', subjects_routes);
 router.use('/api/stat', stat_routes);
-router.use('/api/copy', copy_routes);
+router.use('/api/edition-copy', copy_routes);
 router.use('/api/edition-copy-status', status_copy_routes);
 router.use('/api/genre', genre_routes);
 router.use('/api/edition', edition_routes);
 router.use('/api/books', book_routes);
 router.use('/api/book-author', book_author_routes);
 router.use('/api/book-subject', book_subject_routes);
+router.use('/api/edition-image', edition_image_routes);
 export default router;
