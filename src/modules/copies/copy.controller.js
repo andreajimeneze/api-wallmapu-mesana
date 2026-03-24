@@ -9,9 +9,9 @@ import { copyResponseDTO, copyJoinResponseDTO } from "./copy.dto.js";
 import {
   getAllCopiesService,
   getCopyByIdService,
-  getCopyByIdJoinService,
   createCopyService,
   updateCopyService,
+  deleteCopyService,
 } from "./copy.service.js";
 
 export const getAllCopies = async (req, res) => {
@@ -41,32 +41,32 @@ export const getAllCopies = async (req, res) => {
   }
 };
 
-export const getCopyByIdJoin = async (req, res) => {
-  const { id } = req.params;
+// export const getCopyByIdJoin = async (req, res) => {
+//   const { id } = req.params;
 
-  try {
-    const searchedCopy = await getCopyByIdJoinService(id);
+//   try {
+//     const searchedCopy = await getCopyByIdJoinService(id);
 
-    if (!searchedCopy) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "Copia no encontrada" }));
-    }
+//     if (!searchedCopy) {
+//       return res
+//         .status(404)
+//         .json(notFoundResponse({ message: "Copia no encontrada" }));
+//     }
 
-    return res.status(200).json(
-      succesGetResponse({
-        message: "Copia obtenida exitosamente",
-        result: copyJoinResponseDTO(searchedCopy),
-      }),
-    );
-  } catch (error) {
-    return res.status(500).json(
-      internalServerResponse({
-        message: "Error al intentar obtener la copia",
-      }),
-    );
-  }
-};
+//     return res.status(200).json(
+//       succesGetResponse({
+//         message: "Copia obtenida exitosamente",
+//         result: copyJoinResponseDTO(searchedCopy),
+//       }),
+//     );
+//   } catch (error) {
+//     return res.status(500).json(
+//       internalServerResponse({
+//         message: "Error al intentar obtener la copia",
+//       }),
+//     );
+//   }
+// };
 
 export const getCopyById = async (req, res) => {
   const { id } = req.params;
@@ -96,7 +96,7 @@ export const getCopyById = async (req, res) => {
 };
 
 export const createCopy = async (req, res) => {
-  const { copyData } = req.body;
+  //const { copyData } = req.body;
   console.log("req body en copy controller: ", req.body);
   try {
     const createdCopy = await createCopyService(req.body);
@@ -134,5 +134,22 @@ export const updateCopy = async (req, res) => {
         message: "Error al intentar actualizar una copia",
       }),
     );
+  }
+};
+
+export const deleteCopy = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await deleteCopyService(id);
+
+    return res.status(202).json(
+      successDeleteResponse({ message: "Copia eliminada exitosamente" }),
+    );
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(error.status || 500)
+      .json({ message: error.message || "Error al intentar eliminar copia" });
   }
 };

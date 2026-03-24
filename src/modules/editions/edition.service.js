@@ -1,4 +1,5 @@
 import {
+  sequelize,
   AuthorModel,
   BookModel,
   CopyModel,
@@ -11,7 +12,10 @@ import { createEditionDTO, updateEditionDTO } from "./edition.dto.js";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
 import { editionResponseDTO } from "./edition.dto.js";
 import { Op } from "sequelize";
-import { getCopyByIdService } from "../copies/copy.service.js";
+import {
+  deleteImageCloud,
+  extractPublicId,
+} from "../../services/images/cloudinary.service.js";
 
 export const getAllEditionPaginationService = async ({
   page,
@@ -100,10 +104,10 @@ export const getAllEditionPaginationService = async ({
           },
           {
             model: SubjectModel,
-            as: 'subjects',
-            attributes: ['idSubject', 'name'],
-            throught: { attributes: []}
-          }
+            as: "subjects",
+            attributes: ["idSubject", "name"],
+            throught: { attributes: [] },
+          },
         ],
       },
       {
@@ -159,25 +163,38 @@ export const getEditionByIdService = async (id) => {
       {
         model: BookModel,
         as: "book",
+        include: [
+          {
+            model: AuthorModel,
+            as: "authors",
+          },
+          {
+            model: SubjectModel,
+            as: "subjects",
+          },
+        ],
       },
       {
         model: EditorialModel,
         as: "editorial",
       },
+      {
+        model: CopyModel,
+        as: 'copies'
+      }
     ],
   });
 };
 
 export const getEditionByBookIdService = async (idBook) => {
   return EditionModel.findOne({
-    where: { bookId: idBook
-     },
+    where: { bookId: idBook },
   });
 };
 
 export const createEditionService = async (editionData) => {
   const dtoEdition = createEditionDTO(editionData);
-  console.log('dto edition service: ', dtoEdition);
+  console.log("dto edition service: ", dtoEdition);
 
   return await EditionModel.create(dtoEdition);
 };
@@ -189,28 +206,42 @@ export const updateEditionService = async (id, editionData) => {
     throw new Error("Edición no existe");
   }
 
-  const editionDto = createEditionDTO(editionData);
+  const editionDto = updateEditionDTO(editionData);
   return await EditionModel.update(editionDto);
 };
 
-export const deleteEditionWithImageService = async(id) => {
-  const edition = await getCopyByIdService(id); 
-  const copyEdition = await CopyModel.findOne({where: { editionId: id} });
-  
-  console.log('Copias de las ediciones', copyEdition);
- 
+export const deleteEditionWithImageService = async (id) => {
+  const transaction = await sequelize.transaction();
 
-  if(!edition) {
-    return new Error('Edición no existe');
-  };
+  try {
+    const edition = await EditionModel.findByPk(id);
+    const copyEdition = await CopyModel.count({ where: { editionId: id } });
+    console.log("edición en edition service: ", edition);
+    if (!edition) {
+      const error = new Error("Edición no existe");
+      error.status = 404;
+      throw error;
+    }
 
-  if(copyEdition) {
-    return new Error(`Edición ${edition.edition} tiene copias asociadas`);
+    if (copyEdition > 0) {
+      const error = new Error(
+        `Edición ${edition.edition} tiene copias asociadas. Debe eliminar las copias primero`);
+      error.status = 409;
+      throw error;
+    }
+
+    const coverImage = edition.coverImage;
+
+    await edition.destroy();
+    await transaction.commit();
+
+    if (coverImage && coverImage.trim() !== "") {
+      const publicId = extractPublicId(coverImage);
+      await deleteImageCloud(publicId);
+    }
+    return true;
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-
-  //const url = edition.coverImage;
-
-  return await edition.destroy();
-
-  //return url;
-}
+};

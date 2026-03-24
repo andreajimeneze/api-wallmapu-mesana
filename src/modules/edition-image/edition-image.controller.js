@@ -28,3 +28,7 @@ export const createCoverImage = async (req, res) => {
       );
   }
 };
+
+export const deleteCoverImage = async (req, res) => {
+  
+}

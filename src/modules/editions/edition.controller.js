@@ -85,7 +85,7 @@ export const getEditionById = async (req, res) => {
 
   try {
     const searchedEdition = await getEditionByIdService(id);
-
+console.log('edición encontrada edition controller: ', searchedEdition);
     if (!searchedEdition) {
       return res
         .status(404)
@@ -135,7 +135,7 @@ export const getEditionByBookId = async (req, res) => {
 };
 
 export const createEdition = async (req, res) => {
-  const dtoEdition  = req.body;
+  const dtoEdition = req.body;
 
   try {
     const createdEdition = await createEditionService(dtoEdition);
@@ -160,9 +160,9 @@ export const updateEdition = async (req, res) => {
   const { id } = req.params;
   const { editionData } = req.body;
   const dto = updateCopyDTO(editionData);
-  console.log('edición data: ', dto);
-  console.log('edición data req body', req.body);
-  
+  console.log("edición data: ", dto);
+  console.log("edición data req body", req.body);
+
   try {
     const editedEdition = await updateEditionService(id, dto);
 
@@ -184,6 +184,7 @@ export const updateEdition = async (req, res) => {
 
 export const deleteWithImageEdition = async (req, res) => {
   const { id } = req.params;
+  console.log('id edition controller: ', id);
 
   try {
     await deleteEditionWithImageService(id);
@@ -193,12 +194,8 @@ export const deleteWithImageEdition = async (req, res) => {
       .json(successDeleteResponse({ message: "Edición eliminada con éxito" }));
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json(
-        internalServerResponse({
-          message: "Error al intentar eliminar la edición",
-        }),
-      );
+    return res.status(error.status || 500).json({
+      message: error.message || "Error al intentar crear el libro",
+    });
   }
 };

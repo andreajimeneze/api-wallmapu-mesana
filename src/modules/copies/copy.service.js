@@ -37,30 +37,30 @@ export const getCopyByIdService = async (id) => {
   return await CopyModel.findByPk(id);
 }
 
-export const getCopyByIdJoinService = async (id) => {
-  return await CopyModel.findByPk(id, {
-    include: [
-      {
-        model: EditionModel,
-        as: "editions",
-        include: [
-          {
-            model: BookModel,
-            as: "books",
-            include: [
-              {
-                model: GenreModel,
-                as: "genre",
-              },
-            ],
-          },
-          { model: EditorialModel, as: "editorial" },
-        ],
-      },
-      { model: CopyStatusModel, as: "status" },
-    ],
-  });
-};
+// export const getCopyByIdJoinService = async (id) => {
+//   return await CopyModel.findByPk(id, {
+//     include: [
+//       {
+//         model: EditionModel,
+//         as: "editions",
+//         include: [
+//           {
+//             model: BookModel,
+//             as: "books",
+//             include: [
+//               {
+//                 model: GenreModel,
+//                 as: "genre",
+//               },
+//             ],
+//           },
+//           { model: EditorialModel, as: "editorial" },
+//         ],
+//       },
+//       { model: CopyStatusModel, as: "status" },
+//     ],
+//   });
+// };
 
 export const createCopyService = async (copyData) => {
   const copyDto = createCopyDTO(copyData);
@@ -77,4 +77,17 @@ export const updateCopyService = async (id, copyData) => {
 
   const copyDto = updateCopyDTO(copyData);
   return await searchedCopy.update(copyDto);
+};
+
+export const deleteCopyService = async (id) => {
+  const selectedCopy = await CopyModel.findByPk(id);
+
+  if(!selectedCopy) {
+    const error = new Error('Copia no existe');
+    error.status = 404;
+    throw error;
+  };
+
+  await selectedCopy.destroy();
+  return true;
 }

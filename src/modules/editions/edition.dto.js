@@ -47,6 +47,7 @@ export const editionResponseDTO = (res) => ({
 });
 
 export const createEditionDTO = ({
+  edition,
   isbn,
   publication_year,
   pages,
@@ -55,6 +56,7 @@ export const createEditionDTO = ({
   editorial_id,
 }) => {
   return {
+    edition,
     isbn,
     publicationYear: publication_year,
     pages: pages,
@@ -77,4 +79,6 @@ export const updateEditionDTO = ({edition, isbn, publication_year, pages, cover_
   };
 };
 
-export const editionDetailDTO = (detail) => ({});
+export const editionDetailDTO = (detail) => ({
+
+});
