@@ -2,23 +2,24 @@ import {
   internalServerResponse,
   successCreateResponse,
 } from "../../shared/apiResponse.js";
-import { createCoverImageService } from "./edition_image.service.js";
+import {
+  createCoverImageService,
+  deleteCoverImageService,
+} from "./edition_image.service.js";
 
 export const createCoverImage = async (req, res) => {
   try {
-    if(!req.file) {
-        return res.status(404).json({message: 'No se envió ninguna imagen'});
+    if (!req.file) {
+      return res.status(404).json({ message: "No se envió ninguna imagen" });
     }
     const coverImage = await createCoverImageService(req.file);
 
-    return res
-      .status(201)
-      .json(
-        successCreateResponse({
-          message: "Portada creada exitosamente",
-          result: coverImage,
-        }),
-      );
+    return res.status(201).json(
+      successCreateResponse({
+        message: "Portada creada exitosamente",
+        result: coverImage,
+      }),
+    );
   } catch (error) {
     console.error(error);
     return res
@@ -30,5 +31,18 @@ export const createCoverImage = async (req, res) => {
 };
 
 export const deleteCoverImage = async (req, res) => {
-  
-}
+  const { id } = req.params;
+
+  try {
+    const deleted = await deleteCoverImageService(id);
+
+    return res.status(202).json({ message: "Portada eliminada correctamente", result: deleted });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(error.status || 500)
+      .json({
+        message: error.message || "Error al intentar eliminar la portada",
+      });
+  }
+};

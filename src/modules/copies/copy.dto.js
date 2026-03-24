@@ -67,14 +67,15 @@ export const createCopyDTO = ({
   };
 };
 
-export const updateCopyDTO = ({ signature_topography,
+export const updateCopyDTO = ({ 
+  signatureTopography,
   copy_number,
   edition_id,
   status_id}) => {
   return {
-    signature_topography: signature_topography,
-    copy_number: Number(copy_number),
-    edition_id: Number(edition_id),
-    status_id: Number(status_id),
+    signatureTopography: signatureTopography,
+    copyNumber: Number(copy_number),
+    editionId: Number(edition_id),
+    statusId: Number(status_id),
   };
 };

@@ -2,6 +2,7 @@ import { ProvinceModel, RegionModel } from "../../config/dbSequelize.js";
 
 export const getAllProvincesService = async () => {
     return await ProvinceModel.findAll({
+        order: [['province', 'ASC']],
         include: [{
             model: RegionModel,
             as: 'region',

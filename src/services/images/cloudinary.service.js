@@ -70,7 +70,7 @@ export const deleteImageCloud = async (publicId) => {
   });
 
   if (result.result !== "ok") {
-    throw new Error("No se pudo eliminar la imagen en Cludinary");
+    throw new Error("No se pudo eliminar la imagen en Cloudinary");
   }
 
   return result;

@@ -2,7 +2,9 @@ import { AuthorModel } from "../../config/dbSequelize.js";
 import { createAuthorDTO } from "./author.dto.js";
 
 export const getAllAuthorsService = async () => {
-  return await AuthorModel.findAll();
+  return await AuthorModel.findAll({
+    order: [['name', 'ASC']]
+  });
 };
 
 export const getAuthorByIdService = async (id) => {

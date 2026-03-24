@@ -3,7 +3,9 @@ import { SubjectModel } from "../../config/dbSequelize.js";
 import { createSubjectDTO } from "./subject.dto.js";
 
 export const getAllSubjectsService = async () => {
-  return await SubjectModel.findAll();
+  return await SubjectModel.findAll({
+    order: [['name', 'ASC']]
+  });
 };
 
 export const getSubjectByIdService = async (id) => {

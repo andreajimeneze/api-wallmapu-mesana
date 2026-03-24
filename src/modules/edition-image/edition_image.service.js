@@ -1,6 +1,10 @@
-import { deleteImageCloud, extractPublicId, uploadImageCloud710 } from "../../services/images/cloudinary.service.js";
+import {
+  deleteImageCloud,
+  extractPublicId,
+  uploadImageCloud710,
+} from "../../services/images/cloudinary.service.js";
 import { generateFileName } from "../../services/images/generateFileName.js";
-import { getEditionByIdService } from "../editions/edition.service.js";
+import { EditionModel } from "../../config/dbSequelize.js";
 
 const path = "edition";
 
@@ -12,24 +16,27 @@ export const createCoverImageService = async (file) => {
 };
 
 export const deleteCoverImageService = async (id) => {
-  const selectedEdition = await getEditionByIdService(id);
+  const selectedEdition = await EditionModel.findByPk(id);
 
-  if(!selectedEdition) {
-    const error = new Error('Edición no existe');
+  if (!selectedEdition) {
+    const error = new Error("Edición no existe");
     error.status = 404;
     throw error;
-  };
+  }
 
-  if(!selectedEdition.coverImage || selectedEdition.coverImage === '') {
-    const errorImage = new Error('La edición no tiene imagen de portada');
-    errorImage.status = 404;
-    throw errorImage;
+  if (!selectedEdition.coverImage || selectedEdition.coverImage === "") {
+    const error = new Error("La edición no tiene imagen de portada");
+    error.status = 404;
+    throw error;
   }
 
   const publicId = extractPublicId(selectedEdition.coverImage);
 
-  await deleteImageCloud(publicId);
+  if (publicId) {
+    await deleteImageCloud(publicId);
+  };
+
+  await selectedEdition.update({ coverImage: null });
 
   return true;
-}
-
+};

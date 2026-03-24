@@ -71,11 +71,11 @@ export const updateEditionDTO = ({edition, isbn, publication_year, pages, cover_
   return {
     edition: edition.trim(),
     isbn: isbn.trim(),
-    publicationYear: publication_year.trim(),
-    pages: pages,
-    coverImage: cover_image.trim(),
-    bookId: Number(book_id),
-    editorialId: Number(editorial_id),
+    publicationYear: publication_year,
+    pages: Number(pages),
+    coverImage: typeof cover_image === 'object' && cover_image !== null ?
+    book_id: Number(book_id),
+    editorial_id: Number(editorial_id),
   };
 };
 

@@ -10,6 +10,7 @@ import { createCopyDTO, updateCopyDTO } from "./copy.dto.js";
 
 export const getAllCopiesService = async () => {
   return await CopyModel.findAll({
+    order: [['idCopy', 'ASC']],
     include: [
       {
         model: EditionModel,
@@ -76,6 +77,7 @@ export const updateCopyService = async (id, copyData) => {
   };
 
   const copyDto = updateCopyDTO(copyData);
+  console.log('update copy dto copy service: ', copyDto);
   return await searchedCopy.update(copyDto);
 };
 

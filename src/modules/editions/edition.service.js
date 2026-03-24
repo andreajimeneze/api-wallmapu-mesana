@@ -82,7 +82,7 @@ export const getAllEditionPaginationService = async ({
     offset,
     distinct: true,
     order: [
-      ["created_at", "DESC"],
+      ["updated_at", "DESC"],
       [{ model: BookModel, as: "book" }, "idBook", "ASC"],
     ],
     include: [
@@ -180,8 +180,8 @@ export const getEditionByIdService = async (id) => {
       },
       {
         model: CopyModel,
-        as: 'copies'
-      }
+        as: "copies",
+      },
     ],
   });
 };
@@ -206,8 +206,31 @@ export const updateEditionService = async (id, editionData) => {
     throw new Error("Edición no existe");
   }
 
+  const oldImage = searchedEdition.coverImage;
+
+  const { removeImage = false, isNewImage = false } = editionData;
+
   const editionDto = updateEditionDTO(editionData);
-  return await EditionModel.update(editionDto);
+
+  if (removeImage) {
+    if (oldImage && oldImage.trim() !== "") {
+      const publicId = extractPublicId(oldImage);
+      if (publicId) {
+        await deleteImageCloud(publicId);
+      }
+    }
+    editionDto.coverImage = null;
+  }
+
+  if (isNewImage) {
+    if (oldImage && oldImage.trim() !== "") {
+      const publicId = extractPublicId(oldImage);
+      if (publicId) {
+        await deleteImageCloud(publicId);
+      };
+    };
+  };
+  return await searchedEdition.update(editionDto);
 };
 
 export const deleteEditionWithImageService = async (id) => {
@@ -225,7 +248,8 @@ export const deleteEditionWithImageService = async (id) => {
 
     if (copyEdition > 0) {
       const error = new Error(
-        `Edición ${edition.edition} tiene copias asociadas. Debe eliminar las copias primero`);
+        `Edición ${edition.edition} tiene copias asociadas. Debe eliminar las copias primero`,
+      );
       error.status = 409;
       throw error;
     }

@@ -85,7 +85,7 @@ export const getBooksPaginationAndSearchService = async ({
     offset,
     distinct: true,
     order: [
-      ["created_at", "DESC"],
+      ["updated_at", "DESC"],
       [{ model: GenreModel, as: "genre" }, "idGenre", "ASC"],
     ],
     include: [

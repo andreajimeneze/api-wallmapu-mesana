@@ -6,7 +6,7 @@ import {
   successDeleteResponse,
 } from "../../shared/apiResponse.js";
 import { updateCopyDTO } from "../copies/copy.dto.js";
-import { editionResponseDTO } from "./edition.dto.js";
+import { editionResponseDTO, updateEditionDTO } from "./edition.dto.js";
 import {
   createEditionService,
   deleteEditionWithImageService,
@@ -158,13 +158,13 @@ export const createEdition = async (req, res) => {
 
 export const updateEdition = async (req, res) => {
   const { id } = req.params;
-  const { editionData } = req.body;
-  const dto = updateCopyDTO(editionData);
-  console.log("edición data: ", dto);
+  const  editionData  = req.body;
+
+
   console.log("edición data req body", req.body);
 
   try {
-    const editedEdition = await updateEditionService(id, dto);
+    const editedEdition = await updateEditionService(id, editionData);
 
     return res.status(202).json(
       editionResponseDTO({

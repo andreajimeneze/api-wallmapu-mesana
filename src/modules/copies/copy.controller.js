@@ -126,7 +126,7 @@ export const updateCopy = async (req, res) => {
 
     return res
       .status(202)
-      .json(successUpdateResponse({ message: "Copia actualizada con éxito" }));
+      .json(successUpdateResponse({ message: "Copia actualizada con éxito", result: copyResponseDTO(updatedCopy)}));
   } catch (error) {
     console.error(error);
     return res.status(500).json(
