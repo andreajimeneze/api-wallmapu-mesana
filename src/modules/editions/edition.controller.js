@@ -19,6 +19,7 @@ import {
 
 export const getEditionPagination = async (req, res) => {
   try {
+    let { id_author, id_genre, id_editorial } = req.query;
     let page = parseInt(req.query.page ?? 1);
     let items = parseInt(req.query.items ?? 10);
 
@@ -34,6 +35,9 @@ export const getEditionPagination = async (req, res) => {
       page,
       limit: items,
       search: req.query.search ?? "",
+      id_author,
+      id_genre,
+      id_editorial
     });
 
     const { result } = serviceResponse;

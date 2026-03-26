@@ -21,7 +21,9 @@ export const createAuthorService = async ({ id }, options = {}) => {
   const existingAuthor = await AuthorModel.findByPk(id);
 
   if (existingAuthor) {
-    throw new Error("Autor ya existe");
+    const error = new Error("Autor ya existe");
+    error.status = 409;
+    throw error;
   }
 
   const dto = createAuthorDTO({

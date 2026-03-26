@@ -1,4 +1,5 @@
 import {
+  AuthorModel,
   BookModel,
   CopyModel,
   CopyStatusModel,
@@ -10,7 +11,7 @@ import { createCopyDTO, updateCopyDTO } from "./copy.dto.js";
 
 export const getAllCopiesService = async () => {
   return await CopyModel.findAll({
-    order: [['idCopy', 'ASC']],
+    order: [["idCopy", "ASC"]],
     include: [
       {
         model: EditionModel,
@@ -36,7 +37,7 @@ export const getAllCopiesService = async () => {
 
 export const getCopyByIdService = async (id) => {
   return await CopyModel.findByPk(id);
-}
+};
 
 // export const getCopyByIdJoinService = async (id) => {
 //   return await CopyModel.findByPk(id, {
@@ -64,6 +65,7 @@ export const getCopyByIdService = async (id) => {
 // };
 
 export const createCopyService = async (copyData) => {
+
   const copyDto = createCopyDTO(copyData);
 
   return await CopyModel.create(copyDto);
@@ -72,24 +74,24 @@ export const createCopyService = async (copyData) => {
 export const updateCopyService = async (id, copyData) => {
   const searchedCopy = await CopyModel.findByPk(id);
 
-  if(!searchedCopy || searchedCopy === 0) {
-    throw new Error('No existe copia');
-  };
+  if (!searchedCopy || searchedCopy === 0) {
+    throw new Error("No existe copia");
+  }
 
   const copyDto = updateCopyDTO(copyData);
-  console.log('update copy dto copy service: ', copyDto);
+  console.log("update copy dto copy service: ", copyDto);
   return await searchedCopy.update(copyDto);
 };
 
 export const deleteCopyService = async (id) => {
   const selectedCopy = await CopyModel.findByPk(id);
 
-  if(!selectedCopy) {
-    const error = new Error('Copia no existe');
+  if (!selectedCopy) {
+    const error = new Error("Copia no existe");
     error.status = 404;
     throw error;
-  };
+  }
 
   await selectedCopy.destroy();
   return true;
-}
+};

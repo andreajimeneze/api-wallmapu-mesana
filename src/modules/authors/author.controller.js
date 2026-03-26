@@ -121,7 +121,7 @@ export const createAuthor = async (req, res) => {
             }),
           );
         } else {
-          res.status(500).json(
+          res.status(error.status || 500).json(error.message ||
             internalServerResponse({
               message: error.message || "Error al crear al autor",
             }),

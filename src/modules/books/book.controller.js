@@ -90,7 +90,7 @@ export const createBook = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(error.status || 500).json({
-      message: error.message || "Error al intentar crear el libro",
+      message: error.message || "Error al intentar crear el libro"
     });
   }
 };
