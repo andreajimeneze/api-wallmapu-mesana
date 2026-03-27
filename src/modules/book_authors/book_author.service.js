@@ -9,9 +9,9 @@ export const createBookAuthorService = async (
   authors = [],
   options = {},
 ) => {
-  const bookAuthors = authors.map((authorId) => ({
-    bookId: idBook,
-    authorId: authorId,
+  const bookAuthors = authors.map((idAuthor) => ({
+    idBook,
+    idAuthor,
   }));
 
   return await BookAuthorModel.bulkCreate(bookAuthors, options);
@@ -22,7 +22,7 @@ export const deleteBookAuthorService = async (idBook, transaction = null) => {
   try {
     await BookAuthorModel.destroy(
       {
-        where: { bookId: idBook },
+        where: { idBook },
       },
       transaction,
     );

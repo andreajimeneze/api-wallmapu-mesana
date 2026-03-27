@@ -4,20 +4,20 @@ export const BookSubject = (sequelize, DataTypes) => {
   const BookSubject = sequelize.define(
     "BookSubject",
     {
-      bookId: {
+      idBook: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        field: "book_id",
+        field: "id_book",
         allowNull: false,
         references: {
           model: "wm_books",
           key: "id_book",
         },
       },
-      subjectId: {
+      idSubject: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        field: "subject_id",
+        field: "id_subject",
         allowNull: false,
         references: {
           model: "wm_subjects",

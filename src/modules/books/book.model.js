@@ -47,15 +47,15 @@ export const Book = (sequelize, DataTypes) => {
 
     Book.belongsToMany(models.AuthorModel, {
       through: models.BookAuthorModel,
-      foreignKey: 'bookId',
-      otherKey: 'authorId',
+      foreignKey: 'idBook',
+      otherKey: 'idAuthor',
       as: 'authors'
     });
 
     Book.belongsToMany(models.SubjectModel, {
       through: models.BookSubjectModel,
-      foreignKey: 'bookId',
-      otherKey: 'subjectId',
+      foreignKey: 'idBook',
+      otherKey: 'idSubject',
       as: 'subjects'
     })
   };

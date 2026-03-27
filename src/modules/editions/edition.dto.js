@@ -35,15 +35,15 @@ export const editionResponseDTO = (res) => ({
       }
     : null,
 
-  copies: res.copies
-    ? res.copies.map((copy) => ({
-        id_copy: copy.idCopy,
-        barcode: copy.barcode,
-        signature_topography: copy.signatureTopography,
-        copy_number: copy.copyNumber,
-        status_id: copy.statusId,
-      }))
-    : [],
+  // copies: res.copies
+  //   ? res.copies.map((copy) => ({
+  //       id_copy: copy.idCopy,
+  //       barcode: copy.barcode,
+  //       signature_topography: copy.signatureTopography,
+  //       copy_number: copy.copyNumber,
+  //       status_id: copy.statusId,
+  //     }))
+  //   : [],
 });
 
 export const createEditionDTO = ({

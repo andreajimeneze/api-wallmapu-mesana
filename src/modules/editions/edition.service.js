@@ -17,138 +17,6 @@ import {
   extractPublicId,
 } from "../../services/images/cloudinary.service.js";
 
-// export const getAllEditionPaginationService = async ({
-//   page,
-//   limit,
-//   search,
-// }) => {
-//   limit = Number.isInteger(Number(limit)) ? Number(limit) : 10;
-//   page = Number.isInteger(Number(page)) ? Number(page) : 1;
-
-//   const DEFAULT_LIMIT = 10;
-//   const MAX_LIMIT = 100;
-
-//   limit = Number(limit) || DEFAULT_LIMIT;
-//   page = Number(page) || 1;
-
-//   if (limit < 1) limit = DEFAULT_LIMIT;
-//   if (limit > MAX_LIMIT) limit = MAX_LIMIT;
-
-//   const include = [
-//     {
-//       model: BookModel,
-//       as: "book",
-//       attributes: ["idBook", "title"],
-//       include: [
-//         {
-//           model: GenreModel,
-//           as: "genre",
-//           attributes: ["idGenre", "name"],
-//         },
-//         {
-//           model: AuthorModel,
-//           as: "authors",
-//           attributes: ["idAuthor", "name"],
-//           through: { attributes: [] },
-//           required: false,
-//         },
-//         {
-//           model: SubjectModel,
-//           as: "subjects",
-//           attributes: ["idSubject", "name"],
-//           through: { attributes: [] },
-//           required: false,
-//         },
-//       ],
-//     },
-//     {
-//       model: EditorialModel,
-//       as: "editorial",
-//       attributes: ["idEditorial", "name"],
-//     },
-//     {
-//       model: CopyModel,
-//       as: "copies",
-//       attributes: ["idCopy", "signatureTopography", "copyNumber"],
-//     },
-//   ];
-//   const where = search
-//     ? {
-//         [Op.or]: [
-//           { isbn: { [Op.iLike]: `%${search}%` } },
-//           { "$book.title$": { [Op.iLike]: `%${search}%` } },
-//           { "$book.genre.name$": { [Op.iLike]: `%${search}%` } },
-//           { "$editorial.name$": { [Op.iLike]: `%${search}%` } },
-//           { "$book.authors.name$": { [Op.iLike]: `%${search}%` } },
-//         ],
-//       }
-//     : {};
-
-//   const items = await EditionModel.count({
-//     where,
-//     include,
-//     distinct: true,
-//     col: "id_edition",
-//   });
-
-//   if (items === 0) {
-//     return {
-//       response: "No se encontraron ediciones",
-//       result: paginationResponseDTO({
-//         page: 0,
-//         pages: 0,
-//         items: 0,
-//         next: "none",
-//         prev: "none",
-//         result: [],
-//       }),
-//     };
-//   }
-
-//   const pages = Math.ceil(items / limit);
-
-//   const haveSearch = search && search.trim() !== "";
-
-//   if (page > pages && page > 0) {
-//     page = haveSearch ? 1 : pages;
-//   } else if (page < 1) {
-//     page = 1;
-//   }
-
-//   const offset = (page - 1) * limit;
-
-//   const result = await EditionModel.findAll({
-//     where,
-//     limit,
-//     offset,
-//     distinct: true,
-//     include,
-//     subQuery: false,
-//     order: [
-//       ["updated_at", "DESC"],
-//       [{ model: BookModel, as: "book" }, "idBook", "ASC"],
-//     ],
-//   });
-
-//   return {
-//     response: "Libros obtenidos exitosamente",
-//     result: paginationResponseDTO({
-//       page,
-//       pages,
-//       items,
-//       next:
-//         page < pages
-//           ? `/edition/pagination?page=${page + 1}&limit=${limit}&search=${search}`
-//           : null,
-//       prev:
-//         page > 1
-//           ? `/edition/pagination?page=${page - 1}&limit=${limit}&search=${search}`
-//           : null,
-//       result: result.map(editionResponseDTO),
-//     }),
-//   };
-// };
-
 export const getAllEditionPaginationService = async ({
   page,
   limit,
@@ -178,7 +46,7 @@ export const getAllEditionPaginationService = async ({
     {
       model: BookModel,
       as: "book",
-      attributes: ["idBook", "title"],
+      attributes: ["idBook", "title", 'genreId'],
       required: true,
       include: [
         {
@@ -192,26 +60,15 @@ export const getAllEditionPaginationService = async ({
           attributes: ["id_author", "name"],
           required: id_author > 0,
           where: id_author > 0 ? { idAuthor: id_author } : undefined,
-        },
-        {
-          model: SubjectModel,
-          as: "subjects",
-          attributes: ["idSubject", "name"],
-          through: { attributes: [] },
-          required: false,
-        },
+        }
       ],
     },
     {
       model: EditorialModel,
       as: "editorial",
       attributes: ["idEditorial", "name"],
-    },
-    {
-      model: CopyModel,
-      as: "copies",
-      attributes: ["idCopy", "signatureTopography", "copyNumber"],
-    },
+      required: false
+    }
   ];
 
   const where = {};
@@ -220,9 +77,11 @@ export const getAllEditionPaginationService = async ({
     where[Op.or] = [
       { isbn: { [Op.iLike]: `%${search}%` } },
       { "$book.title$": { [Op.iLike]: `%${search}%` } },
-      { "$book.genre.name$": { [Op.iLike]: `%${search}%` } },
       { "$editorial.name$": { [Op.iLike]: `%${search}%` } },
       { "$book.authors.name$": { [Op.iLike]: `%${search}%` } },
+      //sequelize.literal(`EXISTS (SELECT 1 FROM wm_genres WHERE wm_genres.id_genre = "book"."genre_id" AND wm_genres.name ILIKE '%${search}%')`),
+      { "$book.genre.name$": { [Op.iLike]: `%${search}%` } },
+
     ];
   }
 
@@ -231,13 +90,14 @@ export const getAllEditionPaginationService = async ({
   };
 
   if (id_genre > 0) {
-    where["$book.genre.id_genre$"] = id_genre;
+    where["$book.genre_id$"] = id_genre;
   };
 
   const items = await EditionModel.count({
     where,
     include,
     distinct: true,
+    //subQuery: false,
     col: "id_edition",
   });
 
@@ -272,12 +132,7 @@ export const getAllEditionPaginationService = async ({
     limit,
     offset,
     include,
-    distinct: true,
-    subQuery: false,
-    order: [
-      ["updated_at", "DESC"],
-      [{ model: BookModel, as: "book" }, "idBook", "ASC"],
-    ],
+    subQuery: false
   });
 
   return {

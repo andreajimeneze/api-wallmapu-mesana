@@ -24,13 +24,15 @@ export const deleteCoverImageService = async (id) => {
     throw error;
   }
 
-  if (!selectedEdition.coverImage || selectedEdition.coverImage === "") {
+  if (!selectedEdition.coverImage || selectedEdition.coverImage === null) {
     const error = new Error("La edición no tiene imagen de portada");
     error.status = 404;
     throw error;
   }
 
   const publicId = extractPublicId(selectedEdition.coverImage);
+
+  console.log('public id: ', publicId);
 
   if (publicId) {
     await deleteImageCloud(publicId);

@@ -2,7 +2,7 @@ import { BookSubjectModel } from "../../config/dbSequelize.js";
 
 export const getBookSubjectsByIdService = async (id) => {
   return await findOne({
-    where: { bookId: id },
+    where: { idBook: id },
   });
 };
 
@@ -11,9 +11,9 @@ export const createBookSubjectsService = async (
   subjects = [],
   options = {},
 ) => {
-  const bookSubjects = subjects.map((subjectId) => ({
-    bookId: idBook,
-    subjectId: subjectId,
+  const bookSubjects = subjects.map((idSubject) => ({
+    idBook,
+    idSubject,
   }));
 
   await BookSubjectModel.bulkCreate(bookSubjects, options);
@@ -21,7 +21,7 @@ export const createBookSubjectsService = async (
 
 export const deleteBookSubjectService = async (idBook, options = {}) => {
   await BookSubjectModel.destroy({
-    where: { bookId: idBook },
+    where: { idBook },
     options,
   });
 

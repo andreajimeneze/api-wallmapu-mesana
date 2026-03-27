@@ -5,8 +5,7 @@ import {
   successCreateResponse,
   successDeleteResponse,
 } from "../../shared/apiResponse.js";
-import { updateCopyDTO } from "../copies/copy.dto.js";
-import { editionResponseDTO, updateEditionDTO } from "./edition.dto.js";
+import { editionResponseDTO } from "./edition.dto.js";
 import {
   createEditionService,
   deleteEditionWithImageService,
@@ -21,27 +20,31 @@ export const getEditionPagination = async (req, res) => {
   try {
     let { id_author, id_genre, id_editorial } = req.query;
     let page = parseInt(req.query.page ?? 1);
-    let items = parseInt(req.query.items ?? 10);
+    let limit = parseInt(req.query.limit ?? 10);
 
-    if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
+    console.log('limit', limit);
+    console.log('req query', req.query);
+
+    if (isNaN(page) || page < 1 || isNaN(limit) || limit < 1) {
       return res.status(400).json(
         badRequestResponse({
-          message: "El número de página o items debe ser mayor a 0",
+          message: "El número de página o limit debe ser mayor a 0",
         }),
       );
     }
 
     const serviceResponse = await getAllEditionPaginationService({
       page,
-      limit: items,
+      limit,
       search: req.query.search ?? "",
       id_author,
       id_genre,
       id_editorial
     });
 
+    console.log('service response en controller: ', serviceResponse);
     const { result } = serviceResponse;
-
+console.log('ediciones disponibles: ', result);
     return res.status(200).json(
       succesGetResponse({
         message: "Ediciones obtenidas exitosamente",
