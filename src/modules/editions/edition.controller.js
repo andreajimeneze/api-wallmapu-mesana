@@ -4,6 +4,7 @@ import {
   succesGetResponse,
   successCreateResponse,
   successDeleteResponse,
+  successUpdateResponse,
 } from "../../shared/apiResponse.js";
 import { editionResponseDTO } from "./edition.dto.js";
 import {
@@ -22,9 +23,6 @@ export const getEditionPagination = async (req, res) => {
     let page = parseInt(req.query.page ?? 1);
     let limit = parseInt(req.query.limit ?? 10);
 
-    console.log('limit', limit);
-    console.log('req query', req.query);
-
     if (isNaN(page) || page < 1 || isNaN(limit) || limit < 1) {
       return res.status(400).json(
         badRequestResponse({
@@ -39,12 +37,11 @@ export const getEditionPagination = async (req, res) => {
       search: req.query.search ?? "",
       id_author,
       id_genre,
-      id_editorial
+      id_editorial,
     });
 
-    console.log('service response en controller: ', serviceResponse);
     const { result } = serviceResponse;
-console.log('ediciones disponibles: ', result);
+
     return res.status(200).json(
       succesGetResponse({
         message: "Ediciones obtenidas exitosamente",
@@ -92,7 +89,7 @@ export const getEditionById = async (req, res) => {
 
   try {
     const searchedEdition = await getEditionByIdService(id);
-console.log('edición encontrada edition controller: ', searchedEdition);
+    console.log("edición encontrada edition controller: ", searchedEdition);
     if (!searchedEdition) {
       return res
         .status(404)
@@ -128,7 +125,7 @@ export const getEditionByBookId = async (req, res) => {
 
     return res.status(200).json(
       succesGetResponse({
-        message: "Edición encontrada exitosamente",
+        message: "Edición obtenida exitosamente",
         result: editionResponseDTO(editionByBook),
       }),
     );
@@ -142,10 +139,13 @@ export const getEditionByBookId = async (req, res) => {
 };
 
 export const createEdition = async (req, res) => {
-  const dtoEdition = req.body;
+  const dataEdition = req.body;
+
+  console.log('data en creation edition controller: ', dataEdition);
 
   try {
-    const createdEdition = await createEditionService(dtoEdition);
+    const createdEdition = await createEditionService(dataEdition);
+    console.log('create edition en controller', createdEdition);
 
     return res.status(201).json(
       successCreateResponse({
@@ -165,8 +165,7 @@ export const createEdition = async (req, res) => {
 
 export const updateEdition = async (req, res) => {
   const { id } = req.params;
-  const  editionData  = req.body;
-
+  const editionData = req.body;
 
   console.log("edición data req body", req.body);
 
@@ -174,9 +173,9 @@ export const updateEdition = async (req, res) => {
     const editedEdition = await updateEditionService(id, editionData);
 
     return res.status(202).json(
-      editionResponseDTO({
+      successUpdateResponse({
         message: "Edición modificada con éxito",
-        result: editionResponseDTO(editedEdition),
+        result: editedEdition,
       }),
     );
   } catch (error) {
@@ -191,7 +190,7 @@ export const updateEdition = async (req, res) => {
 
 export const deleteWithImageEdition = async (req, res) => {
   const { id } = req.params;
-  console.log('id edition controller: ', id);
+  console.log("id edition controller: ", id);
 
   try {
     await deleteEditionWithImageService(id);

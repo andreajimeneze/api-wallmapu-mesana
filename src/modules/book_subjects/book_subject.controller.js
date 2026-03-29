@@ -2,10 +2,10 @@ import { deleteBookSubjectService } from "./book_subject.service.js";
 import { successDeleteResponse, internalServerResponse } from '../../shared/apiResponse.js';
 
 export const deleteBookSubject = async (req, res) => {
-  const { bookId, subjectId } = req.params;
+  const { idBook, idSubject } = req.params;
 
   try {
-    await deleteBookSubjectService(bookId, subjectId);
+    await deleteBookSubjectService(idBook, idSubject);
 
     return res.status(202).json(
       successDeleteResponse({

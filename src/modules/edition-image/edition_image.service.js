@@ -9,10 +9,10 @@ import { EditionModel } from "../../config/dbSequelize.js";
 const path = "edition";
 
 export const createCoverImageService = async (file) => {
-  const url = generateFileName(path);
-  const coverImage = await uploadImageCloud710(file.buffer, path, url);
-
-  return coverImage;
+  const filename = generateFileName(path);
+  const {url, public_id} = await uploadImageCloud710(file.buffer, path, filename);
+console.log('cover image en create', url);
+  return url;
 };
 
 export const deleteCoverImageService = async (id) => {
@@ -32,13 +32,14 @@ export const deleteCoverImageService = async (id) => {
 
   const publicId = extractPublicId(selectedEdition.coverImage);
 
-  console.log('public id: ', publicId);
+  console.log("public id: ", publicId);
 
   if (publicId) {
     await deleteImageCloud(publicId);
-  };
+  }
 
   await selectedEdition.update({ coverImage: null });
+
 
   return true;
 };

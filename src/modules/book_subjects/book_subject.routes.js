@@ -4,6 +4,6 @@ import { jwtMiddleware, checkRole } from '../auth/auth.middleware.js';
 
 const router = express.Router();
 
-router.delete('/:bookId/:subjectId', jwtMiddleware, checkRole(['Admin']), deleteBookSubject);
+router.delete('/:idBook/:idSubject', jwtMiddleware, checkRole(['Admin']), deleteBookSubject);
 
 export default router;

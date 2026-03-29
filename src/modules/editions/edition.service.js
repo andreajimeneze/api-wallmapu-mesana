@@ -7,6 +7,7 @@ import {
   EditorialModel,
   GenreModel,
   SubjectModel,
+  CopyStatusModel,
 } from "../../config/dbSequelize.js";
 import { createEditionDTO, updateEditionDTO } from "./edition.dto.js";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
@@ -25,7 +26,6 @@ export const getAllEditionPaginationService = async ({
   id_genre,
   id_editorial,
 }) => {
-
   id_author = Number(id_author) || 0;
   id_genre = Number(id_genre) || 0;
   id_editorial = Number(id_editorial) || 0;
@@ -46,7 +46,7 @@ export const getAllEditionPaginationService = async ({
     {
       model: BookModel,
       as: "book",
-      attributes: ["idBook", "title", 'genreId'],
+      attributes: ["idBook", "title", "genreId"],
       required: true,
       include: [
         {
@@ -60,15 +60,15 @@ export const getAllEditionPaginationService = async ({
           attributes: ["id_author", "name"],
           required: id_author > 0,
           where: id_author > 0 ? { idAuthor: id_author } : undefined,
-        }
+        },
       ],
     },
     {
       model: EditorialModel,
       as: "editorial",
       attributes: ["idEditorial", "name"],
-      required: false
-    }
+      required: false,
+    },
   ];
 
   const where = {};
@@ -79,25 +79,22 @@ export const getAllEditionPaginationService = async ({
       { "$book.title$": { [Op.iLike]: `%${search}%` } },
       { "$editorial.name$": { [Op.iLike]: `%${search}%` } },
       { "$book.authors.name$": { [Op.iLike]: `%${search}%` } },
-      //sequelize.literal(`EXISTS (SELECT 1 FROM wm_genres WHERE wm_genres.id_genre = "book"."genre_id" AND wm_genres.name ILIKE '%${search}%')`),
       { "$book.genre.name$": { [Op.iLike]: `%${search}%` } },
-
     ];
   }
 
   if (id_editorial > 0) {
     where.editorialId = id_editorial;
-  };
+  }
 
   if (id_genre > 0) {
     where["$book.genre_id$"] = id_genre;
-  };
+  }
 
   const items = await EditionModel.count({
     where,
     include,
     distinct: true,
-    //subQuery: false,
     col: "id_edition",
   });
 
@@ -132,7 +129,7 @@ export const getAllEditionPaginationService = async ({
     limit,
     offset,
     include,
-    subQuery: false
+    subQuery: false,
   });
 
   return {
@@ -170,21 +167,11 @@ export const getAllEditionsService = async () => {
 };
 
 export const getEditionByIdService = async (id) => {
-  return await EditionModel.findByPk(id, {
+  const edition = await EditionModel.findByPk(id, {
     include: [
       {
         model: BookModel,
-        as: "book",
-        include: [
-          {
-            model: AuthorModel,
-            as: "authors",
-          },
-          {
-            model: SubjectModel,
-            as: "subjects",
-          },
-        ],
+        as: "book"
       },
       {
         model: EditorialModel,
@@ -193,15 +180,29 @@ export const getEditionByIdService = async (id) => {
       {
         model: CopyModel,
         as: "copies",
+        include: [
+          {
+            model: CopyStatusModel,
+            as: 'status'
+          }
+        ]
       },
     ],
   });
+
+  console.log(
+    "obtener edición por id en servicio con respuesta DTO: ",
+    editionResponseDTO(edition),
+  );
+  return edition;
 };
 
 export const getEditionByBookIdService = async (idBook) => {
-  return EditionModel.findOne({
+  const edition = await EditionModel.findOne({
     where: { bookId: idBook },
   });
+
+  return editionResponseDTO(edition);
 };
 
 export const createEditionService = async (editionData) => {
@@ -212,37 +213,45 @@ export const createEditionService = async (editionData) => {
 };
 
 export const updateEditionService = async (id, editionData) => {
-  const searchedEdition = await EditionModel.findByPk(id);
+  const transaction = await sequelize.transaction();
 
-  if (!searchedEdition) {
-    throw new Error("Edición no existe");
-  }
+  try {
+    const searchedEdition = await EditionModel.findByPk(id, { transaction });
 
-  const oldImage = searchedEdition.coverImage;
-
-  const { removeImage = false, isNewImage = false } = editionData;
-
-  const editionDto = updateEditionDTO(editionData);
-
-  if (removeImage) {
-    if (oldImage && oldImage.trim() !== "") {
-      const publicId = extractPublicId(oldImage);
-      if (publicId) {
-        await deleteImageCloud(publicId);
-      }
+    if (!searchedEdition) {
+      await transaction.rollback();
+      return null;
     }
-    editionDto.coverImage = null;
-  }
 
-  if (isNewImage) {
-    if (oldImage && oldImage.trim() !== "") {
-      const publicId = extractPublicId(oldImage);
-      if (publicId) {
-        await deleteImageCloud(publicId);
-      }
-    }
+    console.log("edición data sin updatedEditionDTO en service: ", editionData);
+
+    const editionDto = updateEditionDTO(editionData);
+
+    console.log("dto en update edition service: ", editionDto);
+
+    await searchedEdition.update(editionDto, { transaction });
+
+    await transaction.commit();
+    const updatedEdition = await EditionModel.findByPk(id, {
+      include: [
+        {
+          model: BookModel,
+          as: "book",
+          include: [{ model: GenreModel, as: "genre" }],
+        },
+        { model: EditorialModel, as: "editorial" },
+      ],
+    });
+
+    console.log(
+      "registro subido luego de guardarlo en BD - SERVICE: ",
+      editionResponseDTO(updatedEdition),
+    );
+    return editionResponseDTO(updatedEdition);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-  return await searchedEdition.update(editionDto);
 };
 
 export const deleteEditionWithImageService = async (id) => {

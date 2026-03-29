@@ -85,4 +85,27 @@ export const updateBookDTO = ({ idBook, title, summary, genreId, authors = [], s
     authors: authors.map(author => Number(author.id_author)),
     subjects: subjects.map(subject => Number(subject.id_subject))
   }
-}
+};
+
+
+export const BookDetailDTO = (book) => {
+  if (!book) return null;
+  
+  return {
+    id_book: book.idBook,
+    title: book.title,
+    summary: book.summary,
+    authors: book.authors?.map(author => ({
+      id_author: author.idAuthor,
+      name: author.name
+    })) || [],
+    subjects: book.subjects?.map(subject => ({
+      id_subject: subject.idSubject,
+      name: subject.name
+    })) || [],
+    genre: book.genre ? {
+      id_genre: book.genre.idGenre,
+      name: book.genre.name
+    } : null
+  };
+};

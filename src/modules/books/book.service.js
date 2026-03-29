@@ -40,59 +40,12 @@ export const getBooksPaginationAndSearchService = async ({
   if (limit < 1) limit = DEFAULT_LIMIT;
   if (limit > MAX_LIMIT) limit = MAX_LIMIT;
 
-  const where = search
-    ? {
-        [Op.or]: [
-          { title: { [Op.iLike]: `%${search}%` } },
-          { genre: { [Op.iLike]: `%${search}%` } },
-        ],
-      }
-    : {};
-
-  const items = await BookModel.count({
-    where,
-  });
-
-  if (items === 0) {
-    return {
-      response: "No se encontraron libros",
-      result: paginationResponseDTO({
-        page: 0,
-        pages: 0,
-        items: 0,
-        next: "none",
-        prev: "none",
-        result: [],
-      }),
-    };
-  }
-
-  const pages = Math.ceil(items / limit);
-
-  const haveSearch = search && search.trim() !== "";
-
-  if (page > pages && page > 0) {
-    page = haveSearch ? 1 : pages;
-  } else if (page < 1) {
-    page = 1;
-  }
-
-  const offset = (page - 1) * limit;
-
-  const result = await BookModel.findAll({
-    where,
-    limit,
-    offset,
-    distinct: true,
-    order: [
-      ["updated_at", "DESC"],
-      [{ model: GenreModel, as: "genre" }, "idGenre", "ASC"],
-    ],
-    include: [
+  const include = [
       {
         model: GenreModel,
         as: "genre",
         attributes: ["idGenre", "name"],
+        required: false
       },
       {
         model: AuthorModel,
@@ -141,7 +94,59 @@ export const getBooksPaginationAndSearchService = async ({
           },
         ],
       },
+    ];
+
+  const where = search
+    ? {
+        [Op.or]: [
+          { title: { [Op.iLike]: `%${search}%` } }
+        ],
+      }
+    : {};
+
+  const items = await BookModel.count({
+    include,
+    where,
+    distinct: true,
+    col: 'id_book'
+  });
+
+  if (items === 0) {
+    return {
+      response: "No se encontraron libros",
+      result: paginationResponseDTO({
+        page: 0,
+        pages: 0,
+        items: 0,
+        next: "none",
+        prev: "none",
+        result: [],
+      }),
+    };
+  }
+
+  const pages = Math.ceil(items / limit);
+
+  const haveSearch = search && search.trim() !== "";
+
+  if (page > pages && page > 0) {
+    page = haveSearch ? 1 : pages;
+  } else if (page < 1) {
+    page = 1;
+  }
+
+  const offset = (page - 1) * limit;
+
+  const result = await BookModel.findAll({
+    where,
+    include,
+    limit,
+    offset,
+    distinct: true,
+    order: [
+      ["updated_at", "DESC"]
     ],
+    
   });
 
   return {
@@ -309,11 +314,11 @@ export const deleteBookService = async (id) => {
     const bookToDelete = await getBookByIdService(id);
 
     const authorsExists = await BookAuthorModel.findOne({
-      where: { bookId: id },
+      where: { idBook: id },
     });
 
     const subjectsExists = await BookSubjectModel.findOne({
-      where: { bookId: id },
+      where: { idBook: id },
     });
 
     const editionsExists = await EditionModel.findOne({
@@ -325,6 +330,7 @@ export const deleteBookService = async (id) => {
         "El libro tiene autores, descriptores o ediciones asociadas",
       );
     }
+
 
     await bookToDelete.destroy(id);
     return true;
