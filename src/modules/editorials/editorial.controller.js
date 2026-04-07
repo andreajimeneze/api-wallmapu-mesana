@@ -6,6 +6,7 @@ import {
 import {
   editorialResponseDTO,
   createEditorialResponseDTO,
+  baseEditorialDTO,
 } from "./editorial.dto.js";
 import {
   createEditorialService,
@@ -44,9 +45,9 @@ export const getEditorialById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const editorialSearched = await getEditorialByIdService(id);
+    const editorial = await getEditorialByIdService(id);
 
-    if (!editorialSearched) {
+    if (!editorial) {
       return res
         .status(404)
         .json(notFoundResponse({ message: "Editorial no encontrada" }));
@@ -54,7 +55,7 @@ export const getEditorialById = async (req, res) => {
 
     return res
       .status(200)
-      .json(succesGetResponse({ message: "Editorial obtenida exitosamente" }));
+      .json(succesGetResponse({ message: "Editorial obtenida exitosamente", result: baseEditorialDTO(editorial) }));
   } catch (error) {
     return res.status(500).json(
       internalServerResponse({
@@ -69,16 +70,16 @@ export const updateEditorial = async (req, res) => {
   const { name } = req.body;
 
   try {
-    const searchedEditorial = getEditorialById(id);
+    const editorial = await getEditorialByIdService(id);
 
-    if (!searchedEditorial) {
+    if (!editorial) {
       return res
         .status(404)
         .json(notFoundResponse({ message: "Editorial no encontrada" }));
     }
 
     const updatedEditorial = await updateEditorialService(id, {
-      editorial: name || searchedEditorial.editorial,
+      editorial: name
     });
 
     return res.status(202).json(

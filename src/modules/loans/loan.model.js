@@ -42,7 +42,7 @@ export const Loan = (sequelize, DataTypes) => {
       }
     },
     {
-      tableName: "loans",
+      tableName: "wm_loans",
       timestamps: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at'

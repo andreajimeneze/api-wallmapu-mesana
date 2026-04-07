@@ -35,7 +35,7 @@ export const deleteCoverImage = async (req, res) => {
 
   try {
     const result = await deleteCoverImageService(id);
-console.log('resultado delete portada en controller', result);
+
     return res.status(202).json({ message: "Portada eliminada correctamente", result: result  });
   } catch (error) {
     console.error(error);

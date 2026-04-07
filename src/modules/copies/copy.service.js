@@ -1,5 +1,5 @@
+import { where } from "sequelize";
 import {
-  AuthorModel,
   BookModel,
   CopyModel,
   CopyStatusModel,
@@ -7,7 +7,7 @@ import {
   EditorialModel,
   GenreModel,
 } from "../../config/dbSequelize.js";
-import { createCopyDTO, updateCopyDTO } from "./copy.dto.js";
+import { createCopyDTO, copyJoinResponseDTO} from "./copy.dto.js";
 
 export const getAllCopiesService = async () => {
   return await CopyModel.findAll({
@@ -35,8 +35,34 @@ export const getAllCopiesService = async () => {
   });
 };
 
-export const getCopyByIdService = async (id) => {
-  return await CopyModel.findByPk(id);
+export const getCopyByEditionIdService = async (idEdition) => {
+  const copy = await CopyModel.findByPk(
+    idEdition, {
+      where: { editionId: idEdition },
+    include: [
+      {
+        model: EditionModel,
+        as: "editions",
+        attributes: ["idEdition", "edition", "bookId", "editorialId"],
+        include: [
+          {
+            model: BookModel,
+            as: "book",
+            include: [
+              {
+                model: GenreModel,
+                as: "genre",
+              },
+            ],
+          },
+          { model: EditorialModel, as: "editorial" },
+        ],
+      },
+      { model: CopyStatusModel, as: "status" },
+    ],
+  });
+  console.log("copy by id en service para admin: ", copyJoinResponseDTO(copy));
+  return copy;
 };
 
 // export const getCopyByIdJoinService = async (id) => {
@@ -78,9 +104,9 @@ export const updateCopyService = async (id, copyData) => {
     throw new Error("No existe copia");
   }
 
-  const copyDto = updateCopyDTO(copyData);
-  console.log("update copy dto copy service: ", copyDto);
-  return await searchedCopy.update(copyDto);
+  //const copyDto = updateCopyDTO(copyData);
+
+  return await searchedCopy.update(copyData);
 };
 
 export const deleteCopyService = async (id) => {

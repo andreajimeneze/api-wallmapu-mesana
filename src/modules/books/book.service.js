@@ -16,11 +16,11 @@ import { Op } from "sequelize";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
 import {
   createBookSubjectsService,
-  deleteBookSubjectService
+  deleteBookSubjectService,
 } from "../book_subjects/book_subject.service.js";
 import {
   createBookAuthorService,
-  deleteBookAuthorService
+  deleteBookAuthorService,
 } from "../book_authors/book_author.service.js";
 
 export const getBooksPaginationAndSearchService = async ({
@@ -41,66 +41,64 @@ export const getBooksPaginationAndSearchService = async ({
   if (limit > MAX_LIMIT) limit = MAX_LIMIT;
 
   const include = [
-      {
-        model: GenreModel,
-        as: "genre",
-        attributes: ["idGenre", "name"],
-        required: false
-      },
-      {
-        model: AuthorModel,
-        as: "authors",
-        attributes: ["idAuthor", "name"],
-        through: { attributes: [] },
-      },
-      {
-        model: SubjectModel,
-        as: "subjects",
-        attributes: ["idSubject", "name"],
-        through: { attributes: [] },
-      },
-      {
-        model: EditionModel,
-        as: "editions",
-        attributes: [
-          "idEdition",
-          "isbn",
-          "publicationYear",
-          "pages",
-          "coverImage",
-        ],
-        include: [
-          {
-            model: EditorialModel,
-            as: "editorial",
-            attributes: ["idEditorial", "name"],
-          },
-          {
-            model: CopyModel,
-            as: "copies",
-            attributes: [
-              "idCopy",
-              "barcode",
-              "signatureTopography",
-              "copyNumber",
-            ],
-            include: [
-              {
-                model: CopyStatusModel,
-                as: "status",
-                attributes: ["idStatus", "name"],
-              },
-            ],
-          },
-        ],
-      },
-    ];
+    {
+      model: GenreModel,
+      as: "genre",
+      attributes: ["idGenre", "name"],
+      required: false,
+    },
+    {
+      model: AuthorModel,
+      as: "authors",
+      attributes: ["idAuthor", "name"],
+      through: { attributes: [] },
+    },
+    {
+      model: SubjectModel,
+      as: "subjects",
+      attributes: ["idSubject", "name"],
+      through: { attributes: [] },
+    },
+    {
+      model: EditionModel,
+      as: "editions",
+      attributes: [
+        "idEdition",
+        "isbn",
+        "publicationYear",
+        "pages",
+        "coverImage",
+      ],
+      include: [
+        {
+          model: EditorialModel,
+          as: "editorial",
+          attributes: ["idEditorial", "name"],
+        },
+        {
+          model: CopyModel,
+          as: "copies",
+          attributes: [
+            "idCopy",
+            "barcode",
+            "signatureTopography",
+            "copyNumber",
+          ],
+          include: [
+            {
+              model: CopyStatusModel,
+              as: "status",
+              attributes: ["idStatus", "name"],
+            },
+          ],
+        },
+      ],
+    },
+  ];
 
   const where = search
     ? {
-        [Op.or]: [
-          { title: { [Op.iLike]: `%${search}%` } }
-        ],
+        [Op.or]: [{ title: { [Op.iLike]: `%${search}%` } }],
       }
     : {};
 
@@ -108,7 +106,7 @@ export const getBooksPaginationAndSearchService = async ({
     include,
     where,
     distinct: true,
-    col: 'id_book'
+    col: "id_book",
   });
 
   if (items === 0) {
@@ -143,10 +141,7 @@ export const getBooksPaginationAndSearchService = async ({
     limit,
     offset,
     distinct: true,
-    order: [
-      ["updated_at", "DESC"]
-    ],
-    
+    order: [["updated_at", "DESC"]],
   });
 
   return {
@@ -168,8 +163,8 @@ export const getBooksPaginationAndSearchService = async ({
   };
 };
 
-export const getBookByIdService = (id) => {
-  return BookModel.findByPk(id, {
+export const getBookByIdService = async (id) => {
+  return await BookModel.findByPk(id, {
     include: [
       {
         model: GenreModel,
@@ -191,14 +186,6 @@ export const getBookByIdService = (id) => {
       {
         model: EditionModel,
         as: "editions",
-        attributes: [
-          "idEdition",
-          'edition',
-          "isbn",
-          "publicationYear",
-          "pages",
-          "coverImage",
-        ],
         include: [
           {
             model: EditorialModel,
@@ -208,12 +195,6 @@ export const getBookByIdService = (id) => {
           {
             model: CopyModel,
             as: "copies",
-            attributes: [
-              "idCopy",
-              "barcode",
-              "signatureTopography",
-              "copyNumber",
-            ],
             include: [
               {
                 model: CopyStatusModel,
@@ -229,10 +210,10 @@ export const getBookByIdService = (id) => {
 };
 
 export const createBookService = async (bookData) => {
-  const bookDto = createBookDTO(bookData);
+  //const bookDto = createBookDTO(bookData);
 
   const exists = await BookModel.findOne({
-    where: { title: { [Op.iLike]: bookDto.title.trim() } },
+    where: { title: { [Op.iLike]: bookData.title.trim() } },
   });
 
   if (exists) {
@@ -244,27 +225,54 @@ export const createBookService = async (bookData) => {
   const transaction = await sequelize.transaction();
   try {
     const book = await BookModel.create(
-      {
-        title: bookDto.title,
-        summary: bookDto.summary,
-        genreId: bookDto.genre_id,
-      },
+      bookData,
+      // {
+      //   title: bookDto.title,
+      //   summary: bookDto.summary,
+      //   genreId: bookDto.genre_id,
+      // },
       { transaction },
     );
 
-    await createBookSubjectsService(book.idBook, bookDto.subjects, {
+    await createBookSubjectsService(book.idBook, bookData.subjects, {
       transaction,
     });
 
-    await createBookAuthorService(book.idBook, bookDto.authors, {
+    await createBookAuthorService(book.idBook, bookData.authors, {
       transaction,
     });
 
     await transaction.commit();
 
-    const bookComplete = await getBookByIdService(book.idBook);
+    const bookComplete = await BookModel.findByPk(book.idBook, {
+      include: [
+        {
+          model: GenreModel,
+          as: "genre",
+          attributes: ["idGenre", "name"],
+        },
+        {
+          model: AuthorModel,
+          as: "authors",
+        },
+        {
+          model: SubjectModel,
+          as: "subjects",
+        },
+        {
+          model: EditionModel,
+          as: "editions",
+          include: [
+            {
+              model: CopyModel,
+              as: "copies",
+            },
+          ],
+        },
+      ],
+    });
 
-    return bookResponseDTO(bookComplete);
+    return bookComplete.idBook ? bookComplete : null;
   } catch (error) {
     await transaction.rollback();
     throw error;
@@ -283,21 +291,21 @@ export const updateBookService = async (id, bookData) => {
   try {
     const bookDto = updateBookDTO(bookData);
 
-    if(!bookDto.authors || bookDto.authors.length === 0) {
-      throw new Error('No puede dejar un libro sin autores');
+    if (!bookDto.authors || bookDto.authors.length === 0) {
+      throw new Error("No puede dejar un libro sin autores");
     }
 
-    if(!bookDto.subjects || bookDto.subjects.length === 0) {
-       throw new Error('No puede dejar un libro sin descriptores');
+    if (!bookDto.subjects || bookDto.subjects.length === 0) {
+      throw new Error("No puede dejar un libro sin descriptores");
     }
 
     const updatedBook = await searchedBook.update(bookDto, { transaction });
-    
+
     await deleteBookAuthorService(id, { transaction });
 
     await createBookAuthorService(id, bookDto.authors, { transaction });
 
-    await deleteBookSubjectService(id, { transaction });    
+    await deleteBookSubjectService(id, { transaction });
 
     await createBookSubjectsService(id, bookDto.subjects, { transaction });
 
@@ -330,7 +338,6 @@ export const deleteBookService = async (id) => {
         "El libro tiene autores, descriptores o ediciones asociadas",
       );
     }
-
 
     await bookToDelete.destroy(id);
     return true;

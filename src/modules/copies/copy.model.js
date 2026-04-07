@@ -56,6 +56,12 @@ export const Copy = (sequelize, DataTypes) => {
       targetKey: "idStatus",
       as: "status",
     });
+
+    Copy.hasMany(models.ReservationModel, {
+      foreignKey: 'copyId',
+      sourceKey: 'idCopy',
+      as: 'reservations'
+    })
   };
   return Copy;
 };

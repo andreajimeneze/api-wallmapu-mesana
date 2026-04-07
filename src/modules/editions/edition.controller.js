@@ -6,7 +6,7 @@ import {
   successDeleteResponse,
   successUpdateResponse,
 } from "../../shared/apiResponse.js";
-import { editionResponseDTO } from "./edition.dto.js";
+import { editionForBookResponseDTO, editionResponseDTO, createEditionDTO } from "./edition.dto.js";
 import {
   createEditionService,
   deleteEditionWithImageService,
@@ -88,21 +88,24 @@ export const getEditionById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const searchedEdition = await getEditionByIdService(id);
-    console.log("edición encontrada edition controller: ", searchedEdition);
-    if (!searchedEdition) {
+    const edition = await getEditionByIdService(id);
+
+    if (!edition) {
       return res
         .status(404)
         .json(notFoundResponse({ message: "Edición no encontrada" }));
     }
 
+    console.log("edition by id en controller para admin (edition for book dto): ", editionForBookResponseDTO(edition));
+    console.log("edition by id en controller para admin (edition response dto): ", editionResponseDTO(edition));
     return res.status(200).json(
       succesGetResponse({
         message: "Edición encontrada exitosamente",
-        result: editionResponseDTO(searchedEdition),
+        result: editionResponseDTO(edition),
       }),
     );
   } catch (error) {
+    console.error(error);
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar obtener la edición",
@@ -141,16 +144,15 @@ export const getEditionByBookId = async (req, res) => {
 export const createEdition = async (req, res) => {
   const dataEdition = req.body;
 
-  console.log('data en creation edition controller: ', dataEdition);
-
+  console.log("data recibida en controller para admin: ", dataEdition);
+  const editionDto = createEditionDTO(dataEdition);
   try {
-    const createdEdition = await createEditionService(dataEdition);
-    console.log('create edition en controller', createdEdition);
+    const createdEdition = await createEditionService(editionDto);
 
     return res.status(201).json(
       successCreateResponse({
         message: "Edición creada con éxito",
-        result: editionResponseDTO(createdEdition),
+        result: editionForBookResponseDTO(createdEdition),
       }),
     );
   } catch (error) {
@@ -166,8 +168,6 @@ export const createEdition = async (req, res) => {
 export const updateEdition = async (req, res) => {
   const { id } = req.params;
   const editionData = req.body;
-
-  console.log("edición data req body", req.body);
 
   try {
     const editedEdition = await updateEditionService(id, editionData);
@@ -190,7 +190,6 @@ export const updateEdition = async (req, res) => {
 
 export const deleteWithImageEdition = async (req, res) => {
   const { id } = req.params;
-  console.log("id edition controller: ", id);
 
   try {
     await deleteEditionWithImageService(id);

@@ -74,6 +74,18 @@ export const User = (sequelize, DataTypes) => {
       targetKey: "idCommune",
       as: "commune",
     });
+
+    User.hasMany(models.ReservationModel, {
+      foreignKey: 'userId',
+      sourceKey: 'idUser',
+      as: 'reservations'
+    });
+
+    User.hasMany(models.NotificationModel, {
+      foreignKey: 'userId',
+      sourceKey: 'idUser',
+      as: 'notifications'
+    })
   };
 
   return User;

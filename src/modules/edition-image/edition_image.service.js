@@ -11,7 +11,7 @@ const path = "edition";
 export const createCoverImageService = async (file) => {
   const filename = generateFileName(path);
   const {url, public_id} = await uploadImageCloud710(file.buffer, path, filename);
-console.log('cover image en create', url);
+
   return url;
 };
 
@@ -31,8 +31,6 @@ export const deleteCoverImageService = async (id) => {
   }
 
   const publicId = extractPublicId(selectedEdition.coverImage);
-
-  console.log("public id: ", publicId);
 
   if (publicId) {
     await deleteImageCloud(publicId);

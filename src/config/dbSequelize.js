@@ -23,6 +23,10 @@ import { Genre } from '../modules/genres/genre.model.js';
 import { Edition } from '../modules/editions/edition.model.js';
 import { BookAuthor } from "../modules/book_authors/book_author.model.js";
 import { BookSubject } from '../modules/book_subjects/book_subject.model.js';
+import { Reservation } from "../modules/reservation/reservation.model.js";
+import { ReservationStatus } from "../modules/reservation_status/reservation_status.model.js";
+import { Notification } from "../modules/notifcation/notification.model.js";
+import { LoanPolicy } from "../modules/loan_policy/loan_policy.model.js";
 
 
 
@@ -72,7 +76,11 @@ export const getModels = () => {
       GenreModel: Genre(sequelize, DataTypes),
       EditionModel: Edition(sequelize, DataTypes),
       BookAuthorModel: BookAuthor(sequelize, DataTypes),
-      BookSubjectModel: BookSubject(sequelize, DataTypes)
+      BookSubjectModel: BookSubject(sequelize, DataTypes),
+      ReservationModel: Reservation(sequelize, DataTypes),
+      ReservationStatusModel: ReservationStatus(sequelize, DataTypes),
+      NotificationModel: Notification(sequelize, DataTypes),
+      LoanPolicyModel: LoanPolicy(sequelize, DataTypes)
     };
 
     // Asociaciones
@@ -108,7 +116,11 @@ export const {
   GenreModel,
   EditionModel,
   BookAuthorModel,
-  BookSubjectModel
+  BookSubjectModel,
+  ReservationModel,
+  ReservationStatusModel,
+  NotificationModel,
+  LoanPolicyModel
 } = getModels();
 
 export { sequelize };

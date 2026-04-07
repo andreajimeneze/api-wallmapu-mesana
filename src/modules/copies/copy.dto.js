@@ -1,45 +1,32 @@
+import { baseBookDTO } from "../books/book.dto.js";
+import { baseStatusCopyDTO } from "../copy_status/copy_status.dto.js";
+import { baseEditionDTO } from "../editions/edition.dto.js";
+import { baseEditorialDTO } from "../editorials/editorial.dto.js";
+
+export const baseCopyDTO = (res) => {
+  if (!res) return null;
+  return {
+    id_copy: res.idCopy,
+    barcode: res.barcode,
+    signature_topography: res.signatureTopography,
+    copy_number: res.copyNumber,
+    status_id: res.statusId,
+    created_at: res.created_at,
+    updated_at: res.updated_at,
+  };
+};
+
 export const copyJoinResponseDTO = (res) => ({
   id_copy: res.idCopy,
   barcode: res.barcode,
   signature_topography: res.signatureTopography,
   copy_number: res.copyNumber,
+  status: baseStatusCopyDTO(res.status),
   created_at: res.created_at,
   updated_at: res.updated_at,
-  editions: res.editions
-    ? {
-        id_editions: res.editions.ideditions,
-        isbn: res.editions.isbn,
-        publication_year: res.editions.publicationYear,
-        pages: res.editions.pages,
-        cover_image: res.editions.coverImage,
-        book: res.editions.book
-          ? {
-              id_book: res.editions.book.idBook,
-              title: res.editions.book.title,
-              summary: res.editions.book.summary,
-              genre: res.editions.book.genre
-                ? {
-                    id_genre: res.editions.book.genre.idGenre,
-                    name: res.editions.book.genre.name,
-                  }
-                : null,
-            }
-          : null,
-        editorial: res.editions.editorial
-          ? {
-              id_editorial: res.editions.editorial.idEditorial,
-              name: res.editions.editorial.name,
-            }
-          : null,
-      }
-    : null,
-
-  status: res.status
-    ? {
-        id_copy_status: res.status.idStatus,
-        name: res.status.name,
-      }
-    : null,
+  editions: res.editions ? baseEditionDTO(res.editions) : null,
+  editorial: res.editions?.editorial ? baseEditorialDTO(res.editions.editorial) : null,
+  book: res.editions?.book ? baseBookDTO(res.editions.book) : null,
 });
 
 export const copyResponseDTO = (res) => ({
@@ -50,7 +37,7 @@ export const copyResponseDTO = (res) => ({
   created_at: res.created_at,
   updated_at: res.updated_at,
   edition_id: res.editionId,
-  status_id: res.statusId
+  status_id: res.statusId,
 });
 
 export const createCopyDTO = ({
@@ -67,13 +54,16 @@ export const createCopyDTO = ({
   };
 };
 
-export const updateCopyDTO = ({ 
-  signatureTopography,
+export const updateCopyDTO = ({
+  //id_copy,
+  signature_topography,
   copy_number,
   edition_id,
-  status_id}) => {
+  status_id,
+}) => {
   return {
-    signatureTopography: signatureTopography,
+    //idCopy: Number(id_copy),
+    signatureTopography: signature_topography,
     copyNumber: Number(copy_number),
     editionId: Number(edition_id),
     statusId: Number(status_id),

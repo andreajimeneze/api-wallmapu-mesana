@@ -8,7 +8,7 @@ import {
 import { copyResponseDTO, copyJoinResponseDTO } from "./copy.dto.js";
 import {
   getAllCopiesService,
-  getCopyByIdService,
+  getCopyByEditionIdService,
   createCopyService,
   updateCopyService,
   deleteCopyService,
@@ -17,14 +17,16 @@ import {
 export const getAllCopies = async (req, res) => {
   try {
     const allCopies = await getAllCopiesService();
-
+    
     if (!allCopies || allCopies.length === 0) {
       return res.status(404).json(
         notFoundResponse({
           message: "No existen copias cargadas actualmente",
         }),
       );
-    }
+    };
+
+    console.log("all copies en controller para admin: ", allCopies.map(copyJoinResponseDTO));
     return res.status(200).json(
       succesGetResponse({
         message: "Copias obtenidas exitosamente",
@@ -70,9 +72,12 @@ export const getAllCopies = async (req, res) => {
 
 export const getCopyById = async (req, res) => {
   const { id } = req.params;
-
+console.log("id recibido en controller para admin: ", id);
+console.log('req.body en controller para admin: ', req.body);
   try {
-    const searchedCopy = await getCopyByIdService(id);
+    const searchedCopy = await getCopyByEditionIdService(id);
+
+    console.log("copy by id en controller para admin: ", copyJoinResponseDTO(searchedCopy));
 
     if (!searchedCopy) {
       return res
@@ -83,10 +88,11 @@ export const getCopyById = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Copia obtenida exitosamente",
-        result: copyResponseDTO(searchedCopy),
+        result: copyJoinResponseDTO(searchedCopy),
       }),
     );
   } catch (error) {
+    console.error(error);
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar obtener la copia",
@@ -96,11 +102,9 @@ export const getCopyById = async (req, res) => {
 };
 
 export const createCopy = async (req, res) => {
-  //const { copyData } = req.body;
-  console.log("req body en copy controller: ", req.body);
   try {
     const createdCopy = await createCopyService(req.body);
-    console.log("copia creada en controller", createdCopy);
+
     return res.status(201).json(
       successDeleteResponse({
         message: "Copia creada exitosamente",
@@ -121,8 +125,10 @@ export const updateCopy = async (req, res) => {
   const { id } = req.params;
   const { copyData } = req.body;
 
+  const copyDto = updateCopyDTO(copyData);
+
   try {
-    const updatedCopy = await updateCopyService(id, copyData);
+    const updatedCopy = await updateCopyService(id, copyDto);
 
     return res
       .status(202)

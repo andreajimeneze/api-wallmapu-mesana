@@ -3,7 +3,7 @@ import {
   notFoundResponse,
   succesGetResponse,
 } from "../../shared/apiResponse.js";
-import { genreResponseDTO } from "./genre.dto.js";
+import { baseGenreDTO } from "./genre.dto.js";
 import { getAllGenresService, getGenreByIdService } from "./genre.service.js";
 
 export const getAllGenres = async (req, res) => {
@@ -20,7 +20,7 @@ export const getAllGenres = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Géneros obtenidos exitosamente",
-        result: allGenres.map(genreResponseDTO),
+        result: allGenres.map(baseGenreDTO),
       }),
     );
   } catch (error) {
@@ -52,7 +52,7 @@ export const getGenreById = async (req, res) => {
       .json(
         succesGetResponse({
           message: "Género obtenido exitosamente",
-          result: genreResponseDTO(searchedGenre),
+          result: baseGenreDTO(searchedGenre),
         }),
       );
   } catch (error) {

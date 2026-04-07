@@ -6,12 +6,12 @@ import {
   EditionModel,
   EditorialModel,
   GenreModel,
-  SubjectModel,
   CopyStatusModel,
+  SubjectModel
 } from "../../config/dbSequelize.js";
 import { createEditionDTO, updateEditionDTO } from "./edition.dto.js";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
-import { editionResponseDTO } from "./edition.dto.js";
+import { editionResponseDTO, editionForBookResponseDTO } from "./edition.dto.js";
 import { Op } from "sequelize";
 import {
   deleteImageCloud,
@@ -167,11 +167,26 @@ export const getAllEditionsService = async () => {
 };
 
 export const getEditionByIdService = async (id) => {
-  const edition = await EditionModel.findByPk(id, {
+  return await EditionModel.findByPk(id, {
     include: [
       {
         model: BookModel,
-        as: "book"
+        as: "book",
+        include: [
+          {
+            model: GenreModel,
+            as: "genre",
+          },
+          {
+            model: AuthorModel,
+            as: "authors",
+          },
+          {            
+            model: SubjectModel,
+            as: "subjects",
+          },
+        ],
+
       },
       {
         model: EditorialModel,
@@ -183,18 +198,16 @@ export const getEditionByIdService = async (id) => {
         include: [
           {
             model: CopyStatusModel,
-            as: 'status'
+            as: 'status',
+            attributes: ['idStatus', 'name']
           }
         ]
       },
     ],
   });
-
-  console.log(
-    "obtener edición por id en servicio con respuesta DTO: ",
-    editionResponseDTO(edition),
-  );
-  return edition;
+// console.log("edition by id en service para admin: ", editionForBookResponseDTO(edition));
+ 
+//   return editionForBookResponseDTO(edition);
 };
 
 export const getEditionByBookIdService = async (idBook) => {
@@ -202,14 +215,34 @@ export const getEditionByBookIdService = async (idBook) => {
     where: { bookId: idBook },
   });
 
+  if(!edition) {
+    const error = new Error("No existe edición para el libro");
+    error.status = 404;
+    throw error;
+  }
+  console.log("edition by book id en service para admin: ", editionResponseDTO(edition));
   return editionResponseDTO(edition);
 };
 
 export const createEditionService = async (editionData) => {
-  const dtoEdition = createEditionDTO(editionData);
-  console.log("dto edition service: ", dtoEdition);
+  //const dtoEdition = createEditionDTO(editionData);
 
-  return await EditionModel.create(dtoEdition);
+  const editionCreated = await EditionModel.create(editionData);
+
+  const edition = await EditionModel.findByPk(editionCreated.idEdition, {
+    include: [
+      {
+        model: BookModel,
+        as: "book",
+      },
+      {
+        model: EditorialModel,
+        as: "editorial",
+      },
+    ],
+  });
+
+  return edition;
 };
 
 export const updateEditionService = async (id, editionData) => {
@@ -223,11 +256,7 @@ export const updateEditionService = async (id, editionData) => {
       return null;
     }
 
-    console.log("edición data sin updatedEditionDTO en service: ", editionData);
-
     const editionDto = updateEditionDTO(editionData);
-
-    console.log("dto en update edition service: ", editionDto);
 
     await searchedEdition.update(editionDto, { transaction });
 
@@ -243,10 +272,6 @@ export const updateEditionService = async (id, editionData) => {
       ],
     });
 
-    console.log(
-      "registro subido luego de guardarlo en BD - SERVICE: ",
-      editionResponseDTO(updatedEdition),
-    );
     return editionResponseDTO(updatedEdition);
   } catch (error) {
     await transaction.rollback();
@@ -260,14 +285,16 @@ export const deleteEditionWithImageService = async (id) => {
   try {
     const edition = await EditionModel.findByPk(id);
     const copyEdition = await CopyModel.count({ where: { editionId: id } });
-    console.log("edición en edition service: ", edition);
+
     if (!edition) {
+      await transaction.rollback();
       const error = new Error("Edición no existe");
       error.status = 404;
       throw error;
     }
 
     if (copyEdition > 0) {
+       await transaction.rollback();
       const error = new Error(
         `Edición ${edition.edition} tiene copias asociadas. Debe eliminar las copias primero`,
       );
@@ -286,7 +313,9 @@ export const deleteEditionWithImageService = async (id) => {
     }
     return true;
   } catch (error) {
-    await transaction.rollback();
+     if (transaction.finished !== 'commit' && transaction.finished !== 'rollback') {
+      await transaction.rollback();
+    }
     throw error;
   }
 };

@@ -1,4 +1,4 @@
-import { bookResponseDTO } from "./book.dto.js";
+import { bookResponseDTO, createBookDTO } from "./book.dto.js";
 import {
   getBooksPaginationAndSearchService,
   getBookByIdService,
@@ -54,6 +54,7 @@ export const getBookById = async (req, res) => {
   try {
     const searchedBook = await getBookByIdService(id);
 
+    console.log("book by id en controller para admin: ", bookResponseDTO(searchedBook));
     if (!searchedBook) {
       return res
         .status(404)
@@ -76,10 +77,13 @@ export const getBookById = async (req, res) => {
 };
 
 export const createBook = async (req, res) => {
-  const bookData = req.body;
 
+  const bookData = req.body;
+  console.log("bookData req body en controller: ", bookData);
+  const bookDto = createBookDTO(bookData);
+console.log("bookDto aplicando createBookDTO en controller: ", bookDto);
   try {
-    const book = await createBookService(bookData);
+    const book = await createBookService(bookDto);
 
     return res.status(201).json(
       successCreateResponse({

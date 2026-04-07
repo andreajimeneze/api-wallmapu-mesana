@@ -1,6 +1,3 @@
--- =========================
--- DROP TABLES (orden correcto por dependencias)
--- =========================
 
 DROP TABLE IF EXISTS wm_news_gallery;
 DROP TABLE IF EXISTS wm_book_subject;
@@ -26,10 +23,6 @@ DROP TABLE IF EXISTS wm_subjects;
 DROP TABLE IF EXISTS wm_editorials;
 DROP TABLE IF EXISTS wm_authors;
 
-
--- =========================
--- TABLAS BASE
--- =========================
 
 CREATE TABLE wm_authors (
   id_author INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -111,10 +104,6 @@ CREATE TABLE wm_news (
 );
 
 
--- =========================
--- LIBROS (modelo nuevo normalizado)
--- =========================
-
 CREATE TABLE wm_books (
   id_book INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   title VARCHAR(200) NOT NULL,
@@ -162,10 +151,6 @@ CREATE TABLE wm_book_subject (
   PRIMARY KEY (id_book, id_subject)
 );
 
-
--- =========================
--- USUARIOS Y PRÉSTAMOS
--- =========================
 
 CREATE TABLE wm_users (
   id_user UUID PRIMARY KEY DEFAULT gen_random_uuid(),

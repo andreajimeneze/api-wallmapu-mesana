@@ -7,7 +7,7 @@ import {
   notFoundResponse,
   succesGetResponse,
 } from "../../shared/apiResponse.js";
-import { statusCopyResponseDTO } from "./copy_status.dto.js";
+import { baseStatusCopyDTO } from "./copy_status.dto.js";
 
 export const getAllCopyStatus = async (req, res) => {
   try {
@@ -23,7 +23,7 @@ export const getAllCopyStatus = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Estados de las copias obtenidos exitosamente",
-        result: allCopiesStatus.map(statusCopyResponseDTO),
+        result: allCopiesStatus.map(baseStatusCopyDTO),
       }),
     );
   } catch (error) {
@@ -55,7 +55,7 @@ export const getCopyStatusById = async (req, res) => {
       .json(
         succesGetResponse({
           message: "Estado de la copia obtenido exitosamente",
-          result: statusCopyResponseDTO(searchedCopyStatus),
+          result: baseStatusCopyDTO(searchedCopyStatus),
         }),
       );
   } catch (error) {
