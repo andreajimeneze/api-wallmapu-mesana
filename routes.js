@@ -20,6 +20,7 @@ import book_routes from './src/modules/books/book.routes.js';
 import book_author_routes from './src/modules/book_authors/book_author.routes.js';
 import book_subject_routes from './src/modules/book_subjects/book_subject.routes.js';
 import edition_image_routes from './src/modules/edition-image/edition_image.routes.js';
+import reservation_status_routes from './src/modules/reservation_status/reservation_status.routes.js';
 
 const router = Router();
 
@@ -44,4 +45,6 @@ router.use('/api/books', book_routes);
 router.use('/api/book-author', book_author_routes);
 router.use('/api/book-subject', book_subject_routes);
 router.use('/api/edition-image', edition_image_routes);
+router.use('/api/status', reservation_status_routes);
+
 export default router;
