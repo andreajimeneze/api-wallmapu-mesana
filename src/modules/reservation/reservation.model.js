@@ -37,6 +37,23 @@ export const Reservation = (sequelize, DataTypes) => {
             tableName: 'wm_reservations',
             timestamps: false
         }
-    )
+    );
+    Reservation.associate = (models) => {
+        Reservation.belongsTo(models.ReservationStatusModel, {
+            foreignKey: 'statusId',
+            targetKey: 'idStatus',
+            as: 'reservationStatus'
+        });
+        Reservation.belongsTo(models.CopyModel, {
+            foreignKey: 'copyId',
+            targetKey: 'idCopy',
+            as: 'copy'
+        });
+        Reservation.belongsTo(models.UserModel, {
+            foreignKey: 'userId',
+            targetKey: 'idUser',
+            as: 'user'
+        });
+    };
     return Reservation
-}
+};
