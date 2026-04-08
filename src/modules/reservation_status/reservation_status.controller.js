@@ -1,6 +1,6 @@
 import { getAllStatusService } from "./reservation_status.service.js";
 import { internalServerResponse, notFoundResponse, succesGetResponse } from '../../shared/apiResponse.js';
-import { reservationStatusDTO } from "./reservation_status.dto";
+import { reservationStatusDTO } from "./reservation_status.dto.js";
 
 export const getAllStatus = async (req, res) => {
     try {

@@ -20,7 +20,8 @@ export const Notification = (sequelize, DataTypes) => {
         isRead:
         {
             type: DataTypes.BOOLEAN,
-            default: false
+            default: false,
+            field: 'is_read'
         },
         userId: {
             type: DataTypes.STRING,
@@ -32,6 +33,7 @@ export const Notification = (sequelize, DataTypes) => {
             tableName: 'wm_notifications',
             timestamps: true,
             createdAt: 'created_at',
+            updatedAt: false
         }
     );
 
