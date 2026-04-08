@@ -22,6 +22,7 @@ import book_subject_routes from './src/modules/book_subjects/book_subject.routes
 import edition_image_routes from './src/modules/edition-image/edition_image.routes.js';
 import reservation_status_routes from './src/modules/reservation_status/reservation_status.routes.js';
 import notification_routes from './src/modules/notifcation/notification.routes.js';
+import reservation_routes from './src/modules/reservation/reservation.routes.js';
 
 const router = Router();
 
@@ -48,5 +49,7 @@ router.use('/api/book-subject', book_subject_routes);
 router.use('/api/edition-image', edition_image_routes);
 router.use('/api/status', reservation_status_routes);
 router.use('/api/notifications', notification_routes);
+router.use('/api/reservations', reservation_routes);
+
 
 export default router;

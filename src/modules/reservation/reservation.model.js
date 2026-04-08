@@ -12,10 +12,12 @@ export const Reservation = (sequelize, DataTypes) => {
         },
         reservationDate: {
             type: DataTypes.DATE,
+            field: 'reservation_date'
         },
         expirationDate: {
             type: DataTypes.DATE,
-            allowNull: false
+            allowNull: false,
+            field: 'expiration_date'
         },
         userId: {
             type: DataTypes.STRING,
@@ -30,7 +32,8 @@ export const Reservation = (sequelize, DataTypes) => {
         reservationStatusId: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            default: 1
+            default: 1,
+            field: 'reservation_status_id'
         }
     },
         {
@@ -40,14 +43,14 @@ export const Reservation = (sequelize, DataTypes) => {
     );
     Reservation.associate = (models) => {
         Reservation.belongsTo(models.ReservationStatusModel, {
-            foreignKey: 'statusId',
+            foreignKey: 'reservationStatusId',
             targetKey: 'idStatus',
             as: 'reservationStatus'
         });
         Reservation.belongsTo(models.CopyModel, {
             foreignKey: 'copyId',
             targetKey: 'idCopy',
-            as: 'copy'
+            as: 'copies'
         });
         Reservation.belongsTo(models.UserModel, {
             foreignKey: 'userId',

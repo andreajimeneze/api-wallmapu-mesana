@@ -1,3 +1,10 @@
+export const baseUserDTO = (user) => ({
+    id_user: user.idUser,
+    name: user.username,
+    lastname: user.userlastname,
+    email: user.email
+});
+
 export const userResponseDTO = (user) => ({
     id_user: user.idUser,
     name: user.username,
@@ -12,4 +19,4 @@ export const userResponseDTO = (user) => ({
     created_at: user.created_at,
     updated_at: user.updated_at,
     role: user.userRole?.role
-})
+});

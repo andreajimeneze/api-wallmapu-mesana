@@ -22,7 +22,7 @@ export const ReservationStatus = (sequelize, DataTypes) => {
 
     ReservationStatus.associate = (models) => {
         ReservationStatus.hasMany(models.ReservationModel, {
-            foreignKey: 'statusId',
+            foreignKey: 'reservationStatusId',
             sourceKey: 'idStatus',
             as: 'reservations'
         })

@@ -191,10 +191,10 @@ CREATE TABLE IF NOT EXISTS wm_reservations (
   reservation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   expiration_date TIMESTAMP NOT NULL,
   user_id UUID NOT NULL,
-  book_id INTEGER NOT NULL,
+  copy_id INTEGER NOT NULL,
   reservation_status_id INTEGER NOT NULL DEFAULT 1,
   CONSTRAINT fk_res_user FOREIGN KEY (user_id) REFERENCES wm_users(id_user),
-  CONSTRAINT fk_res_book FOREIGN KEY (book_id) REFERENCES wm_books(id_book),
+  CONSTRAINT fk_res_copies FOREIGN KEY (copy_id) REFERENCES wm_copies(id_copy),
   CONSTRAINT fk_res_status FOREIGN KEY (reservation_status_id) REFERENCES wm_reservation_status(id_status)
 );
  
