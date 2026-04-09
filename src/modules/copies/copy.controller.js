@@ -5,13 +5,14 @@ import {
   successDeleteResponse,
   successUpdateResponse,
 } from "../../shared/apiResponse.js";
-import { copyResponseDTO, copyJoinResponseDTO } from "./copy.dto.js";
+import { copyResponseDTO, copyJoinResponseDTO, copyByBookResponseDTO } from "./copy.dto.js";
 import {
   getAllCopiesService,
   getCopyByEditionIdService,
   createCopyService,
   updateCopyService,
   deleteCopyService,
+  getAllCopiesByBookService,
 } from "./copy.service.js";
 
 export const getAllCopies = async (req, res) => {
@@ -43,32 +44,26 @@ export const getAllCopies = async (req, res) => {
   }
 };
 
-// export const getCopyByIdJoin = async (req, res) => {
-//   const { id } = req.params;
+export const getAllCopiesByBook = async (req, res) => {
+  const { bookId } = req.params;
 
-//   try {
-//     const searchedCopy = await getCopyByIdJoinService(id);
+  try {
+    const allBookCopies = await getAllCopiesByBookService(bookId);
 
-//     if (!searchedCopy) {
-//       return res
-//         .status(404)
-//         .json(notFoundResponse({ message: "Copia no encontrada" }));
-//     }
+    if(allBookCopies.length === 0) {
+      return res.status(404).json(notFoundResponse({message: 'No existen copias de este libro'}));
+    };
 
-//     return res.status(200).json(
-//       succesGetResponse({
-//         message: "Copia obtenida exitosamente",
-//         result: copyJoinResponseDTO(searchedCopy),
-//       }),
-//     );
-//   } catch (error) {
-//     return res.status(500).json(
-//       internalServerResponse({
-//         message: "Error al intentar obtener la copia",
-//       }),
-//     );
-//   }
-// };
+    return res.status(200).json(succesGetResponse({message: 'Copias del libro obtenidas con éxito', result: allBookCopies.map(copyByBookResponseDTO)}))
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(
+      internalServerResponse({
+        message: "Error al intentar obtener las copias del libro",
+      }),
+    );
+  }
+};
 
 export const getCopyById = async (req, res) => {
   const { id } = req.params;

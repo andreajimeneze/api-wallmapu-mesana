@@ -1,13 +1,12 @@
-import { where } from "sequelize";
 import {
   BookModel,
   CopyModel,
   CopyStatusModel,
   EditionModel,
   EditorialModel,
-  GenreModel,
+  GenreModel
 } from "../../config/dbSequelize.js";
-import { createCopyDTO, copyJoinResponseDTO} from "./copy.dto.js";
+import { createCopyDTO, copyJoinResponseDTO } from "./copy.dto.js";
 
 export const getAllCopiesService = async () => {
   return await CopyModel.findAll({
@@ -35,10 +34,40 @@ export const getAllCopiesService = async () => {
   });
 };
 
+export const getAllCopiesByBookService = async (bookId) => {
+  return await CopyModel.findAll({
+
+    order: [["idCopy", "ASC"]],
+    include: [
+      {
+        model: EditionModel,
+        as: "edition",
+        where: {
+          bookId: bookId
+        },
+        include: [
+          {
+            model: EditorialModel,
+            as: "editorial"
+          },
+          {
+            model: BookModel,
+            as: "book",
+          }
+        ],
+      },
+      { 
+        model: CopyStatusModel, 
+        as: "status" 
+      }
+    ],
+  });
+};
+
 export const getCopyByEditionIdService = async (idEdition) => {
   const copy = await CopyModel.findByPk(
     idEdition, {
-      where: { editionId: idEdition },
+    where: { editionId: idEdition },
     include: [
       {
         model: EditionModel,
@@ -65,31 +94,6 @@ export const getCopyByEditionIdService = async (idEdition) => {
   return copy;
 };
 
-// export const getCopyByIdJoinService = async (id) => {
-//   return await CopyModel.findByPk(id, {
-//     include: [
-//       {
-//         model: EditionModel,
-//         as: "editions",
-//         include: [
-//           {
-//             model: BookModel,
-//             as: "books",
-//             include: [
-//               {
-//                 model: GenreModel,
-//                 as: "genre",
-//               },
-//             ],
-//           },
-//           { model: EditorialModel, as: "editorial" },
-//         ],
-//       },
-//       { model: CopyStatusModel, as: "status" },
-//     ],
-//   });
-// };
-
 export const createCopyService = async (copyData) => {
 
   const copyDto = createCopyDTO(copyData);
@@ -103,8 +107,6 @@ export const updateCopyService = async (id, copyData) => {
   if (!searchedCopy || searchedCopy === 0) {
     throw new Error("No existe copia");
   }
-
-  //const copyDto = updateCopyDTO(copyData);
 
   return await searchedCopy.update(copyData);
 };

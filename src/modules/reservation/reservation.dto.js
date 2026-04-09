@@ -19,6 +19,16 @@ export const reservationResponseDTO = (res) => ({
     user: res.user ? baseUserDTO(res.user) : null,
     copies: res.copies && Array.isArray(res.copies) ? res.copies.map((copy) => ({
         ...baseCopyDTO(copy),
-        edition:copy.edition ? baseEditionDTO(copy.edition) : null
+        edition: copy.edition ? baseEditionDTO(copy.edition) : null
     })) : []
 });
+
+export const createReservationDTO = (data) => {
+    return {
+        reservationDate: data.reservation_date,
+        expirationDate: data.expiration_date,
+        userId: data.user_id,
+        copyId: data.copy_id,
+        reservationStatusId: data.reservation_status_id
+    }
+};

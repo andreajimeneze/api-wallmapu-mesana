@@ -1,6 +1,6 @@
 import { baseBookDTO } from "../books/book.dto.js";
 import { baseStatusCopyDTO } from "../copy_status/copy_status.dto.js";
-import { baseEditionDTO } from "../editions/edition.dto.js";
+import { baseEditionDTO, editionBasicDTO } from "../editions/edition.dto.js";
 import { baseEditorialDTO } from "../editorials/editorial.dto.js";
 
 export const baseCopyDTO = (res) => {
@@ -27,6 +27,16 @@ export const copyJoinResponseDTO = (res) => ({
   editions: res.editions ? baseEditionDTO(res.editions) : null,
   editorial: res.editions?.editorial ? baseEditorialDTO(res.editions.editorial) : null,
   book: res.editions?.book ? baseBookDTO(res.editions.book) : null,
+});
+
+export const copyByBookResponseDTO = (res) => ({
+  id_copy: res.idCopy,
+  barcode: res.barcode,
+  signature_topography: res.signatureTopography,
+  copy_number: res.copyNumber,
+  created_at: res.created_at,
+  updated_at: res.updated_at,
+  edition: res.edition ? editionBasicDTO(res.edition) : null,
 });
 
 export const copyResponseDTO = (res) => ({

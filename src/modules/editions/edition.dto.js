@@ -17,6 +17,18 @@ export const baseEditionDTO = (res) => ({
     updated_at: res.updated_at,
   });
 
+  export const editionBasicDTO = (res) => ({
+    id_edition: res.idEdition,
+  edition: res.edition,
+  isbn: res.isbn,
+  publication_year: res.publicationYear,
+  pages: res.pages,
+  cover_image: res.coverImage,
+  editorial_id: res.editorialId,
+  editorial_name: res.editorial.name
+  })
+  
+
 export const editionResponseDTO = (res) => {
   if (!res) return null;
 

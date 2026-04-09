@@ -48,7 +48,7 @@ export const Copy = (sequelize, DataTypes) => {
     Copy.belongsTo(models.EditionModel, {
       foreignKey: "editionId",
       targetKey: "idEdition",
-      as: "editions",
+      as: "edition",
     });
 
     Copy.belongsTo(models.CopyStatusModel, {
