@@ -24,6 +24,7 @@ import reservation_status_routes from './src/modules/reservation_status/reservat
 import notification_routes from './src/modules/notifcation/notification.routes.js';
 import reservation_routes from './src/modules/reservation/reservation.routes.js';
 import loanPolicy_routes from './src/modules/loan_policy/loan.policy.routes.js';
+import loanStatus_routes from './src/modules/loans-status/loan_status.routes.js';
 
 const router = Router();
 
@@ -52,6 +53,7 @@ router.use('/api/status', reservation_status_routes);
 router.use('/api/notifications', notification_routes);
 router.use('/api/reservations', reservation_routes);
 router.use('/api/loan', loanPolicy_routes);
+router.use('/api/loan-status', loanStatus_routes);
 
 
 export default router;

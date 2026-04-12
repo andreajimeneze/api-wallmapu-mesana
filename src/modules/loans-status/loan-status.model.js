@@ -11,13 +11,12 @@ export const LoanStatus = (sequelize, DataTypes) => {
         field: "id_loan_status",
       },
 
-      loanStatus: {
-        type: DataTypes.STRING,
-        field: "loan_status",
+      name: {
+        type: DataTypes.STRING
       }
     },
     {
-      tableName: "loan_status",
+      tableName: "wm_loan_status",
       timestamps: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at'
