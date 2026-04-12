@@ -1,12 +1,16 @@
 import express from 'express';
-import { getBooksPaginationAndSearch, getBookById, createBook, updateBook, deleteBook } from './book.controller.js';
+import { getBooksPaginationAndSearch, getBookById, createBook, updateBook, deleteBook, getAllBooks, getBookByIdDetail } from './book.controller.js';
 import { checkRole, jwtMiddleware } from '../auth/auth.middleware.js';
 
 const router = express.Router();
 
 router.get('/', jwtMiddleware, checkRole(['Admin', 'Lector']), getBooksPaginationAndSearch);
 
+router.get('/', getAllBooks)
+
 router.get('/:id', getBookById);
+
+router.get('/detail/:id', getBookByIdDetail)
 
 router.post('/', jwtMiddleware, checkRole(['Admin']), createBook);
 

@@ -1,7 +1,5 @@
-import { baseBookDTO } from "../books/book.dto.js";
 import { baseStatusCopyDTO } from "../copy_status/copy_status.dto.js";
-import { baseEditionDTO, editionBasicDTO } from "../editions/edition.dto.js";
-import { baseEditorialDTO } from "../editorials/editorial.dto.js";
+import { editionBasicDTO, editionDetailDTO } from "../editions/edition.dto.js";
 
 export const baseCopyDTO = (res) => {
   if (!res) return null;
@@ -10,6 +8,7 @@ export const baseCopyDTO = (res) => {
     barcode: res.barcode,
     signature_topography: res.signatureTopography,
     copy_number: res.copyNumber,
+    edition_id: res.editionId,
     status_id: res.statusId,
     created_at: res.created_at,
     updated_at: res.updated_at,
@@ -21,12 +20,11 @@ export const copyJoinResponseDTO = (res) => ({
   barcode: res.barcode,
   signature_topography: res.signatureTopography,
   copy_number: res.copyNumber,
+  edition_id: res.editionId,
   status: baseStatusCopyDTO(res.status),
   created_at: res.created_at,
   updated_at: res.updated_at,
-  editions: res.editions ? baseEditionDTO(res.editions) : null,
-  editorial: res.editions?.editorial ? baseEditorialDTO(res.editions.editorial) : null,
-  book: res.editions?.book ? baseBookDTO(res.editions.book) : null,
+  edition: res.edition ? editionBasicDTO(res.edition) : null,
 });
 
 export const copyByBookResponseDTO = (res) => ({
@@ -34,9 +32,12 @@ export const copyByBookResponseDTO = (res) => ({
   barcode: res.barcode,
   signature_topography: res.signatureTopography,
   copy_number: res.copyNumber,
+  edition_id: res.editionId,
   created_at: res.created_at,
   updated_at: res.updated_at,
-  edition: res.edition ? editionBasicDTO(res.edition) : null,
+  status: res.status ? baseStatusCopyDTO(res.status) : null,
+  edition: res.edition ? editionDetailDTO(res.edition) : null,
+  availability_status: res.status.name
 });
 
 export const copyResponseDTO = (res) => ({
@@ -44,38 +45,44 @@ export const copyResponseDTO = (res) => ({
   barcode: res.barcode,
   signature_topography: res.signatureTopography,
   copy_number: res.copyNumber,
-  created_at: res.created_at,
-  updated_at: res.updated_at,
   edition_id: res.editionId,
   status_id: res.statusId,
+  created_at: res.created_at,
+  updated_at: res.updated_at,
+  status: res.status ? baseStatusCopyDTO(res.status) : null,
 });
 
 export const createCopyDTO = ({
   signature_topography,
   copy_number,
   edition_id,
-  status_id,
 }) => {
   return {
     signatureTopography: signature_topography,
     copyNumber: Number(copy_number),
     editionId: Number(edition_id),
-    statusId: Number(status_id),
+    statusId: 1
   };
 };
 
-export const updateCopyDTO = ({
-  //id_copy,
-  signature_topography,
-  copy_number,
-  edition_id,
-  status_id,
-}) => {
-  return {
-    //idCopy: Number(id_copy),
-    signatureTopography: signature_topography,
-    copyNumber: Number(copy_number),
-    editionId: Number(edition_id),
-    statusId: Number(status_id),
-  };
+export const updateCopyDTO = (copyData) => {
+  const dto = {};
+
+  if (copyData.signature_topography !== undefined) {
+    dto.signatureTopography = copyData.signature_topography;
+  }
+
+  if (copyData.copy_number !== undefined) {
+    dto.copyNumber = Number(copyData.copy_number);
+  }
+
+  if (copyData.edition_id !== undefined) {
+    dto.editionId = Number(copyData.edition_id);
+  }
+
+  if (copyData.status_id > 0) {
+    dto.statusId = Number(copyData.status_id);
+  }
+
+  return dto;
 };

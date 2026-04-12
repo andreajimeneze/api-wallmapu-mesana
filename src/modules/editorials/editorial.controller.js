@@ -32,7 +32,7 @@ export const getAllEditorials = async (req, res) => {
       }),
     );
   } catch (error) {
-    //console.error(error)
+    console.error(error)
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar obtener las editoriales",

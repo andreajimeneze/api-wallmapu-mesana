@@ -1,10 +1,11 @@
-import { bookResponseDTO, createBookDTO } from "./book.dto.js";
+import { baseBookDTO, BookDetailDTO, bookResponseDTO, createBookDTO } from "./book.dto.js";
 import {
   getBooksPaginationAndSearchService,
   getBookByIdService,
   createBookService,
   updateBookService,
   deleteBookService,
+  getAllBooksService,
 } from "./book.service.js";
 import {
   notFoundResponse,
@@ -49,12 +50,31 @@ export const getBooksPaginationAndSearch = async (req, res) => {
   }
 };
 
+export const getAllBooks = async(req, res) => {
+  try {
+    const allBooks = await getAllBooksService();
+
+    if(!allBooks || allBooks.length === 0) {
+      return res.status(404).json(notFoundResponse({message: 'No existen libros cargados'}));
+    };
+
+    return res.status(200).json(succesGetResponse({message: 'Libros obtenidos exitosamente', result: allBooks.map(baseBookDTO)}))
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(
+      internalServerResponse({
+        message: "Error al intentar obtener el libro",
+      }),
+    );
+  }
+}
+
 export const getBookById = async (req, res) => {
   const { id } = req.params;
   try {
     const searchedBook = await getBookByIdService(id);
 
-    console.log("book by id en controller para admin: ", bookResponseDTO(searchedBook));
+   
     if (!searchedBook) {
       return res
         .status(404)
@@ -76,12 +96,40 @@ export const getBookById = async (req, res) => {
   }
 };
 
+export const getBookByIdDetail = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const searchedBook = await getBookByIdService(id);
+
+   
+    if (!searchedBook) {
+      return res
+        .status(404)
+        .json(notFoundResponse({ message: "Libro no encontrado" }));
+    }
+    return res.status(200).json(
+      succesGetResponse({
+        message: "Libro obtenido exitosamente",
+        result: bookResponseDTO(searchedBook),
+      }),
+    );
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(
+      internalServerResponse({
+        message: "Error al intentar obtener el libro",
+      }),
+    );
+  }
+};
+
+
 export const createBook = async (req, res) => {
 
   const bookData = req.body;
-  console.log("bookData req body en controller: ", bookData);
+  
   const bookDto = createBookDTO(bookData);
-console.log("bookDto aplicando createBookDTO en controller: ", bookDto);
+
   try {
     const book = await createBookService(bookDto);
 

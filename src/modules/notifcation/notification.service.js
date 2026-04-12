@@ -48,8 +48,6 @@ export const deleteNotificationByUserIdService = async (userId) => {
         }
     });
 
-    console.log('notificación en servicio delete by user', notification)
-
     if(!notification) {
         throw new Error('No existe la notificación buscada');
     };

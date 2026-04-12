@@ -6,7 +6,9 @@ import {
   EditorialModel,
   GenreModel
 } from "../../config/dbSequelize.js";
-import { createCopyDTO, copyJoinResponseDTO } from "./copy.dto.js";
+
+import { baseCopyDTO } from "./copy.dto.js";
+
 
 export const getAllCopiesService = async () => {
   return await CopyModel.findAll({
@@ -14,7 +16,7 @@ export const getAllCopiesService = async () => {
     include: [
       {
         model: EditionModel,
-        as: "editions",
+        as: "edition",
         include: [
           {
             model: BookModel,
@@ -56,53 +58,129 @@ export const getAllCopiesByBookService = async (bookId) => {
           }
         ],
       },
-      { 
-        model: CopyStatusModel, 
-        as: "status" 
+      {
+        model: CopyStatusModel,
+        as: "status"
       }
     ],
   });
 };
 
-export const getCopyByEditionIdService = async (idEdition) => {
-  const copy = await CopyModel.findByPk(
-    idEdition, {
-    where: { editionId: idEdition },
+export const getCopiesByEditionIdService = async (idEdition) => {
+  const copy = await CopyModel.findAll(
+    {
+      where: { editionId: idEdition },
+      include: [
+        {
+          model: CopyStatusModel,
+          attributes: ['name'],
+          as: "status"
+        },
+      ],
+    });
+
+  return copy;
+};
+
+export const getAllCopiesAvailableService = async (bookId) => {
+  return await CopyModel.findAll({
+    where: {
+      statusId: 1
+    },
     include: [
       {
         model: EditionModel,
-        as: "editions",
-        attributes: ["idEdition", "edition", "bookId", "editorialId"],
+        as: "edition",
+        required: true,
         include: [
           {
             model: BookModel,
             as: "book",
-            include: [
-              {
-                model: GenreModel,
-                as: "genre",
-              },
-            ],
+            required: true,
+            where: {
+              idBook: bookId
+            }
           },
-          { model: EditorialModel, as: "editorial" },
+          {
+            model: EditorialModel,
+            as: "editorial"
+          }
         ],
       },
-      { model: CopyStatusModel, as: "status" },
+      {
+        model: CopyStatusModel, 
+        as: "status"
+      },
     ],
-  });
-  console.log("copy by id en service para admin: ", copyJoinResponseDTO(copy));
-  return copy;
+  })
+};
+
+export const getCopyByIdService = async (id) => {
+  return await CopyModel.findByPk(id);
 };
 
 export const createCopyService = async (copyData) => {
 
-  const copyDto = createCopyDTO(copyData);
+  try {
 
-  return await CopyModel.create(copyDto);
+    const edition = await EditionModel.findByPk(copyData.editionId);
+
+    if (!edition) {
+      throw new Error("Edición no existe");
+    }
+
+    const existingCopy = await CopyModel.findOne({
+      where: {
+        editionId: copyData.editionId,
+        copyNumber: copyData.copyNumber
+      }
+    })
+
+    if (existingCopy) {
+      throw new Error('Número de copia ya existe');
+    };
+
+    const existingSignature = await CopyModel.findOne({
+      where: {
+        signatureTopography: copyData.signatureTopography
+      },
+      include: [
+        {
+          model: EditionModel,
+          as: 'edition',
+          required: true,
+          where: {
+            bookId: edition.bookId
+          }
+        }
+      ]
+    })
+
+    if (existingSignature) {
+      throw new Error('Signatura ya existe para ese libro');
+    };
+
+    return await CopyModel.create(copyData);
+
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+
+
+
 };
 
 export const updateCopyService = async (id, copyData) => {
-  const searchedCopy = await CopyModel.findByPk(id);
+  const searchedCopy = await CopyModel.findByPk(id, {
+    include: [
+      {
+        model: CopyStatusModel,
+        as: 'status'
+      }
+    ]
+  });
+
 
   if (!searchedCopy || searchedCopy === 0) {
     throw new Error("No existe copia");

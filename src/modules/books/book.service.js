@@ -11,7 +11,7 @@ import {
   BookAuthorModel,
   BookSubjectModel,
 } from "../../config/dbSequelize.js";
-import { bookResponseDTO, createBookDTO, updateBookDTO } from "./book.dto.js";
+import { bookResponseDTO, updateBookDTO } from "./book.dto.js";
 import { Op } from "sequelize";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
 import {
@@ -163,6 +163,10 @@ export const getBooksPaginationAndSearchService = async ({
   };
 };
 
+export const getAllBooksService = async() => {
+  return await BookModel.findAll();
+};
+
 export const getBookByIdService = async (id) => {
   return await BookModel.findByPk(id, {
     include: [
@@ -189,8 +193,7 @@ export const getBookByIdService = async (id) => {
         include: [
           {
             model: EditorialModel,
-            as: "editorial",
-            attributes: ["idEditorial", "name"],
+            as: 'editorial'
           },
           {
             model: CopyModel,
@@ -199,7 +202,7 @@ export const getBookByIdService = async (id) => {
               {
                 model: CopyStatusModel,
                 as: "status",
-                attributes: ["idStatus", "name"],
+                attributes: ["name"],
               },
             ],
           },
@@ -210,7 +213,6 @@ export const getBookByIdService = async (id) => {
 };
 
 export const createBookService = async (bookData) => {
-  //const bookDto = createBookDTO(bookData);
 
   const exists = await BookModel.findOne({
     where: { title: { [Op.iLike]: bookData.title.trim() } },
@@ -226,11 +228,7 @@ export const createBookService = async (bookData) => {
   try {
     const book = await BookModel.create(
       bookData,
-      // {
-      //   title: bookDto.title,
-      //   summary: bookDto.summary,
-      //   genreId: bookDto.genre_id,
-      // },
+
       { transaction },
     );
 

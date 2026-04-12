@@ -96,8 +96,6 @@ export const getEditionById = async (req, res) => {
         .json(notFoundResponse({ message: "Edición no encontrada" }));
     }
 
-    console.log("edition by id en controller para admin (edition for book dto): ", editionForBookResponseDTO(edition));
-    console.log("edition by id en controller para admin (edition response dto): ", editionResponseDTO(edition));
     return res.status(200).json(
       succesGetResponse({
         message: "Edición encontrada exitosamente",
@@ -144,7 +142,6 @@ export const getEditionByBookId = async (req, res) => {
 export const createEdition = async (req, res) => {
   const dataEdition = req.body;
 
-  console.log("data recibida en controller para admin: ", dataEdition);
   const editionDto = createEditionDTO(dataEdition);
   try {
     const createdEdition = await createEditionService(editionDto);

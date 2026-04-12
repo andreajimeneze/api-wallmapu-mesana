@@ -5,14 +5,16 @@ import {
   successDeleteResponse,
   successUpdateResponse,
 } from "../../shared/apiResponse.js";
-import { copyResponseDTO, copyJoinResponseDTO, copyByBookResponseDTO } from "./copy.dto.js";
+import { copyResponseDTO, copyJoinResponseDTO, copyByBookResponseDTO, createCopyDTO, updateCopyDTO } from "./copy.dto.js";
 import {
   getAllCopiesService,
-  getCopyByEditionIdService,
+ getCopiesByEditionIdService,
   createCopyService,
   updateCopyService,
   deleteCopyService,
   getAllCopiesByBookService,
+  getAllCopiesAvailableService,
+  getCopyByIdService,
 } from "./copy.service.js";
 
 export const getAllCopies = async (req, res) => {
@@ -27,7 +29,6 @@ export const getAllCopies = async (req, res) => {
       );
     };
 
-    console.log("all copies en controller para admin: ", allCopies.map(copyJoinResponseDTO));
     return res.status(200).json(
       succesGetResponse({
         message: "Copias obtenidas exitosamente",
@@ -65,40 +66,80 @@ export const getAllCopiesByBook = async (req, res) => {
   }
 };
 
-export const getCopyById = async (req, res) => {
-  const { id } = req.params;
-console.log("id recibido en controller para admin: ", id);
-console.log('req.body en controller para admin: ', req.body);
-  try {
-    const searchedCopy = await getCopyByEditionIdService(id);
+export const getAllCopiesAbailableByBook = async (req, res) => {
+  const {bookId} = req.params;
 
-    console.log("copy by id en controller para admin: ", copyJoinResponseDTO(searchedCopy));
+
+  try {
+    const availableCopies = await getAllCopiesAvailableService(bookId);
+ 
+    if(availableCopies.length === 0) {
+       return res.status(404).json(notFoundResponse({message: 'No existen copias disponibles de este libro'}));
+    };
+
+    return  res.status(200).json(succesGetResponse({message: 'Copias disponibles del libro obtenidas con éxito', result: availableCopies.map(copyByBookResponseDTO)}))
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(
+      internalServerResponse({
+        message: "Error al intentar obtener las copias disponibles del libro",
+      }),
+    );
+  }
+};
+
+export const getCopiesByIdEdition = async (req, res) => {
+  const { idEdition } = req.params;
+
+  try {
+    const searchedCopy = await getCopiesByEditionIdService(idEdition);
 
     if (!searchedCopy) {
       return res
         .status(404)
-        .json(notFoundResponse({ message: "Copia no encontrada" }));
+        .json(notFoundResponse({ message: "Copias no encontradas" }));
     }
 
     return res.status(200).json(
       succesGetResponse({
-        message: "Copia obtenida exitosamente",
-        result: copyJoinResponseDTO(searchedCopy),
+        message: "Copias obtenidas exitosamente",
+        result: searchedCopy.map(copyResponseDTO),
       }),
     );
   } catch (error) {
     console.error(error);
     return res.status(500).json(
       internalServerResponse({
-        message: "Error al intentar obtener la copia",
+        message: "Error al intentar obtener las copias",
       }),
     );
   }
 };
 
-export const createCopy = async (req, res) => {
+export const getCopyById = async (req, res) => {
+  const {id} = req.params;
+
   try {
-    const createdCopy = await createCopyService(req.body);
+    const copyById = await getCopyByIdService(id);
+
+    if(!copyById) {
+      return res.status(404).json(notFoundResponse({message: 'No existe la copia solicitada'}));
+    };
+
+    return res.status(200).json(succesGetResponse({message: 'Copia obtenida exitosamente', result: copyResponseDTO(copyById)}));
+  } catch(error) {
+    console.error(error);
+    return res.status(500).json(internalServerResponse({message: 'Error al intentar obtener la copia'}));
+  }
+};
+
+export const createCopy = async (req, res) => {
+  const copyData  = req.body;
+  
+  const copyDto = createCopyDTO(copyData);
+
+  try {
+    const createdCopy = await createCopyService(copyDto);
 
     return res.status(201).json(
       successDeleteResponse({
@@ -108,17 +149,16 @@ export const createCopy = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    return res.status(500).json(
-      internalServerResponse({
-        message: "Error al intentar crear una copia",
-      }),
-    );
+    return res.status(400).json({
+    isSuccess: false,
+    message: error.message,
+  });
   }
 };
 
 export const updateCopy = async (req, res) => {
   const { id } = req.params;
-  const { copyData } = req.body;
+  const  copyData = req.body;
 
   const copyDto = updateCopyDTO(copyData);
 

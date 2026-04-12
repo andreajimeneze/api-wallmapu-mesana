@@ -7,11 +7,10 @@ import {
   EditorialModel,
   GenreModel,
   CopyStatusModel,
-  SubjectModel
 } from "../../config/dbSequelize.js";
-import { createEditionDTO, updateEditionDTO } from "./edition.dto.js";
+import {  editionForBookResponseDTO, updateEditionDTO } from "./edition.dto.js";
 import { paginationResponseDTO } from "../../shared/paginationResponse.js";
-import { editionResponseDTO, editionForBookResponseDTO } from "./edition.dto.js";
+import { editionResponseDTO} from "./edition.dto.js";
 import { Op } from "sequelize";
 import {
   deleteImageCloud,
@@ -69,6 +68,17 @@ export const getAllEditionPaginationService = async ({
       attributes: ["idEditorial", "name"],
       required: false,
     },
+    {
+      model: CopyModel,
+      as: 'copies',
+      required: false,
+      include: [
+        {
+          model: CopyStatusModel,
+          as: 'status'
+        }
+      ]
+    }
   ];
 
   const where = {};
@@ -132,7 +142,7 @@ export const getAllEditionPaginationService = async ({
     subQuery: false,
   });
 
-  return {
+    return {
     response: "Libros obtenidos exitosamente",
     result: paginationResponseDTO({
       page,
@@ -146,7 +156,7 @@ export const getAllEditionPaginationService = async ({
         page > 1
           ? `/edition/pagination?page=${page - 1}&limit=${limit}&search=${search}`
           : null,
-      result: result.map(editionResponseDTO),
+      result: result.map(editionForBookResponseDTO),
     }),
   };
 };
@@ -172,42 +182,27 @@ export const getEditionByIdService = async (id) => {
       {
         model: BookModel,
         as: "book",
-        include: [
-          {
-            model: GenreModel,
-            as: "genre",
-          },
-          {
-            model: AuthorModel,
-            as: "authors",
-          },
-          {            
-            model: SubjectModel,
-            as: "subjects",
-          },
-        ],
-
+        attributes: ['idBook', 'title']
       },
       {
         model: EditorialModel,
         as: "editorial",
+        attribute: ['name']
       },
       {
         model: CopyModel,
         as: "copies",
+        attributes: ['idCopy', 'copyNumber',  'barcode', 'created_at'],
         include: [
           {
             model: CopyStatusModel,
             as: 'status',
-            attributes: ['idStatus', 'name']
+            attributes: ['name']
           }
         ]
       },
     ],
   });
-// console.log("edition by id en service para admin: ", editionForBookResponseDTO(edition));
- 
-//   return editionForBookResponseDTO(edition);
 };
 
 export const getEditionByBookIdService = async (idBook) => {
@@ -220,12 +215,11 @@ export const getEditionByBookIdService = async (idBook) => {
     error.status = 404;
     throw error;
   }
-  console.log("edition by book id en service para admin: ", editionResponseDTO(edition));
+ 
   return editionResponseDTO(edition);
 };
 
 export const createEditionService = async (editionData) => {
-  //const dtoEdition = createEditionDTO(editionData);
 
   const editionCreated = await EditionModel.create(editionData);
 

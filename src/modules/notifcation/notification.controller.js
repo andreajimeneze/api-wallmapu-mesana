@@ -83,8 +83,6 @@ export const deleteNotificationById = async (req, res) => {
 export const deleteNotificationByUserId = async (req, res) => {
     const { userId } = req.params;
 
-    console.log('user id recibido en controller delete', userId)
-
     try {
         const notification = await deleteNotificationByUserIdService(userId);
 

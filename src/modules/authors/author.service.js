@@ -11,12 +11,6 @@ export const getAuthorByIdService = async (id) => {
   return await AuthorModel.findByPk(id);
 };
 
-// export const getAuthorByNameService = async (name) => {
-//   return await AuthorModel.findOne({
-//     where: { name: { [Op.iLike]: name.trim() } },
-//   });
-// };
-
 export const createAuthorService = async ({ id }, options = {}) => {
   const existingAuthor = await AuthorModel.findByPk(id);
 
@@ -33,17 +27,3 @@ export const createAuthorService = async ({ id }, options = {}) => {
   return AuthorModel.create(dto, options);
 };
 
-// export const getOrCreateAuthorService = async (authorNames, options = {}) => {
-//   const authorIds = [];
-
-//   for (const name of authorNames) {
-//     let author = await getAuthorByNameService(name, options);
-
-//     if (!author) {
-//       author = await createAuthorService({ name }, options);
-//     }
-
-//     authorIds.push(author.idAuthor);
-//   }
-//   return authorIds;
-// };

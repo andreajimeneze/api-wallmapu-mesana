@@ -16,15 +16,10 @@ export const baseBookDTO = (res) => ({
 });
 
 export const bookResponseDTO = (res) => ({
-  id_book: res.idBook,
-  title: res.title,
-  summary: res.summary,
-  genre_id: res.genreId,
-  created_at: res.created_at,
-  updated_at: res.updated_at,
+  ...baseBookDTO(res),
   genre: res.genre ? baseGenreDTO(res.genre) : null,
   authors: res.authors
-    ? res.authors.map(baseAuthorDTO) 
+    ? res.authors.map(baseAuthorDTO)
     : [],
 
   subjects: res.subjects
@@ -43,25 +38,25 @@ export const bookResponseDTO = (res) => ({
     : []
 });
 
-export const createBookDTO = ({title,
+export const createBookDTO = ({ title,
   summary,
   genre_id,
   authors = [],
-  subjects = []}) => {
-    if(!title?.trim() || !genre_id || authors.length === 0 || subjects.length === 0 ) {
-      throw new Error('Debe completar los campos título, género, autores y descriptores');
-    }
+  subjects = [] }) => {
+  if (!title?.trim() || !genre_id || authors.length === 0 || subjects.length === 0) {
+    throw new Error('Debe completar los campos título, género, autores y descriptores');
+  }
 
-    return {
-      title: title.trim(),
-      summary,
-      genreId: Number(genre_id),
-      authors: authors.map(author => Number(author.id_author)),
-      subjects: subjects.map(subject => Number(subject.id_subject))
-    }
+  return {
+    title: title.trim(),
+    summary,
+    genreId: Number(genre_id),
+    authors: authors.map(author => Number(author.id_author)),
+    subjects: subjects.map(subject => Number(subject.id_subject))
+  }
 };
 
-export const updateBookDTO = ({ idBook, title, summary, genreId, authors = [], subjects = []}) => {
+export const updateBookDTO = ({ idBook, title, summary, genreId, authors = [], subjects = [] }) => {
   return {
     idBook: Number(idBook),
     title: title.trim(),
@@ -75,18 +70,41 @@ export const updateBookDTO = ({ idBook, title, summary, genreId, authors = [], s
 
 export const BookDetailDTO = (book) => {
   if (!book) return null;
-  
+
   return {
     id_book: book.idBook,
     title: book.title,
     summary: book.summary,
-     authors: book.authors
-    ? book.authors.map(baseAuthorDTO) 
-    : [],
+    genre_id: book.genreId,
+     created_at: book.created_at,
+  updated_at: book.updated_at,
+    authors: book.authors
+      ? book.authors.map(baseAuthorDTO)
+      : [],
 
-  subjects: book.subjects
-    ? book.subjects.map(baseSubjectDTO)
-    : [],
+    subjects: book.subjects
+      ? book.subjects.map(baseSubjectDTO)
+      : [],
     genre: baseGenreDTO(book.genre),
-  };
+  }
 };
+
+export const bookBasicDTO = (book) => {
+  if (!book) return null;
+
+  return {
+    id_book: book.idBook,
+    title: book.title,
+    summary: book.summary,
+    genre_id: book.genreId,
+     created_at: book.created_at,
+  updated_at: book.updated_at,
+    authors: book.authors
+      ? book.authors.map(baseAuthorDTO)
+      : [],
+
+    subjects: book.subjects
+      ? book.subjects.map(baseSubjectDTO)
+      : [],
+  }
+}

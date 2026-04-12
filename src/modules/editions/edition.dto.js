@@ -1,33 +1,34 @@
-import { baseBookDTO, BookDetailDTO } from "../books/book.dto.js";
+import { bookBasicDTO, BookDetailDTO } from "../books/book.dto.js";
 import { baseCopyDTO } from "../copies/copy.dto.js";
 import { baseStatusCopyDTO } from "../copy_status/copy_status.dto.js";
 import { baseEditorialDTO } from "../editorials/editorial.dto.js";
 
 export const baseEditionDTO = (res) => ({
 
-    id_edition: res.idEdition,
-    edition: res.edition,
-    isbn: res.isbn,
-    publication_year: res.publicationYear,
-    pages: res.pages,
-    cover_image: res.coverImage,
-    book_id: res.bookId,
-    editorial_id: res.editorialId,
-    created_at: res.created_at,
-    updated_at: res.updated_at,
-  });
-
-  export const editionBasicDTO = (res) => ({
-    id_edition: res.idEdition,
+  id_edition: res.idEdition,
   edition: res.edition,
   isbn: res.isbn,
   publication_year: res.publicationYear,
   pages: res.pages,
   cover_image: res.coverImage,
+  book_id: res.bookId,
+  editorial_id: res.editorialId,
+  created_at: res.created_at,
+  updated_at: res.updated_at,
+});
+
+export const editionBasicDTO = (res) => ({
+  id_edition: res.idEdition,
+  edition: res.edition,
+  isbn: res.isbn,
+  publication_year: res.publicationYear,
+  pages: res.pages,
+  cover_image: res.coverImage,
+   book_id: res.bookId,
   editorial_id: res.editorialId,
   editorial_name: res.editorial.name
-  })
-  
+})
+
 
 export const editionResponseDTO = (res) => {
   if (!res) return null;
@@ -39,17 +40,17 @@ export const editionResponseDTO = (res) => {
     publication_year: res.publicationYear,
     pages: res.pages,
     cover_image: res.coverImage,
+    book_id: res.bookId,
     created_at: res.created_at,
     updated_at: res.updated_at,
     editorial: res.editorial ? baseEditorialDTO(res.editorial) : null,
-    book: res.book ? BookDetailDTO(res.book) : null,
+    book: res.book ? bookBasicDTO(res.book) : null,
     copies:
-      res.copies && Array.isArray(res.copies)
-        ? res.copies.map((copy) => ({
-            ...baseCopyDTO(copy),
-            status: baseStatusCopyDTO(copy.status),
-          }))
-        : [],
+      res.copies?.map((copy) => ({
+          ...baseCopyDTO(copy),
+          status: copy.status ? baseStatusCopyDTO(copy.status) : null
+        }))
+        ?? [],
   };
 };
 
@@ -63,16 +64,17 @@ export const editionForBookResponseDTO = (res) => {
     publication_year: res.publicationYear,
     pages: res.pages,
     cover_image: res.coverImage,
+    book_id: res.bookId,
     created_at: res.created_at,
     updated_at: res.updated_at,
 
-    book: res.book ? baseBookDTO(res.book) : null,
+    book: res.book ? BookDetailDTO(res.book) : null,
     editorial: baseEditorialDTO(res.editorial),
-    copies: 
-     res.copies?.map((copy) =>({
-      ...baseCopyDTO(copy), 
-      status: baseStatusCopyDTO(copy.status)
-    }))
+    copies: res.copies ?
+      res.copies.map((copy) => ({
+        ...baseCopyDTO(copy),
+        status: baseStatusCopyDTO(copy.status)
+      })) : []
   };
 };
 
@@ -99,10 +101,10 @@ export const createEditionDTO = ({
   };
 };
 
-export const updateEditionDTO = ({ 
+export const updateEditionDTO = ({
   id_edition,
   edition,
-  isbn, 
+  isbn,
   publication_year,
   pages,
   cover_image,
@@ -121,7 +123,16 @@ export const updateEditionDTO = ({
     bookId: Number(book_id),
     editorialId: Number(editorial_id),
   };
-}; 
+};
 
 
-export const editionDetailDTO = (detail) => ({});
+export const editionDetailDTO = (res) => ({
+   id_edition: res.idEdition,
+  edition: res.edition,
+  isbn: res.isbn,
+  publication_year: res.publicationYear,
+  pages: res.pages,
+  cover_image: res.coverImage,
+   book_id: res.bookId,
+   editorial: baseEditorialDTO(res.editorial),
+});

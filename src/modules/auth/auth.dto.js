@@ -1,6 +1,6 @@
 export const authResponseDTO = (auth) => ({
     token: auth.token, 
-    //refreshToken: auth.refreshToken,
+  
     user: {
         id_user: auth.user.id_user,
         email: auth.user.email,
