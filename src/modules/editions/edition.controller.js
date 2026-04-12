@@ -149,7 +149,7 @@ export const createEdition = async (req, res) => {
     return res.status(201).json(
       successCreateResponse({
         message: "Edición creada con éxito",
-        result: editionForBookResponseDTO(createdEdition),
+        result: editionResponseDTO(createdEdition),
       }),
     );
   } catch (error) {

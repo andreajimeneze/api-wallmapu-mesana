@@ -22,11 +22,16 @@ export const LoanPolicy = (sequelize, DataTypes) => {
         },
         reservationDays: {
             type: DataTypes.INTEGER,
-            default: 3
+            default: 3,
+            field: 'reservation_days'
+        },
+        finePerDay: {
+            type: DataTypes.INTEGER,
+            field: 'fine_per_day'
         }
     },
         {
-            tableName: 'wm_loan_policy',
+            tableName: 'wm_loan_policies',
             timestamps: false
         }
     )

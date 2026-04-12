@@ -23,6 +23,7 @@ import edition_image_routes from './src/modules/edition-image/edition_image.rout
 import reservation_status_routes from './src/modules/reservation_status/reservation_status.routes.js';
 import notification_routes from './src/modules/notifcation/notification.routes.js';
 import reservation_routes from './src/modules/reservation/reservation.routes.js';
+import loanPolicy_routes from './src/modules/loan_policy/loan.policy.routes.js';
 
 const router = Router();
 
@@ -50,6 +51,7 @@ router.use('/api/edition-image', edition_image_routes);
 router.use('/api/status', reservation_status_routes);
 router.use('/api/notifications', notification_routes);
 router.use('/api/reservations', reservation_routes);
+router.use('/api/loan', loanPolicy_routes);
 
 
 export default router;
