@@ -9,7 +9,7 @@ export const ReservationStatus = (sequelize, DataTypes) => {
                 autoIncrement: true,
                 field: 'id_status'
             },
-            status: {
+            name: {
                 type: DataTypes.STRING,
                 allowNull: false
             }
