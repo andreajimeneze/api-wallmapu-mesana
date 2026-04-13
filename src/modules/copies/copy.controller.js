@@ -4,7 +4,7 @@ import {
   succesGetResponse,
   successDeleteResponse,
   successUpdateResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 import { copyResponseDTO, copyJoinResponseDTO, copyByBookResponseDTO, createCopyDTO, updateCopyDTO } from "./copy.dto.js";
 import {
   getAllCopiesService,

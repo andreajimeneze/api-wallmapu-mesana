@@ -3,7 +3,7 @@ import {
   internalServerResponse,
   notFoundResponse,
   succesGetResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 import { responseUserRoleDTO } from "./user-role.dto.js";
 
 export const getUserRoles = async (req, res) => {

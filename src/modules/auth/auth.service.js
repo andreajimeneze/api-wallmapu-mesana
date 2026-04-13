@@ -3,7 +3,7 @@ import { getUserByEmailService,  createUserService} from "../users/user.service.
 import { verifyToken } from "./google.service.js";
 import { authResponseDTO } from "./auth.dto.js";
 import { env } from "../../config/env.js";
-import { isProfileComplete } from "../../helper/profileComplete.js";
+import { isProfileComplete } from "./utils/profileComplete.js";
 
 export const loginWithGoogleService = async (googleToken) => {
    

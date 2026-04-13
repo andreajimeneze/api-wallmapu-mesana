@@ -5,7 +5,7 @@ import {
   notFoundResponse,
   successDeleteResponse,
   badRequestResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 
 import {
   newsGalleryResponseDTO,

@@ -5,7 +5,7 @@ import {
   UserRoleModel,
   UserStatusModel,
 } from "../../config/dbSequelize.js";
-import { paginationResponseDTO } from "../../shared/paginationResponse.js";
+import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
 import { userResponseDTO } from "./user.dto.js";
 
 export const getUsersPaginationSearchService = async ({

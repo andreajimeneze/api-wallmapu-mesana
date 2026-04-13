@@ -6,7 +6,7 @@ import {
   internalServerResponse,
   notFoundResponse,
   succesGetResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 import { baseStatusCopyDTO } from "./copy_status.dto.js";
 
 export const getAllCopyStatus = async (req, res) => {

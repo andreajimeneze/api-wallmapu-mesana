@@ -5,7 +5,7 @@ import {
   successCreateResponse,
   successDeleteResponse,
   successUpdateResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 import { editionForBookResponseDTO, editionResponseDTO, createEditionDTO } from "./edition.dto.js";
 import {
   createEditionService,
@@ -44,7 +44,7 @@ export const getEditionPagination = async (req, res) => {
 
     return res.status(200).json(
       succesGetResponse({
-        message: "Ediciones obtenidas exitosamente",
+        resource: "Ediciones",
         result: result,
       }),
     );
@@ -70,7 +70,7 @@ export const getAllEditions = async (req, res) => {
 
     return res.status(200).json(
       succesGetResponse({
-        message: "Lista de ediciones obtenida exitosamente",
+        resource: "Lista de ediciones",
         result: allEditions.map(editionResponseDTO),
       }),
     );
@@ -98,7 +98,7 @@ export const getEditionById = async (req, res) => {
 
     return res.status(200).json(
       succesGetResponse({
-        message: "Edición encontrada exitosamente",
+        resource: "Edición",
         result: editionResponseDTO(edition),
       }),
     );
@@ -126,7 +126,7 @@ export const getEditionByBookId = async (req, res) => {
 
     return res.status(200).json(
       succesGetResponse({
-        message: "Edición obtenida exitosamente",
+        resource: "Edición",
         result: editionResponseDTO(editionByBook),
       }),
     );

@@ -1,4 +1,4 @@
-import { internalServerResponse, notFoundResponse, succesGetResponse } from "../../shared/apiResponse.js";
+import { internalServerResponse, notFoundResponse, succesGetResponse } from "../../core/responses/apiResponse.js";
 import { loanResponseDTO } from "./loan.dto.js";
 import { getActiveLoansByBookIdService, getActiveLoansByCopyIdService, getActiveLoansByUserIdService, getAllLoansService, getLoanByIdService, getLoansOverDueService } from './loan.service.js';
 
@@ -7,10 +7,10 @@ export const getAllLoans = async (req, res) => {
         const allLoans = await getAllLoansService();
 
         if (allLoans.length === 0) {
-            return res.status(404).json(notFoundResponse({ message: 'No existen préstamos actualmente' }));
+            return res.status(404).json(notFoundResponse({ resource: 'Préstamos' }));
         };
 
-        return res.status(200).json(succesGetResponse({ message: 'Préstamos obtenidos con éxito', result: allLoans.map(loanResponseDTO) }))
+        return res.status(200).json(succesGetResponse({ resource: 'Préstamos', result: allLoans.map(loanResponseDTO) }))
     } catch (error) {
         console.error(error);
         return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener los préstamos' }));

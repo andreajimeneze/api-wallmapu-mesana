@@ -9,7 +9,7 @@ import {
   badRequestResponse,
   internalServerResponse,
   notFoundResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 import { userResponseDTO } from "./user.dto.js";
 
 export const getUsersPaginationSearch = async (req, res) => {

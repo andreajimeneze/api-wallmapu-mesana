@@ -1,5 +1,5 @@
 import { deleteBookSubjectService } from "./book_subject.service.js";
-import { successDeleteResponse, internalServerResponse } from '../../shared/apiResponse.js';
+import { successDeleteResponse, internalServerResponse } from '../../core/responses/apiResponse.js';
 
 export const deleteBookSubject = async (req, res) => {
   const { idBook, idSubject } = req.params;

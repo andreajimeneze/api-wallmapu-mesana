@@ -7,7 +7,7 @@ import {
   notFoundResponse,
   badRequestResponse,
   conflictResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 import { createNewsDTO, newsResponseDTO, updateNewsDTO } from "./news.dto.js";
 import {
   getNewsPaginationAndSearchService,
@@ -15,8 +15,8 @@ import {
   getNewsByIdService,
   updateNewsService,
 } from "./news.service.js";
-import { createNewsWithImagesService } from "../../application/news/createNewsWithImages.usecase.js";
-import { deleteNewsAndImages } from "../../application/news/deleteNewsAndImages.usecase.js";
+import { createNewsWithImagesService } from "./usecases/createNewsWithImages.usecase.js";
+import { deleteNewsAndImages } from "./usecases/deleteNewsAndImages.usecase.js";
 
 export const getNewsPaginationAndSearch = async (req, res) => {
   try {

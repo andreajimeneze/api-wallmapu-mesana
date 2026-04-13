@@ -1,4 +1,4 @@
-import { internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse, successDeleteResponse, successUpdateResponse } from "../../shared/apiResponse.js"
+import { internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse, successDeleteResponse, successUpdateResponse } from "../../core/responses/apiResponse.js"
 import { baseLoanPolicyDTO, createLoanPolicyDTO, updateLoanPolicyDTO } from "./loan_policy.dto.js";
 import { deletePolicyService, getAllLoanPoliciesService, getLoanPolicyByIdService } from "./loan_policy.service.js"
 
@@ -8,10 +8,10 @@ export const getAllLoanPolicies = async ( req, res ) => {
         const loanPolicies = await getAllLoanPoliciesService();
 
         if(loanPolicies.length === 0) {
-            return res.status(404).json(notFoundResponse({message: 'No existen políticas de préstamos cargadas'}));
+            return res.status(404).json(notFoundResponse({resource: 'Políticas de préstamos'}));
         };
 
-        return res.status(200).json(succesGetResponse({message: 'Políticas de préstamo obtenidas exitosamente', result: loanPolicies.map(baseLoanPolicyDTO)}));
+        return res.status(200).json(succesGetResponse({resource: 'Políticas de préstamos', result: loanPolicies.map(baseLoanPolicyDTO)}));
     } catch(error) {
         console.error(error);
         return res.status(500).json(internalServerResponse({

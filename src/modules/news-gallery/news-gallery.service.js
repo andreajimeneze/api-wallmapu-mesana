@@ -2,9 +2,9 @@ import {
   deleteImageCloud,
   extractPublicId,
   uploadImageCloud169,
-} from "../../services/images/cloudinary.service.js";
+} from "../../core/services/cloudinary.service.js";
 import { NewsGalleryModel, NewsModel } from "../../config/dbSequelize.js";
-import { generateFileName } from "../../services/images/generateFileName.js";
+import { generateFileName } from "../../core/utils/generateFileName.js";
 
 const path = "news";
 

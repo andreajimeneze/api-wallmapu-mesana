@@ -15,7 +15,7 @@ import {
   successUpdateResponse,
   successDeleteResponse,
   conflictResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 
 export const getBooksPaginationAndSearch = async (req, res) => {
   try {

@@ -1,7 +1,7 @@
 import {
   internalServerResponse,
   successDeleteResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 import { deleteBookAuthorService } from "./book_author.service.js";
 
 export const deleteBookAuthor = async (req, res) => {

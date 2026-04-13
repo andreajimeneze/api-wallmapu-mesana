@@ -1,4 +1,4 @@
-import { internalServerResponse, notFoundResponse, succesGetResponse } from "../../shared/apiResponse.js";
+import { internalServerResponse, notFoundResponse, succesGetResponse } from "../../core/responses/apiResponse.js";
 import { reservationResponseDTO } from "./reservation.dto.js";
 import { getActiveReservationByCopyService, getAllReservationsService, getReservationByIdService, getReservationsByUserIdService } from "./reservation.service.js";
 

@@ -9,13 +9,13 @@ import {
   CopyStatusModel,
 } from "../../config/dbSequelize.js";
 import {  editionForBookResponseDTO, updateEditionDTO } from "./edition.dto.js";
-import { paginationResponseDTO } from "../../shared/paginationResponse.js";
+import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
 import { editionResponseDTO} from "./edition.dto.js";
 import { Op } from "sequelize";
 import {
   deleteImageCloud,
   extractPublicId,
-} from "../../services/images/cloudinary.service.js";
+} from "../../core/services/cloudinary.service.js";
 
 export const getAllEditionPaginationService = async ({
   page,

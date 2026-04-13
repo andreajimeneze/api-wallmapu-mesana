@@ -2,7 +2,7 @@ import {
   internalServerResponse,
   notFoundResponse,
   succesGetResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 import { responseRegionDTO } from "./region.dto.js";
 import {
   getAllRegionsService,

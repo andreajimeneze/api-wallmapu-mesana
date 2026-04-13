@@ -1,7 +1,7 @@
 import {
   internalServerResponse,
   successCreateResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 import {
   createCoverImageService,
   deleteCoverImageService,

@@ -6,7 +6,7 @@ import {
   deleteImageByIdGallery,
   deleteGalleryByNewsId
 } from "./news-gallery.controller.js";
-import { upload } from "../../services/images/multer.js";
+import { upload } from "../../core/services/multer.js";
 import { jwtMiddleware, checkRole } from "../auth/auth.middleware.js";
 
 const router = express.Router();

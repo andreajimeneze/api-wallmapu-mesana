@@ -3,7 +3,7 @@ import {
   internalServerResponse,
   notFoundResponse,
   succesGetResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 import { responseUserStatusDTO } from "./user-status.dto.js";
 
 export const getUsersStatus = async (req, res) => {

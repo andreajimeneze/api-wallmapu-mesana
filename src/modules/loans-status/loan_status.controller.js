@@ -1,4 +1,4 @@
-import { internalServerResponse, notFoundResponse, succesGetResponse } from "../../shared/apiResponse.js";
+import { internalServerResponse, notFoundResponse, succesGetResponse } from "../../core/responses/apiResponse.js";
 import { loanStatusDTO } from "./loan_status.dto.js";
 import { getAllLoanStatusService } from "./loan_status.service.js";
 

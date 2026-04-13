@@ -2,8 +2,8 @@ import {
   deleteImageCloud,
   extractPublicId,
   uploadImageCloud710,
-} from "../../services/images/cloudinary.service.js";
-import { generateFileName } from "../../services/images/generateFileName.js";
+} from "../../core/services/cloudinary.service.js";
+import { generateFileName } from "../../core/utils/generateFileName.js";
 import { EditionModel } from "../../config/dbSequelize.js";
 
 const path = "edition";

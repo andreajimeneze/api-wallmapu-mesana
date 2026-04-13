@@ -1,7 +1,7 @@
 import {
   internalServerResponse,
   succesGetResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 import { stateAdminResponseDTO } from "./stat.dto.js";
 import { getAllStatesAdminService } from "./stat.service.js";
 

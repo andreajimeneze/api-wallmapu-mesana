@@ -1,6 +1,6 @@
 import { NewsGalleryModel, NewsModel } from "../../config/dbSequelize.js";
 import { Op } from "sequelize";
-import { paginationResponseDTO } from "../../shared/paginationResponse.js";
+import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
 import { newsResponseDTO } from "./news.dto.js";
 
 

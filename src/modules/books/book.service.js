@@ -13,7 +13,7 @@ import {
 } from "../../config/dbSequelize.js";
 import { bookResponseDTO, updateBookDTO } from "./book.dto.js";
 import { Op } from "sequelize";
-import { paginationResponseDTO } from "../../shared/paginationResponse.js";
+import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
 import {
   createBookSubjectsService,
   deleteBookSubjectService,

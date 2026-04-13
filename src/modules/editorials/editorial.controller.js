@@ -2,7 +2,7 @@ import {
   internalServerResponse,
   notFoundResponse,
   succesGetResponse,
-} from "../../shared/apiResponse.js";
+} from "../../core/responses/apiResponse.js";
 import {
   editorialResponseDTO,
   createEditorialResponseDTO,
@@ -27,7 +27,7 @@ export const getAllEditorials = async (req, res) => {
 
     return res.status(200).json(
       succesGetResponse({
-        message: "Editoriales obtenidas exitosamente",
+        resource: "Editoriales",
         result: editorials.map(editorialResponseDTO),
       }),
     );
@@ -55,7 +55,7 @@ export const getEditorialById = async (req, res) => {
 
     return res
       .status(200)
-      .json(succesGetResponse({ message: "Editorial obtenida exitosamente", result: baseEditorialDTO(editorial) }));
+      .json(succesGetResponse({ resource: "Editorial", result: baseEditorialDTO(editorial) }));
   } catch (error) {
     return res.status(500).json(
       internalServerResponse({
@@ -84,7 +84,7 @@ export const updateEditorial = async (req, res) => {
 
     return res.status(202).json(
       succesGetResponse({
-        message: "Editorial editada correctamente",
+        resource: "Editorial",
         result: updatedEditorial,
       }),
     );
@@ -108,7 +108,7 @@ export const createEditorial = async (req, res) => {
       .status(201)
       .json(
         succesGetResponse({
-          message: "Editorial creada exitosamente",
+          resource: "Editorial",
           result: createdEditorial,
         }),
       );

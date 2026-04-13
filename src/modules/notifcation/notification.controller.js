@@ -1,4 +1,4 @@
-import { internalServerResponse, notFoundResponse, succesGetResponse, successDeleteResponse } from "../../shared/apiResponse.js"
+import { internalServerResponse, notFoundResponse, succesGetResponse, successDeleteResponse } from "../../core/responses/apiResponse.js"
 import { createNotificationDTO, notificationDTO } from "./notification.dto.js";
 import { createNotificationService, deleteNotificationByIdService, deleteNotificationByUserIdService, getAllNotificationsService, getNotificationByIdService, getNotificationsByUnreadUserIdService } from "./notification.service.js";
 
