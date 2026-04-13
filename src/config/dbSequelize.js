@@ -10,7 +10,6 @@ import { LoanStatus } from "../modules/loans-status/loan-status.model.js";
 import { Loan } from "../modules/loans/loan.model.js";
 import { Province } from "../modules/province/province.model.js";
 import { Region } from "../modules/region/region.model.js";
-import { ReturnStatus } from "../modules/return-status/return-status.model.js";
 import { UserStatus } from "../modules/user-status/user-status.model.js";
 import { UserRole } from "../modules/user-role/user-role.model.js";
 import { User } from "../modules/users/user.model.js";
@@ -64,7 +63,6 @@ export const getModels = () => {
       LoanModel: Loan(sequelize, DataTypes),
       ProvinceModel: Province(sequelize, DataTypes),
       RegionModel: Region(sequelize, DataTypes),
-      ReturnStatusModel: ReturnStatus(sequelize, DataTypes),
       UserStatusModel: UserStatus(sequelize, DataTypes),
       UserRoleModel: UserRole(sequelize, DataTypes),
       UserModel: User(sequelize, DataTypes),
@@ -104,7 +102,6 @@ export const {
   LoanModel,
   ProvinceModel,
   RegionModel,
-  ReturnStatusModel,
   UserStatusModel,
   UserRoleModel,
   UserModel,

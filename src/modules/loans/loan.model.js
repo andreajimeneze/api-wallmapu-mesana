@@ -15,15 +15,15 @@ export const Loan = (sequelize, DataTypes) => {
         allowNull: false,
         field: "user_id",
       },
-      bookId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        field: "book_id",
-      },
       loanDate: {
         type: DataTypes.DATE,
         allowNull: false,
         field: "loan_date",
+      },
+      dueDate: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        field: "due_date",
       },
       returnDate: {
         type: DataTypes.DATE,
@@ -33,12 +33,12 @@ export const Loan = (sequelize, DataTypes) => {
       loanStatusId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        field: "loan_status_id",
+        field: 'loan_status_id'
       },
-      returnStatusId: {
+      copyId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        field: "return_status_id",
+        field: "copy_id",
       }
     },
     {
@@ -55,24 +55,17 @@ export const Loan = (sequelize, DataTypes) => {
       sourceKey: "idUser",
       as: "user",
     });
-
-    Loan.belongsTo(models.BookModel, {
-      foreignKey: "bookId",
-      sourceKey: "idBook",
-      as: "book",
+    Loan.belongsTo(models.CopyModel, {
+      foreignKey: "copyId",
+      sourceKey: "idCopy",
+      as: "copy",
     });
 
     Loan.belongsTo(models.LoanStatusModel, {
-      foreignKey: "loanStatusId",
-      sourceKey: "idLoanStatus",
-      as: "loanStatus",
-    });
-
-    Loan.belongsTo(models.ReturnStatusModel, {
-      foreignKey: "returnStatusId",
-      sourceKey: "idReturnStatus",
-      as: "returnStatus",
-    });
+      foreignKey: 'loanStatusId',
+      sourceKey: 'idLoanStatus',
+      as: 'loanStatus'
+    })
   };
 
   return Loan;

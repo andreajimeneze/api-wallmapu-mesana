@@ -25,6 +25,7 @@ import notification_routes from './src/modules/notifcation/notification.routes.j
 import reservation_routes from './src/modules/reservation/reservation.routes.js';
 import loanPolicy_routes from './src/modules/loan_policy/loan.policy.routes.js';
 import loanStatus_routes from './src/modules/loans-status/loan_status.routes.js';
+import loans_routes from './src/modules/loans/loan.routes.js';
 
 const router = Router();
 
@@ -49,11 +50,12 @@ router.use('/api/books', book_routes);
 router.use('/api/book-author', book_author_routes);
 router.use('/api/book-subject', book_subject_routes);
 router.use('/api/edition-image', edition_image_routes);
-router.use('/api/status', reservation_status_routes);
+router.use('/api/reservation-status', reservation_status_routes);
 router.use('/api/notifications', notification_routes);
 router.use('/api/reservations', reservation_routes);
-router.use('/api/loan', loanPolicy_routes);
+router.use('/api/loan-policies', loanPolicy_routes);
 router.use('/api/loan-status', loanStatus_routes);
+router.use('/api/loans', loans_routes);
 
 
 export default router;

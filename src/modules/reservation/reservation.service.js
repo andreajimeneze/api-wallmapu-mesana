@@ -23,7 +23,7 @@ export const getAllReservationsService = async () => {
             {
                 model: ReservationStatusModel,
                 as: 'reservationStatus',
-                attributes: ['idStatus', 'status']
+                attributes: ['idStatus', 'name']
             }
         ],
         order: [['reservationDate', 'DESC']]
@@ -53,7 +53,7 @@ export const getReservationByIdService = async (id) => {
             {
                 model: ReservationStatusModel,
                 as: 'reservationStatus',
-                attributes: ['idStatus', 'status']
+                attributes: ['idStatus', 'name']
             }
         ]
     });
@@ -85,7 +85,7 @@ export const getReservationsByUserIdService = async (userId) => {
             {
                 model: ReservationStatusModel,
                 as: 'reservationStatus',
-                attributes: ['idStatus', 'status']
+                attributes: ['idStatus', 'name']
             }
         ]
     })

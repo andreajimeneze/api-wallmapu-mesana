@@ -7,9 +7,6 @@ import {
   GenreModel
 } from "../../config/dbSequelize.js";
 
-import { baseCopyDTO } from "./copy.dto.js";
-
-
 export const getAllCopiesService = async () => {
   return await CopyModel.findAll({
     order: [["idCopy", "ASC"]],
