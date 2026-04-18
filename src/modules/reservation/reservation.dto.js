@@ -13,16 +13,31 @@ export const baseReservationDTO = (res) => ({
 });
 
 
-export const reservationResponseDTO = (res) => ({
-    reservations: baseReservationDTO(res),
-    reservation_status: res.reservationStatus ? reservationStatusDTO(res.reservationStatus) : null,
-    user: res.user ? baseUserDTO(res.user) : null,
-    copies: res.copies && Array.isArray(res.copies) ? res.copies.map((copy) => ({
-        ...baseCopyDTO(copy),
-        edition: copy.edition ? baseEditionDTO(copy.edition) : null
-    })) : []
-});
+export const reservationResponseDTO = (res) => {
+    const copy = res.copy;
+    const edition = copy?.edition;
 
+    return {
+        id_reservation: res.idReservation,
+        reservation_date: res.reservationDate,
+        expiration_date: res.expirationDate,
+
+        user_id: res.userId,
+        user_name: res.user?.username,
+        user_lastname: res.user?.userlastname,
+        user_email: res.user?.email,
+
+        copy_id: res.copyId,
+        copy_barcode: copy?.barcode,
+        copy_signature: copy?.signatureTopography,
+
+        book_id: edition?.book?.idBook,
+        book_title: edition?.book?.title,
+
+        reservation_status_id: res.reservationStatusId,
+        reservation_status_name: res.reservationStatus?.name
+    };
+};
 export const createReservationDTO = ({
     expirationDate,
     userId,

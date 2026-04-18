@@ -51,7 +51,7 @@ export const Reservation = (sequelize, DataTypes) => {
         Reservation.belongsTo(models.CopyModel, {
             foreignKey: 'copyId',
             targetKey: 'idCopy',
-            as: 'copies'
+            as: 'copy'
         });
         Reservation.belongsTo(models.UserModel, {
             foreignKey: 'userId',

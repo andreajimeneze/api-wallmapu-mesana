@@ -1,6 +1,6 @@
-import { internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse } from "../../core/responses/apiResponse.js";
+import { conflictResponse, internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse } from "../../core/responses/apiResponse.js";
 import { reservationResponseDTO } from "./reservation.dto.js";
-import { createCopyReservationService, getActiveReservationByCopyService, getAllReservationsService, getReservationByIdService, getReservationsByUserIdService } from "./reservation.service.js";
+import { createCopyReservationService, getActiveReservationByCopyService, getAllReservationsService, getExpireOverdueService, getReservationByIdService, getReservationPendingById, getReservationsByUserIdService, updateStatusReservationsService } from "./reservation.service.js";
 
 export const getAllReservations = async (req , res) => {
     try {
@@ -85,4 +85,36 @@ console.log(user_id)
         console.error(error);
         return res.status(500).json(internalServerResponse({message: 'Error al intentar crear la reserva'}));
     }
+};
+
+// export const getExpireOverdue = async (req, res) => {
+//    try {
+//     const expireOverdue = await getExpireOverdueService();
+
+//     if(!expireOverdue || expireOverdue.length === 0) {
+//         return res.status(200).json(succesGetResponse({message: 'No existen reservas con fecha vencida'}))
+//     };
+
+    
+//      return res.status(200).json(succesGetResponse({message: 'Reservas con fecha vencida obtenidas con éxito', data: expireOverdue.map(reservationResponseDTO)}))
+    
+//    } catch(error) {
+//         console.error(error);
+//         return res.status(500).json(internalServerResponse({message: 'Error al intentar obtener reservas vencidas'}));
+//     }
+// };
+
+export const markAsExpireOverdue = async (req, res) => {
+
+    try {
+        const markedExpireOverdue = await updateStatusReservationsService();
+
+
+        return res.status(200).json(succesGetResponse({message: 'Estados modificado con éxitos', data: markedExpireOverdue}))
+
+    } catch(error) {
+        console.error(error);
+        return res.status(500).json(internalServerResponse({message: 'Error al intentar actualizar reservas vencidas'}));
+    }
+
 }

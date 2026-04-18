@@ -1,4 +1,4 @@
-import { CopyModel, EditionModel, ReservationModel, ReservationStatusModel, UserModel } from "../../config/dbSequelize.js"
+import { BookModel, CopyModel, EditionModel, ReservationModel, ReservationStatusModel, UserModel } from "../../config/dbSequelize.js"
 import { getDefaultPolicy } from "../loan_policy/loan_policy.service.js";
 import { createReservationDTO } from "./reservation.dto.js";
 import { getCopyByIdService } from '../copies/copy.service.js';
@@ -14,13 +14,20 @@ export const getAllReservationsService = async () => {
             },
             {
                 model: CopyModel,
-                as: 'copies',
-                attributes: ['idCopy', 'barcode', 'copyNumber', 'statusId'],
+                as: 'copy',
+                attributes: ['idCopy', 'barcode', 'signatureTopography', 'copyNumber', 'statusId'],
                 include: [
                     {
                         model: EditionModel,
                         as: 'edition',
-                        attributes: ['idEdition', 'bookId']
+                        attributes: ['idEdition', 'bookId'],
+                        include: [
+                            {
+                                model: BookModel,
+                                as: 'book',
+                                attributes: ['idBook', 'title']
+                            }
+                        ]
                     }
                 ]
             },
@@ -177,3 +184,53 @@ export const createCopyReservationService = async (userId, copyId) => {
 
     //return await getReservationByIdService(createdReservation.idReservation);
 };
+
+export const getExpireOverdueService = async () => {
+    return ReservationModel.findAll({
+        where: {
+            expirationDate: {
+                [Op.lt]: new Date()
+            }
+        },
+        include: [
+            {
+                model: CopyModel,
+                as: 'copies'
+            },
+            {
+                model: UserModel,
+                as: 'user'
+            },
+            {
+                model: ReservationStatusModel,
+                as: 'reservationStatus'
+            }
+        ]
+    });
+
+
+};
+
+export const getReservationPendingById = async (id) => {
+    return ReservationModel.findOne({
+        where: {
+            idReservation: id,
+            reservationStatusId: 1
+        }
+    });
+};
+
+export const updateStatusReservationsService = async() => {
+    const [updatedStatusCount ] = await ReservationModel.update(
+        {reservationStatusId: 4},
+    {
+        where: {
+            reservationStatusId: 1,
+            expirationDate: {
+                [Op.lt]: new Date()
+            }
+        }
+    })
+    return updatedStatusCount;
+}
+

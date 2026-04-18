@@ -5,12 +5,13 @@ import { reservationStatusDTO } from "./reservation_status.dto.js";
 export const getAllStatus = async (req, res) => {
     try {
         const allStatus = await getAllStatusService();
+      
 
         if (!allStatus) {
             return res.status(200).json(succesGetResponse({ message: 'No existen status cargados' }))
         }
 
-        return res.status(200).json(succesGetResponse({ message: 'Status obtenidos con éxito', data: reservationStatusDTO(allStatus) }));
+        return res.status(200).json(succesGetResponse({ message: 'Status obtenidos con éxito', data: allStatus.map(reservationStatusDTO) }));
 
     } catch (error) {
         return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener los status' }));
