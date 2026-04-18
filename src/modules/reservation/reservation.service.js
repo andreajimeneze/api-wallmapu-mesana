@@ -51,7 +51,7 @@ export const getReservationByIdService = async (id) => {
             },
             {
                 model: CopyModel,
-                as: 'copies',
+                as: 'copy',
                 attributes: ['idCopy', 'barcode', 'copyNumber', 'statusId'],
                 include: [
                     {
@@ -83,7 +83,7 @@ export const getReservationsByUserIdService = async (userId) => {
             },
             {
                 model: CopyModel,
-                as: 'copies',
+                as: 'copy',
                 attributes: ['idCopy', 'barcode', 'copyNumber', 'statusId'],
                 include: [
                     {
@@ -114,7 +114,7 @@ export const getActiveReservationByUserIdAndCopyService = async (userId, copyId)
         include: [
             {
                 model: CopyModel,
-                as: 'copies',
+                as: 'copy',
                 attributes: ['idCopy', 'barcode', 'copyNumber', 'statusId'],
                 include: [
                     {
@@ -137,7 +137,7 @@ export const getActiveReservationByCopyService = async (copyId) => {
         include: [
             {
                 model: CopyModel,
-                as: 'copies',
+                as: 'copy',
                 attributes: ['idCopy', 'barcode', 'copyNumber', 'statusId'],
                 include: [
                     {
@@ -195,7 +195,7 @@ export const getExpireOverdueService = async () => {
         include: [
             {
                 model: CopyModel,
-                as: 'copies'
+                as: 'copy'
             },
             {
                 model: UserModel,
