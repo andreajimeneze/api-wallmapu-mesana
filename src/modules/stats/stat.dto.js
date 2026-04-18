@@ -1,11 +1,9 @@
 export const stateAdminResponseDTO = (stat) => ({
-    users: stat.users,
-    news:stat.news,
-    regions: stat.regions,
-    provinces: stat.provinces,
-    communes: stat.communes,
-    authors: stat.authors,
-    editorials: stat.editorials,
-    subjects: stat.subjects || 0,
-    books: stat.books || 0
+    users: stat.users || 0,
+    news:stat.news || 0,
+    authors: stat.authors || 0,
+    editorials: stat.editorials || 0,
+    books: stat.books || 0,
+    loans: stat.loans || 0,
+    reservations: stat.reservations || 0
 })

@@ -1,12 +1,10 @@
 import {
   AuthorModel,
   BookModel,
-  CommuneModel,
   EditorialModel,
+  LoanModel,
   NewsModel,
-  ProvinceModel,
-  RegionModel,
-  SubjectModel,
+  ReservationModel,
   UserModel,
 } from "../../config/dbSequelize.js";
 
@@ -14,34 +12,28 @@ export const getAllStatesAdminService = async () => {
   const [
     users,
     news,
-    regions,
-    provinces,
-    communes,
     authors,
     editorials,
-    subjects,
-    books
+    books, 
+    loans,
+    reservations
   ] = await Promise.all([
     UserModel.count(),
     NewsModel.count(),
-    RegionModel.count(),
-    ProvinceModel.count(),
-    CommuneModel.count(),
     AuthorModel.count(),
     EditorialModel.count(),
-    SubjectModel.count(),
-    BookModel.count()
+    BookModel.count(),
+    LoanModel.count(),
+    ReservationModel.count()
   ]);
 
   return {
     users,
     news,
-    regions,
-    provinces,
-    communes,
     authors,
     editorials,
-    subjects,
-    books
+    books,
+    loans,
+    reservations
   };
 };
