@@ -6,9 +6,9 @@ export const getAllLoans = async (req, res) => {
     try {
         const allLoans = await getAllLoansService();
 
-        // if (allLoans.length === 0) {
-        //     return res.status(404).json(notFoundResponse({ resource: 'Préstamos' }));
-        // };
+        if (allLoans.length === 0) {
+            return res.status(200).json(succesGetResponse({ resource: 'Préstamos' }));
+        };
 
         return res.status(200).json(succesGetResponse({ resource: 'Préstamos', data: allLoans.map(loanResponseDTO) }))
     } catch (error) {
@@ -42,7 +42,7 @@ export const getActiveLoansByUserId = async (req, res) => {
         const activeLoans = getActiveLoansByUserIdService(userId);
 
         if (activeLoans.length === 0) {
-            return res.status(404).json(notFoundResponse({ message: 'No existen préstamos activos para el usuario' }));
+            return res.status(200).json(succesGetResponse({ message: 'No existen préstamos activos para el usuario' }));
         };
 
         return res.status(200).json(succesGetResponse({ message: 'Préstamos activos obtenidos correctamente', data: loanResponseDTO(activeLoans) }))
@@ -79,7 +79,7 @@ export const getActiveLoansByBookId = async (req, res) => {
          const activeLoansByBook = getActiveLoansByBookIdService(copyId);
 
         if (activeLoansByBook.length === 0) {
-            return res.status(404).json(notFoundResponse({ message: 'No existen libros con préstamos activos' }));
+            return res.status(200).json(succesGetResponse({ message: 'No existen libros con préstamos activos' }));
         };
 
         return res.status(200).json(succesGetResponse({ message: 'Libros con préstamos activos obtenidos correctamente', data: loanResponseDTO(activeLoansByBook) }))
@@ -96,7 +96,7 @@ export const getLoansOverDue = async (req, res) => {
         const overDueLoans = await getLoansOverDueService();
 
         if(overDueLoans.length === 0) {
-            return res.status(404).json(notFoundResponse({ message: 'No existen préstamos vencidos' }));
+            return res.status(200).json(succesGetResponse({ message: 'No existen préstamos vencidos' }));
         };
 
         return res.status(200).json(succesGetResponse({ message: 'Préstamos vencidos obtenidos correctamente', data: overDueLoans.map(loanResponseDTO) }))

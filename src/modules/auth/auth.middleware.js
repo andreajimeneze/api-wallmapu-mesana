@@ -2,6 +2,7 @@ import  jwt  from "jsonwebtoken";
 import { env } from '../../config/env.js';
 
 export const jwtMiddleware = (req, res, next) => {
+  console.log("🔥 ENTRE AL MIDDLEWARE");
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "Token requerido" });

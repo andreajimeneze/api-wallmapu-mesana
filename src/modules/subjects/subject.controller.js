@@ -15,9 +15,9 @@ export const getAllSubjects = async (req, res) => {
 
     if (!subjects || subjects.length === 0) {
       return res
-        .status(404)
+        .status(200)
         .json(
-          notFoundResponse({ message: "No existen descriptores cargados" }),
+          succesGetResponse({ message: "No existen descriptores cargados" }),
         );
     }
 

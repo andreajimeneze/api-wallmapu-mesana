@@ -7,9 +7,9 @@ export const getAllLoanPolicies = async ( req, res ) => {
 
         const loanPolicies = await getAllLoanPoliciesService();
 
-        // if(loanPolicies.length === 0) {
-        //     return res.status(404).json(notFoundResponse({resource: 'Políticas de préstamos'}));
-        // };
+        if(loanPolicies.length === 0) {
+            return res.status(200).json(succesGetResponse({resource: 'Políticas de préstamos'}));
+        };
 
         return res.status(200).json(succesGetResponse({resource: 'Políticas de préstamos', data: loanPolicies.map(baseLoanPolicyDTO)}));
     } catch(error) {

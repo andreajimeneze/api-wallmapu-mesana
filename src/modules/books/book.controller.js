@@ -56,7 +56,7 @@ export const getAllBooks = async(req, res) => {
     const allBooks = await getAllBooksService();
 
     if(!allBooks || allBooks.length === 0) {
-      return res.status(404).json(notFoundResponse({message: 'No existen libros cargados'}));
+      return res.status(200).json(succesGetResponse({message: 'No existen libros cargados'}));
     };
 
     return res.status(200).json(succesGetResponse({message: 'Libros obtenidos exitosamente', data: allBooks.map(baseBookDTO)}))

@@ -15,9 +15,9 @@ export const getAllProvinces = async (req, res) => {
 
     if (!provinces || provinces.length === 0) {
       return res
-        .status(404)
+        .status(200)
         .json(
-          notFoundResponse({
+          succesGetResponse({
             message: "No hay provincias cargadas actualmente",
           }),
         );

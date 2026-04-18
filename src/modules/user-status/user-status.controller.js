@@ -12,8 +12,8 @@ export const getUsersStatus = async (req, res) => {
 
     if (!userStatus  || userStatus.length === 0) {
       return res
-        .status(404)
-        .json(notFoundResponse({ message: "No existen status cargados" }));
+        .status(200)
+        .json(succesGetResponse({ message: "No existen status cargados" }));
     }
 
     return res.status(200).json(

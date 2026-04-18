@@ -25,14 +25,14 @@ export const reservationResponseDTO = (res) => ({
 
 export const createReservationDTO = ({
     expirationDate,
-    user_id,
-    copy_id,
+    userId,
+    copyId,
     reservationStatusId
 }) => {
     return {
         expirationDate: expirationDate,
-        userId: user_id,
-        copyId: copy_id,
+        userId: userId,
+        copyId: copyId,
         reservationStatusId: reservationStatusId
     }
 };

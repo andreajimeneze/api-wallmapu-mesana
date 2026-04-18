@@ -15,9 +15,9 @@ export const getAllCommune = async (req, res) => {
 
     if (!communes || communes.length === 0) {
       return res
-        .status(404)
+        .status(200)
         .json(
-          notFoundResponse({ message: "No hay comunas cargadas actualmente" }),
+          succesGetResponse({ message: "No hay comunas cargadas actualmente" }),
         );
     }
 

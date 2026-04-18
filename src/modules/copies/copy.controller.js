@@ -22,8 +22,8 @@ export const getAllCopies = async (req, res) => {
     const allCopies = await getAllCopiesService();
     
     if (!allCopies || allCopies.length === 0) {
-      return res.status(404).json(
-        notFoundResponse({
+      return res.status(200).json(
+        succesGetResponse({
           message: "No existen copias cargadas actualmente",
         }),
       );
@@ -52,7 +52,7 @@ export const getAllCopiesByBook = async (req, res) => {
     const allBookCopies = await getAllCopiesByBookService(bookId);
 
     if(allBookCopies.length === 0) {
-      return res.status(404).json(notFoundResponse({message: 'No existen copias de este libro'}));
+      return res.status(200).json(succesGetResponse({message: 'No existen copias de este libro'}));
     };
 
     return res.status(200).json(succesGetResponse({message: 'Copias del libro obtenidas con éxito', data: allBookCopies.map(copyByBookResponseDTO)}))
@@ -74,7 +74,7 @@ export const getAllCopiesAbailableByBook = async (req, res) => {
     const availableCopies = await getAllCopiesAvailableService(bookId);
  
     if(!availableCopies || availableCopies.length === 0) {
-       return res.status(404).json(notFoundResponse({message: 'No existen copias disponibles de este libro'}));
+       return res.status(200).json(succesGetResponse({message: 'No existen copias disponibles de este libro'}));
     };
 
     return  res.status(200).json(succesGetResponse({message: 'Copias disponibles del libro obtenidas con éxito', data: availableCopies.map(copyByBookResponseDTO)}))

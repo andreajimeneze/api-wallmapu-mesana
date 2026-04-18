@@ -21,8 +21,8 @@ export const getAllEditorials = async (req, res) => {
    
     if (!editorials || editorials.length === 0) {
       return res
-        .status(404)
-        .json(notFoundResponse({ message: "No hay editoriales cargadas" }));
+        .status(200)
+        .json(succesGetResponse({ message: "No hay editoriales cargadas" }));
     }
 
     return res.status(200).json(

@@ -7,7 +7,7 @@ export const getAllLoanStatus = async (req , res) => {
         const allLoanStatus = await getAllLoanStatusService();
 
         if(allLoanStatus.length === 0) {
-            return res.status(404).json(notFoundResponse({message: 'No existen estados de préstamos cargados'}));
+            return res.status(200).json(succesGetResponse({message: 'No existen estados de préstamos cargados'}));
         };
 
         return res.status(200).json(succesGetResponse({message: 'Estados de préstamos cargados con éxito', data: allLoanStatus.map(loanStatusDTO)}))

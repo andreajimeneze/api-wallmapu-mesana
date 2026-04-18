@@ -11,7 +11,7 @@ export const Loan = (sequelize, DataTypes) => {
         field: "id_loan",
       },
       userId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         field: "user_id",
       },

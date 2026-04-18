@@ -11,9 +11,9 @@ export const getAllGenres = async (req, res) => {
     const allGenres = await getAllGenresService();
     if (!allGenres || allGenres.length === 0) {
       return res
-        .status(404)
+        .status(200)
         .json(
-          notFoundResponse({ message: "No existen géneros cargados actualmente" }),
+          succesGetResponse({ message: "No existen géneros cargados actualmente" }),
         );
     }
 

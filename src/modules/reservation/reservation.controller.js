@@ -57,11 +57,13 @@ export const getActiveReservationByCopy = async (req, res) => {
     const {copyId} = req.params;
 
     try {
-        const activeReservationByCopy = await getActiveReservationByCopyService(userId, copyId);
+        const activeReservationByCopy = await getActiveReservationByCopyService(copyId);
 
         if(!activeReservationByCopy) {
-            return res.status(200).json(notFoundResponse({message: 'No existe reserva de la copia', data: reservationResponseDTO(activeReservationByCopy)}));
-        }
+            return res.status(200).json(succesGetResponse({message: 'No existe reserva de la copia', data: reservationResponseDTO(activeReservationByCopy)}));
+        };
+
+        return res.status(200).json(succesGetResponse({message: 'Reservas activas obtenidas con éxito', data: reservationResponseDTO(activeReservationByCopy)}))
     } catch(error) {
         console.error(error);
         return res.status(500).json(internalServerResponse({message: 'Error al intentar obtener la reserva de la copia'}));
@@ -71,10 +73,14 @@ export const getActiveReservationByCopy = async (req, res) => {
 export const createReservation = async (req, res) => {
     const  { copy_id }  = req.body;
 
-    try {
-        const createdReserve = await createCopyReservationService(req.user, copy_id);
+    const  user_id  = req.user.sub;
 
-        return res.status(successCreateResponse({resource: 'Reserva', data: createdReserve}));
+console.log(user_id)
+
+    try {
+        const createdReserve = await createCopyReservationService(user_id, copy_id);
+
+        return res.status(201).json(successCreateResponse({resource: 'Reserva'}));
     } catch(error) {
         console.error(error);
         return res.status(500).json(internalServerResponse({message: 'Error al intentar crear la reserva'}));

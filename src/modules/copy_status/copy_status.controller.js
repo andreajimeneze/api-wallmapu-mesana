@@ -14,9 +14,9 @@ export const getAllCopyStatus = async (req, res) => {
     const allCopiesStatus = await getAllStatusCopyService();
     if (!allCopiesStatus || allCopiesStatus.length === 0) {
       return res
-        .status(404)
+        .status(200)
         .json(
-          notFoundResponse({ message: "Estado de la copia no encontrado" }),
+          succesGetResponse({ message: "No existen estados cargados actualmente" }),
         );
     }
 

@@ -1,6 +1,6 @@
 import {
+  badRequestResponse,
   internalServerResponse,
-  notFoundResponse,
   succesGetResponse,
 } from "../../core/responses/apiResponse.js";
 import { loginWithGoogleService } from "./auth.service.js";
@@ -13,7 +13,7 @@ export const loginWithGoogle = async (req, res) => {
     if (!googleToken) {
       return res
         .status(400)
-        .json(notFoundResponse({ message: "Token requerido" }));
+        .json(badRequestResponse({ message: "Token requerido" }));
     }
 
     const login = await loginWithGoogleService(googleToken);
@@ -27,7 +27,7 @@ export const loginWithGoogle = async (req, res) => {
         }),
       );
   } catch (error) {
-    return res.status(400).json(
+    return res.status(500).json(
       internalServerResponse({
         message: error.message,
       }),

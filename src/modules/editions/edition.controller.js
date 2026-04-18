@@ -65,8 +65,8 @@ export const getAllEditions = async (req, res) => {
 
     if (!allEditions || allEditions.length === 0) {
       return res
-        .status(404)
-        .json(notFoundResponse({ message: "Edición no encontrada" }));
+        .status(200)
+        .json(succesGetResponse({ message: "No existen ediciones cargadas actualmente" }));
     }
 
     return res.status(200).json(

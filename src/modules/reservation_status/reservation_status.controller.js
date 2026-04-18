@@ -7,7 +7,7 @@ export const getAllStatus = async (req, res) => {
         const allStatus = await getAllStatusService();
 
         if (!allStatus) {
-            return res.status(404).json(notFoundResponse({ message: 'No existen status cargados' }))
+            return res.status(200).json(succesGetResponse({ message: 'No existen status cargados' }))
         }
 
         return res.status(200).json(succesGetResponse({ message: 'Status obtenidos con éxito', data: reservationStatusDTO(allStatus) }));

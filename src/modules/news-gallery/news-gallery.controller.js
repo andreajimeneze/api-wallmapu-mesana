@@ -25,9 +25,9 @@ export const getGalleryByNewsId = async (req, res) => {
 
     if (images.length === 0) {
       return res
-        .status(404)
+        .status(200)
         .json(
-          notFoundResponse({
+          succesGetResponse({
             message: `No existen imágenes en la galería asociadas a la noticia ${newsId}`,
           }),
         );

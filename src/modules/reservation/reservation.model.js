@@ -21,7 +21,7 @@ export const Reservation = (sequelize, DataTypes) => {
             field: 'expiration_date'
         },
         userId: {
-            type: DataTypes.STRING,
+            type: DataTypes.UUID,
             allowNull: false,
             field: 'user_id'
         },

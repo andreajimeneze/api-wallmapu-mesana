@@ -24,7 +24,7 @@ export const Notification = (sequelize, DataTypes) => {
             field: 'is_read'
         },
         userId: {
-            type: DataTypes.STRING,
+            type: DataTypes.UUID,
             allowNull: false,
             field: 'user_id'
         }

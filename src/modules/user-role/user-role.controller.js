@@ -12,8 +12,8 @@ export const getUserRoles = async (req, res) => {
 
     if (!userRoles) {
       return res
-        .status(404)
-        .json(notFoundResponse({ message: "No existe roles cargados" }));
+        .status(200)
+        .json(succesGetResponse({ message: "No existe roles cargados" }));
     }
 
     return res.status(200).json(

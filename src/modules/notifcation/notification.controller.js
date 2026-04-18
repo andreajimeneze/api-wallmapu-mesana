@@ -6,8 +6,8 @@ export const getAllNotifications = async (req, res) => {
     try {
         const notifications = await getAllNotificationsService();
 
-        if (!notifications) {
-            return res.status(404).json(notFoundResponse({ message: 'No existen notificaciones' }));
+        if (!notifications || notifications.length === 0) {
+            return res.status(200).json(succesGetResponse({ message: 'No existen notificaciones' }));
         };
 
         return res.status(200).json(succesGetResponse({ message: 'Notificaciones obtenidas exitosamente', data: notifications.map(notificationDTO) }));
