@@ -32,7 +32,7 @@ export const getAllCopies = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Copias obtenidas exitosamente",
-        result: allCopies.map(copyJoinResponseDTO),
+        data: allCopies.map(copyJoinResponseDTO),
       }),
     );
   } catch (error) {
@@ -55,9 +55,9 @@ export const getAllCopiesByBook = async (req, res) => {
       return res.status(404).json(notFoundResponse({message: 'No existen copias de este libro'}));
     };
 
-    return res.status(200).json(succesGetResponse({message: 'Copias del libro obtenidas con éxito', result: allBookCopies.map(copyByBookResponseDTO)}))
+    return res.status(200).json(succesGetResponse({message: 'Copias del libro obtenidas con éxito', data: allBookCopies.map(copyByBookResponseDTO)}))
   } catch (error) {
-    console.error(error);
+    console.error('get copies by book service', error);
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar obtener las copias del libro",
@@ -73,11 +73,11 @@ export const getAllCopiesAbailableByBook = async (req, res) => {
   try {
     const availableCopies = await getAllCopiesAvailableService(bookId);
  
-    if(availableCopies.length === 0) {
+    if(!availableCopies || availableCopies.length === 0) {
        return res.status(404).json(notFoundResponse({message: 'No existen copias disponibles de este libro'}));
     };
 
-    return  res.status(200).json(succesGetResponse({message: 'Copias disponibles del libro obtenidas con éxito', result: availableCopies.map(copyByBookResponseDTO)}))
+    return  res.status(200).json(succesGetResponse({message: 'Copias disponibles del libro obtenidas con éxito', data: availableCopies.map(copyByBookResponseDTO)}))
   } catch (error) {
     console.error(error);
     return res.status(500).json(
@@ -89,21 +89,20 @@ export const getAllCopiesAbailableByBook = async (req, res) => {
 };
 
 export const getCopiesByIdEdition = async (req, res) => {
-  const { idEdition } = req.params;
+  const {editionId}  = req.params;
 
   try {
-    const searchedCopy = await getCopiesByEditionIdService(idEdition);
-
+    const searchedCopy = await getCopiesByEditionIdService(editionId);
+ 
     if (!searchedCopy) {
       return res
-        .status(404)
-        .json(notFoundResponse({ message: "Copias no encontradas" }));
-    }
+        .status(404).json(notFoundResponse({ message: "Copias no encontradas" }));
+    };
 
     return res.status(200).json(
       succesGetResponse({
         message: "Copias obtenidas exitosamente",
-        result: searchedCopy.map(copyResponseDTO),
+        data: searchedCopy.map(copyResponseDTO),
       }),
     );
   } catch (error) {
@@ -126,7 +125,7 @@ export const getCopyById = async (req, res) => {
       return res.status(404).json(notFoundResponse({message: 'No existe la copia solicitada'}));
     };
 
-    return res.status(200).json(succesGetResponse({message: 'Copia obtenida exitosamente', result: copyResponseDTO(copyById)}));
+    return res.status(200).json(succesGetResponse({message: 'Copia obtenida exitosamente', data: copyResponseDTO(copyById)}));
   } catch(error) {
     console.error(error);
     return res.status(500).json(internalServerResponse({message: 'Error al intentar obtener la copia'}));
@@ -134,28 +133,32 @@ export const getCopyById = async (req, res) => {
 };
 
 export const createCopy = async (req, res) => {
-  const copyData  = req.body;
-  
-  const copyDto = createCopyDTO(copyData);
+ const { copy_number, signature_topography }  = req.body;
+ const {editionId} = req.params;
 
+  const copyData = {
+  signatureTopography: signature_topography,
+  copyNumber: copy_number,
+  editionId: editionId
+};
+ 
   try {
-    const createdCopy = await createCopyService(copyDto);
+    const createdCopy = await createCopyService(editionId, copyData);
 
     return res.status(201).json(
       successDeleteResponse({
         message: "Copia creada exitosamente",
-        result: copyResponseDTO(createdCopy),
+        data: copyResponseDTO(createdCopy),
       }),
     );
   } catch (error) {
-    console.error(error);
+    console.error('copy controller: ', error);
     return res.status(400).json({
     isSuccess: false,
     message: error.message,
   });
   }
-};
-
+}
 export const updateCopy = async (req, res) => {
   const { id } = req.params;
   const  copyData = req.body;
@@ -167,7 +170,7 @@ export const updateCopy = async (req, res) => {
 
     return res
       .status(202)
-      .json(successUpdateResponse({ message: "Copia actualizada con éxito", result: copyResponseDTO(updatedCopy)}));
+      .json(successUpdateResponse({ message: "Copia actualizada con éxito", data: copyResponseDTO(updatedCopy)}));
   } catch (error) {
     console.error(error);
     return res.status(500).json(

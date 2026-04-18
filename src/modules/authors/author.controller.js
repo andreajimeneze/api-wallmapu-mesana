@@ -25,7 +25,7 @@ export const getAllAuthors = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Autores cargados exitosamente",
-        result: allAuthors.map(authorResponseDTO),
+        data: allAuthors.map(authorResponseDTO),
       }),
     );
   } catch (error) {
@@ -55,7 +55,7 @@ export const getAuthorById = async (req, res) => {
       .json(
         succesGetResponse({
           message: "Autor obtenido exitosamente",
-          result: authorResponseDTO(author),
+          data: authorResponseDTO(author),
         }),
       );
   } catch (error) {
@@ -78,7 +78,7 @@ export const createAuthor = async (req, res) => {
     res.status(201).json(
           successCreateResponse({
             message: "Author creado exitosamente",
-            result: authorResponseDTO(createdAuthor),
+            data: authorResponseDTO(createdAuthor),
           }),
         );
       } catch (error) {

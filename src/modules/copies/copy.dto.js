@@ -37,7 +37,7 @@ export const copyByBookResponseDTO = (res) => ({
   updated_at: res.updated_at,
   status: res.status ? baseStatusCopyDTO(res.status) : null,
   edition: res.edition ? editionDetailDTO(res.edition) : null,
-  availability_status: res.status.name
+  availability_status: res.availability_status
 });
 
 export const copyResponseDTO = (res) => ({
@@ -55,12 +55,13 @@ export const copyResponseDTO = (res) => ({
 export const createCopyDTO = ({
   signature_topography,
   copy_number,
-  edition_id,
+  editionId,
 }) => {
+  
   return {
     signatureTopography: signature_topography,
     copyNumber: Number(copy_number),
-    editionId: Number(edition_id),
+    editionId: editionId,
     statusId: 1
   };
 };

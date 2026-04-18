@@ -1,11 +1,19 @@
+import { Op } from "sequelize";
 import {
   BookModel,
   CopyModel,
   CopyStatusModel,
   EditionModel,
   EditorialModel,
-  GenreModel
+  GenreModel,
+  LoanModel,
+  LoanStatusModel,
+  ReservationModel,
+  ReservationStatusModel
 } from "../../config/dbSequelize.js";
+import { getEditionByIdService } from "../editions/edition.service.js";
+
+
 
 export const getAllCopiesService = async () => {
   return await CopyModel.findAll({
@@ -63,10 +71,11 @@ export const getAllCopiesByBookService = async (bookId) => {
   });
 };
 
-export const getCopiesByEditionIdService = async (idEdition) => {
+export const getCopiesByEditionIdService = async (editionId) => {
+  
   const copy = await CopyModel.findAll(
     {
-      where: { editionId: idEdition },
+      where: { editionId: editionId },
       include: [
         {
           model: CopyStatusModel,
@@ -80,7 +89,7 @@ export const getCopiesByEditionIdService = async (idEdition) => {
 };
 
 export const getAllCopiesAvailableService = async (bookId) => {
-  return await CopyModel.findAll({
+  const activeCopies = await CopyModel.findAll({
     where: {
       statusId: 1
     },
@@ -105,22 +114,73 @@ export const getAllCopiesAvailableService = async (bookId) => {
         ],
       },
       {
-        model: CopyStatusModel, 
+        model: CopyStatusModel,
         as: "status"
       },
+      {
+        model: LoanModel,
+        as: 'loan',
+        required: false,
+        include: [
+          {
+            model: LoanStatusModel,
+            as: 'loanStatus',
+            required: false,
+            attributes: ['idLoanStatus', 'name']
+            // where: {
+            //   name: {
+            //     [Op.notIn]: ['Devuelto', 'Vencido']
+            //   }
+
+            }
+        ]
+      },
+      {
+        model: ReservationModel,
+        as: 'reservations',
+        required: false,
+        include: [
+          {
+            model: ReservationStatusModel,
+            as: 'reservationStatus',
+            required: false,
+            attributes: ['idStatus', 'name']
+            // where: {
+            //   name: {
+            //     [Op.ne]: 'Pendiente de retiro'
+            //   }
+            // }
+          }
+        ]
+      }
     ],
+  });
+
+  const data = activeCopies.filter(copy => {
+    const hasActiveLoan = copy.loan && copy.loan.loanStatus && !['devuelto', 'vencido'];
+    const hasActiveReservation = copy.reservations && copy.reservations.some(reserve => 
+      reserve.reservationStatus && reserve.reservationStatus.name == 'Pendiente de retiro'
+    );
+
+    return !hasActiveLoan && !hasActiveReservation;
   })
+  .map(copy => ({
+    ...copy.toJSON(),
+    availability_status: 'disponible'
+  }))
+
+  return data
 };
 
 export const getCopyByIdService = async (id) => {
   return await CopyModel.findByPk(id);
 };
 
-export const createCopyService = async (copyData) => {
+export const createCopyService = async (idEdition, copyData) => {
 
   try {
-
-    const edition = await EditionModel.findByPk(copyData.editionId);
+idEdition
+    const edition = await getEditionByIdService(editionId);
 
     if (!edition) {
       throw new Error("Edición no existe");
@@ -128,7 +188,7 @@ export const createCopyService = async (copyData) => {
 
     const existingCopy = await CopyModel.findOne({
       where: {
-        editionId: copyData.editionId,
+        editionId: idEdition,
         copyNumber: copyData.copyNumber
       }
     })
@@ -160,7 +220,7 @@ export const createCopyService = async (copyData) => {
     return await CopyModel.create(copyData);
 
   } catch (error) {
-    console.error(error);
+    console.error('copy service: ' ,error);
     throw error;
   }
 

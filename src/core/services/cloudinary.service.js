@@ -19,11 +19,11 @@ export const uploadImageCloud169 = (buffer, folder, publicId) => {
           },
         ],
       },
-      (error, result) => {
+      (error, data) => {
         if (error) return reject(error);
         resolve({
-          url: result.secure_url,
-          publicId: result.public_id,
+          url: data.secure_url,
+          publicId: data.public_id,
         });
       },
     );
@@ -51,11 +51,11 @@ export const uploadImageCloud710 = (buffer, folder, publicId) => {
           },
         ],
       },
-      (error, result) => {
+      (error, data) => {
         if (error) return reject(error);
         resolve({
-          url: result.secure_url,
-          publicId: result.public_id,
+          url: data.secure_url,
+          publicId: data.public_id,
         });
       },
     );
@@ -65,15 +65,15 @@ export const uploadImageCloud710 = (buffer, folder, publicId) => {
 };
 
 export const deleteImageCloud = async (publicId) => {
-  const result = await cloudinary.uploader.destroy(publicId, {
+  const data = await cloudinary.uploader.destroy(publicId, {
     resource_type: "image",
   });
 
-  if (result.result !== "ok") {
+  if (data.data !== "ok") {
     throw new Error("No se pudo eliminar la imagen en Cloudinary");
   }
 
-  return result;
+  return data;
 };
 
 export const extractPublicId = (url) => {

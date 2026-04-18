@@ -14,7 +14,7 @@ export const getAllStatAdmin = async (req, res) => {
       .json(
         succesGetResponse({
           message: "Estados de administración cargados exitosamente",
-          result: stateAdminResponseDTO(allStats),
+          data: stateAdminResponseDTO(allStats),
         }),
       );
   } catch (error) {

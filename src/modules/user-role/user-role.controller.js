@@ -19,7 +19,7 @@ export const getUserRoles = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Roles obtenidos exitosamente",
-        result: userRoles.map(responseUserRoleDTO),
+        data: userRoles.map(responseUserRoleDTO),
       }),
     );
   } catch (error) {
@@ -45,7 +45,7 @@ export const getUserRoleById = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Rol obtenido exitosamente",
-        result: responseUserRoleDTO(userRoleId),
+        data: responseUserRoleDTO(userRoleId),
       }),
     );
   } catch (error) {

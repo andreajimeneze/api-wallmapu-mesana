@@ -20,7 +20,7 @@ export const getAllGenres = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         resource: "Géneros",
-        result: allGenres.map(baseGenreDTO),
+        data: allGenres.map(baseGenreDTO),
       }),
     );
   } catch (error) {
@@ -52,7 +52,7 @@ export const getGenreById = async (req, res) => {
       .json(
         succesGetResponse({
           resource: "Género",
-          result: baseGenreDTO(searchedGenre),
+          data: baseGenreDTO(searchedGenre),
         }),
       );
   } catch (error) {

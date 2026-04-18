@@ -40,7 +40,7 @@ export const getNewsPaginationAndSearch = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Noticias obtenidas exitosamente",
-        result: result.result,
+        data: result.data,
       }),
     );
   } catch (error) {
@@ -61,7 +61,7 @@ export const getNewsById = async (req, res) => {
     res.status(200).json(
       succesGetResponse({
         message: "Noticia obtenida exitosamente",
-        result: newsResponseDTO(newsSelected),
+        data: newsResponseDTO(newsSelected),
       }),
     );
   } catch (error) {
@@ -93,7 +93,7 @@ export const createNews = async (req, res) => {
     res.status(201).json(
       successCreateResponse({
         message: "Noticia creada exitosamente",
-        result: newsResponseDTO(createdNews),
+        data: newsResponseDTO(createdNews),
       }),
     );
   } catch (error) {
@@ -136,7 +136,7 @@ export const updateNews = async (req, res) => {
     res.status(202).json(
       successUpdateResponse({
         message: "Noticia editada correctamente",
-        result: newsResponseDTO(updatedNews),
+        data: newsResponseDTO(updatedNews),
       }),
     );
   } catch (error) {
@@ -163,7 +163,7 @@ export const deleteNews = async (req, res) => {
     res.status(202).json(
       successDeleteResponse({
         message: "Noticia eliminada correctamente",
-        result: newsDeleted,
+        data: newsDeleted,
       }),
     );
   } catch (error) {
@@ -196,7 +196,7 @@ export const createNewsWithImages = async (req, res) => {
     return res.status(201).json(
       successCreateResponse({
         message: "Noticia con imagen creada exitosamente",
-        result: newsResponseDTO(newsWithImages)
+        data: newsResponseDTO(newsWithImages)
       }),
     );
   } catch (error) {

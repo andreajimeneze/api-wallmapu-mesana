@@ -8,7 +8,6 @@ DROP TABLE IF EXISTS wm_books;
 DROP TABLE IF EXISTS wm_users;
 
 DROP TABLE IF EXISTS wm_copy_status;
-DROP TABLE IF EXISTS wm_return_status;
 DROP TABLE IF EXISTS wm_loan_status;
 DROP TABLE IF EXISTS wm_user_status;
 DROP TABLE IF EXISTS wm_user_roles;
@@ -81,17 +80,12 @@ CREATE TABLE wm_user_roles (
 
 CREATE TABLE wm_user_status (
   id_user_status INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  status VARCHAR(45) NOT NULL
+  name VARCHAR(45) NOT NULL
 );
 
 CREATE TABLE wm_loan_status (
   id_loan_status INTEGER PRIMARY KEY,
-  loan_status VARCHAR(45) NOT NULL
-);
-
-CREATE TABLE wm_return_status (
-  id_return_status INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  return_status VARCHAR(45) NOT NULL
+  name VARCHAR(45) NOT NULL
 );
 
 CREATE TABLE wm_news (
@@ -177,15 +171,9 @@ CREATE TABLE wm_news_gallery (
 
 CREATE TABLE IF NOT EXISTS wm_reservation_status (
   id_status INTEGER PRIMARY KEY,
-  status VARCHAR(30) UNIQUE NOT NULL
+  name VARCHAR(30) UNIQUE NOT NULL
 );
 
-INSERT INTO wm_reservation_status (id_status, status) VALUES
-(1, 'Pendiente de retiro'),
-(2, 'Completada'),
-(3, 'Cancelada'),
-(4, 'Vencida');
- 
 CREATE TABLE IF NOT EXISTS wm_reservations (
   id_reservation INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   reservation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

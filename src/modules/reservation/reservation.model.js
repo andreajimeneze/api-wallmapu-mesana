@@ -12,7 +12,8 @@ export const Reservation = (sequelize, DataTypes) => {
         },
         reservationDate: {
             type: DataTypes.DATE,
-            field: 'reservation_date'
+            field: 'reservation_date', 
+            defaultValue: DataTypes.NOW
         },
         expirationDate: {
             type: DataTypes.DATE,

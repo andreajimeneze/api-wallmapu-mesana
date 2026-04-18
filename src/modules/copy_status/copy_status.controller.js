@@ -23,7 +23,7 @@ export const getAllCopyStatus = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Estados de las copias obtenidos exitosamente",
-        result: allCopiesStatus.map(baseStatusCopyDTO),
+        data: allCopiesStatus.map(baseStatusCopyDTO),
       }),
     );
   } catch (error) {
@@ -55,7 +55,7 @@ export const getCopyStatusById = async (req, res) => {
       .json(
         succesGetResponse({
           message: "Estado de la copia obtenido exitosamente",
-          result: baseStatusCopyDTO(searchedCopyStatus),
+          data: baseStatusCopyDTO(searchedCopyStatus),
         }),
       );
   } catch (error) {

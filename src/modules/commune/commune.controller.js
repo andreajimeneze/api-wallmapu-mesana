@@ -24,7 +24,7 @@ export const getAllCommune = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Comunas obtenidas exitosamente",
-        result: communes.map(responseCommuneDTO),
+        data: communes.map(responseCommuneDTO),
       }),
     );
   } catch (error) {
@@ -53,7 +53,7 @@ export const getCommuneById = async (req, res) => {
       .json(
         succesGetResponse({
           message: "Comuna obtenida exitosamente",
-          result: responseCommuneDTO(commune),
+          data: responseCommuneDTO(commune),
         }),
       );
   } catch (error) {

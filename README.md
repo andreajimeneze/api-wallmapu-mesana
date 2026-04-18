@@ -36,7 +36,7 @@ Todas las respuestas siguen esta estructura:
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {}
+  "data": {}
 }
 ```
 
@@ -102,13 +102,13 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
+  "data": {
     "page": 0,
     "pages": 0,
     "items": 0,
     "next": "string",
     "prev": "string",
-    "result": [
+    "data": [
       {
         "id_news": 0,
         "title": "string",
@@ -139,7 +139,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
+  "data": {
     "id_news": 0,
     "title": "string",
     "subtitle": "string",
@@ -193,7 +193,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {}
+  "data": {}
 }
 ```
 
@@ -208,7 +208,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id": 0,
       "alt": "string",
@@ -241,7 +241,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {}
+  "data": {}
 }
 ```
 
@@ -256,7 +256,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {}
+  "data": {}
 }
 ```
 
@@ -277,13 +277,13 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
+  "data": {
     "page": 0,
     "pages": 0,
     "items": 0,
     "next": "string",
     "prev": "string",
-    "result": [
+    "data": [
       {
         "id_user": 0,
         "username": "string",
@@ -312,7 +312,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
+  "data": {
     "id_user": 0,
     "username": "string",
     "userlastname": "string",
@@ -357,7 +357,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_region": 0,
       "region": "string",
@@ -392,7 +392,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_province": 0,
       "province": "string",
@@ -417,7 +417,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_province": 0,
       "province": "string",
@@ -444,7 +444,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_commune": 0,
       "commune": "string",
@@ -470,7 +470,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_commune": 0,
       "commune": "string",
@@ -498,7 +498,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_user_role": 0,
       "role": "string",
@@ -533,7 +533,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_user_status": 0,
       "status": "string",
@@ -568,7 +568,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_author": 0,
       "name": "string",
@@ -588,7 +588,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
+  "data": {
     "id_author": 0,
     "name": "string",
     "created_at": "string",
@@ -608,7 +608,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_genre": 0,
       "name": "string",
@@ -628,7 +628,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
+  "data": {
     "id_genre": 0,
     "name": "string",
     "created_at": "string",
@@ -648,7 +648,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_subject": 0,
       "name": "string",
@@ -668,7 +668,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
+  "data": {
     "id_subject": 0,
     "name": "string",
     "created_at": "string",
@@ -688,7 +688,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_editorial": 0,
       "name": "string",
@@ -708,7 +708,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
+  "data": {
     "id_editorial": 0,
     "name": "string",
     "created_at": "string",
@@ -728,7 +728,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_edition": 0,
       "isbn": "string",
@@ -753,7 +753,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
+  "data": {
     "id_edition": 0,
     "isbn": "string",
     "publication_year": 0,
@@ -778,7 +778,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_status": 0,
       "name": "string"
@@ -796,7 +796,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
+  "data": {
     "id_status": 0,
     "name": "string"
   }
@@ -814,7 +814,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": [
+  "data": [
     {
       "id_copy": 0,
       "barcode": "string",
@@ -860,7 +860,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
+  "data": {
     "id_copy": 0,
     "barcode": "string",
     "signature_topography": "string",
@@ -898,7 +898,7 @@ search=string
   "items": 0,
   "next": "string",
   "prev": "string",
-  "result": [
+  "data": [
     {
       "id_book": 0,
       "title": "string",
@@ -960,7 +960,7 @@ search=string
   "isSuccess": true,
   "statusCode": 0,
   "message": "string",
-  "result": {
+  "data": {
     "id_book": 0,
     "title": "string",
     "summary": "string",

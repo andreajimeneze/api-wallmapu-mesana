@@ -33,7 +33,7 @@ export const Copy = (sequelize, DataTypes) => {
       statusId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        field: "status_id",
+        field: "status_id"
       },
     },
     {
@@ -61,6 +61,12 @@ export const Copy = (sequelize, DataTypes) => {
       foreignKey: 'copyId',
       sourceKey: 'idCopy',
       as: 'reservations'
+    });
+
+    Copy.hasMany(models.LoanModel, {
+      foreignKey: 'copyId',
+      targetKey: 'idCopy',
+      as: 'loan'
     })
   };
   return Copy;

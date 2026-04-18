@@ -1,6 +1,6 @@
-import { internalServerResponse, notFoundResponse, succesGetResponse } from "../../core/responses/apiResponse.js";
+import { internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse } from "../../core/responses/apiResponse.js";
 import { reservationResponseDTO } from "./reservation.dto.js";
-import { getActiveReservationByCopyService, getAllReservationsService, getReservationByIdService, getReservationsByUserIdService } from "./reservation.service.js";
+import { createCopyReservationService, getActiveReservationByCopyService, getAllReservationsService, getReservationByIdService, getReservationsByUserIdService } from "./reservation.service.js";
 
 export const getAllReservations = async (req , res) => {
     try {
@@ -10,7 +10,7 @@ export const getAllReservations = async (req , res) => {
             return res.status(404).json(notFoundResponse({message: 'No existen reservas por el momento'}));
         };
 
-        return res.status(200).json(succesGetResponse({message: 'Reservas obtenidas con éxito', result: allReservations.map(reservationResponseDTO)}));
+        return res.status(200).json(succesGetResponse({message: 'Reservas obtenidas con éxito', data: allReservations.map(reservationResponseDTO)}));
     } catch(error) {
         console.error(error);
         return res.status(500).json(internalServerResponse({message: 'Error al intentar obtener las reservas'}));
@@ -27,7 +27,7 @@ export const getReservationById = async (req, res) => {
             return res.status(404).json(notFoundResponse({message: 'Reservación no existe'}));
         }
 
-        return res.status(200).json(succesGetResponse({message: 'Reserva obtenida con éxito', result: reservationResponseDTO(reservation)}));
+        return res.status(200).json(succesGetResponse({message: 'Reserva obtenida con éxito', data: reservationResponseDTO(reservation)}));
     } catch(error) {
         console.error(error);
         return res.status(500).json(internalServerResponse({message: 'Error al intentar obtener la reserva'}));
@@ -45,7 +45,7 @@ export const getReservationsByUserId = async (req, res) => {
             return res.status(404).json(notFoundResponse({message: 'No se encontraron reservas para el usuario'}));
         };
 
-        return res.status(200).json(succesGetResponse({message: 'Reservas de usuario obtenidas con éxito', result: reservationsByUser.map(reservationResponseDTO)}));
+        return res.status(200).json(succesGetResponse({message: 'Reservas de usuario obtenidas con éxito', data: reservationsByUser.map(reservationResponseDTO)}));
 
     } catch(error) {
         console.error(error);
@@ -60,10 +60,23 @@ export const getActiveReservationByCopy = async (req, res) => {
         const activeReservationByCopy = await getActiveReservationByCopyService(userId, copyId);
 
         if(!activeReservationByCopy) {
-            return res.status(200).json(notFoundResponse({message: 'No existe reserva de la copia', result: reservationResponseDTO(activeReservationByCopy)}));
+            return res.status(200).json(notFoundResponse({message: 'No existe reserva de la copia', data: reservationResponseDTO(activeReservationByCopy)}));
         }
     } catch(error) {
         console.error(error);
         return res.status(500).json(internalServerResponse({message: 'Error al intentar obtener la reserva de la copia'}));
     }
 };
+
+export const createReservation = async (req, res) => {
+    const  { copy_id }  = req.body;
+
+    try {
+        const createdReserve = await createCopyReservationService(req.user, copy_id);
+
+        return res.status(successCreateResponse({resource: 'Reserva', data: createdReserve}));
+    } catch(error) {
+        console.error(error);
+        return res.status(500).json(internalServerResponse({message: 'Error al intentar crear la reserva'}));
+    }
+}

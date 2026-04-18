@@ -45,19 +45,16 @@ export const editionResponseDTO = (res) => {
     updated_at: res.updated_at,
     editorial: res.editorial ? baseEditorialDTO(res.editorial) : null,
     book: res.book ? bookBasicDTO(res.book) : null,
-    copies:
-      res.copies?.map((copy) => ({
-          ...baseCopyDTO(copy),
-          status: copy.status ? baseStatusCopyDTO(copy.status) : null
-        }))
-        ?? [],
+    // copies:
+    //   res.copies?.map((copy) => ({
+    //       ...baseCopyDTO(copy),
+    //       status: copy.status ? baseStatusCopyDTO(copy.status) : null
+    //     }))
+    //     ?? [],
   };
 };
 
-export const editionForBookResponseDTO = (res) => {
-  if (!res) return null;
-
-  return {
+export const editionForBookResponseDTO = (res) => ({
     id_edition: res.idEdition,
     edition: res.edition,
     isbn: res.isbn,
@@ -75,8 +72,7 @@ export const editionForBookResponseDTO = (res) => {
         ...baseCopyDTO(copy),
         status: baseStatusCopyDTO(copy.status)
       })) : []
-  };
-};
+  });
 
 export const createEditionDTO = ({
   edition,

@@ -33,7 +33,7 @@ export const getUsersPaginationSearch = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Usuarios obtenidos exitosamente",
-        result: result.result,
+        data: result.data,
       }),
     );
   } catch (error) {
@@ -61,7 +61,7 @@ export const getUserByIdUser = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Usuario encontrado con éxito",
-        result: userResponseDTO(userSelected),
+        data: userResponseDTO(userSelected),
       }),
     );
   } catch (error) {
@@ -89,7 +89,7 @@ export const getUserByIdAdmin = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Usuario Admin encontrado con éxito",
-        result: userResponseDTO(userSelected),
+        data: userResponseDTO(userSelected),
       }),
     );
   } catch (error) {
@@ -130,7 +130,7 @@ export const updateUser = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Usuario editado exitosamente",
-        result: userResponseDTO(updatedUser),
+        data: userResponseDTO(updatedUser),
       }),
     );
   } catch (error) {
@@ -153,7 +153,7 @@ export const createUser = async (req, res) => {
       .json(
         succesGetResponse({
           message: "Usuario creado exitosamente",
-          result: createdUser,
+          data: createdUser,
         }),
       );
   } catch (error) {

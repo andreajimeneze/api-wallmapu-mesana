@@ -1,11 +1,13 @@
 import express from 'express';
-import { createEdition, deleteWithImageEdition, getAllEditions, getEditionByBookId, getEditionById, getEditionPagination, updateEdition } from './edition.controller.js';
+import { createEdition, deleteWithImageEdition, getAllEditions, getEditionByBookId, getEditionById, getEditionByIdDetail, getEditionPagination, updateEdition } from './edition.controller.js';
 import { jwtMiddleware, checkRole } from '../auth/auth.middleware.js';
 const router = express.Router();
 
 router.get('/', getAllEditions);
 
 router.get('/pagination', getEditionPagination);
+
+router.get('/:id/detail', getEditionByIdDetail);
 
 router.get('/:id', getEditionById);
 

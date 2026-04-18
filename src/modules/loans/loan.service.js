@@ -117,8 +117,18 @@ export const getActiveLoansByBookIdService = async (bookId) => {
                                 }
                             }
                         ]
-                    }
+                    },
                 ]
+            },
+            {
+                model: UserModel,
+                as: 'user',
+                required: false
+            },
+            {
+                model: LoanStatusModel,
+                as: 'loanStatus',
+                required: false
             }
         ]
     })
@@ -147,4 +157,8 @@ export const getLoansOverDueService = async () => {
             }
         ]
     })
+};
+
+export const createLoanService = async (loanData) => {
+    return await LoanModel.create(loanData);
 };

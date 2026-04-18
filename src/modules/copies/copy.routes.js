@@ -10,11 +10,13 @@ router.get('/book/:bookId', getAllCopiesByBook);
 
 router.get('/:id', getCopyById);
 
-router.get('/edition/:idEdition', getCopiesByIdEdition);
+router.get('/edition/:editionId', getCopiesByIdEdition);
 
 router.get('/book/:bookId/available', getAllCopiesAbailableByBook);
 
-router.post('/', jwtMiddleware, checkRole(['Admin']), createCopy);
+router.post('/', 
+    //jwtMiddleware, checkRole(['Admin']), 
+    createCopy);
 
 router.put('/:id', jwtMiddleware, checkRole(['Admin']), updateCopy);
 

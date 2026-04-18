@@ -111,13 +111,13 @@ export const getAllEditionPaginationService = async ({
   if (items === 0) {
     return {
       response: "No se encontraron ediciones",
-      result: paginationResponseDTO({
+      data: paginationResponseDTO({
         page: 0,
         pages: 0,
         items: 0,
         next: "none",
         prev: "none",
-        result: [],
+        data: [],
       }),
     };
   }
@@ -142,9 +142,9 @@ export const getAllEditionPaginationService = async ({
     subQuery: false,
   });
 
+  console.log('result en edition service: ', result.map(editionForBookResponseDTO))
     return {
-    response: "Libros obtenidos exitosamente",
-    result: paginationResponseDTO({
+    data: paginationResponseDTO({
       page,
       pages,
       items,
@@ -156,7 +156,7 @@ export const getAllEditionPaginationService = async ({
         page > 1
           ? `/edition/pagination?page=${page - 1}&limit=${limit}&search=${search}`
           : null,
-      result: result.map(editionForBookResponseDTO),
+      data: result.map(editionForBookResponseDTO),
     }),
   };
 };
@@ -172,6 +172,12 @@ export const getAllEditionsService = async () => {
         model: EditorialModel,
         as: "editorial",
       },
+      {
+        model: CopyModel,
+        as: 'copies',
+        required: true,
+        attributes: ['idCopy', 'barcode', 'copyNumber', 'signatureTopography', 'createdAt' ]
+      }
     ],
   });
 };
@@ -189,18 +195,18 @@ export const getEditionByIdService = async (id) => {
         as: "editorial",
         attribute: ['name']
       },
-      {
-        model: CopyModel,
-        as: "copies",
-        attributes: ['idCopy', 'copyNumber',  'barcode', 'created_at'],
-        include: [
-          {
-            model: CopyStatusModel,
-            as: 'status',
-            attributes: ['name']
-          }
-        ]
-      },
+      // {
+      //   model: CopyModel,
+      //   as: "copies",
+      //   attributes: ['idCopy', 'copyNumber',  'barcode', 'created_at'],
+      //   include: [
+      //     {
+      //       model: CopyStatusModel,
+      //       as: 'status',
+      //       attributes: ['name']
+      //     }
+      //   ]
+      // },
     ],
   });
 };

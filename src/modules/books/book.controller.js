@@ -17,6 +17,7 @@ import {
   conflictResponse,
 } from "../../core/responses/apiResponse.js";
 
+
 export const getBooksPaginationAndSearch = async (req, res) => {
   try {
     let page = parseInt(req.query.page ?? 1);
@@ -39,7 +40,7 @@ export const getBooksPaginationAndSearch = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Libros obtenidos exitosamente",
-        result: result.result,
+        data: result.data,
       }),
     );
   } catch (error) {
@@ -58,7 +59,7 @@ export const getAllBooks = async(req, res) => {
       return res.status(404).json(notFoundResponse({message: 'No existen libros cargados'}));
     };
 
-    return res.status(200).json(succesGetResponse({message: 'Libros obtenidos exitosamente', result: allBooks.map(baseBookDTO)}))
+    return res.status(200).json(succesGetResponse({message: 'Libros obtenidos exitosamente', data: allBooks.map(baseBookDTO)}))
   } catch (error) {
     console.error(error);
     return res.status(500).json(
@@ -71,6 +72,7 @@ export const getAllBooks = async(req, res) => {
 
 export const getBookById = async (req, res) => {
   const { id } = req.params;
+
   try {
     const searchedBook = await getBookByIdService(id);
 
@@ -83,7 +85,7 @@ export const getBookById = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Libro obtenido exitosamente",
-        result: bookResponseDTO(searchedBook),
+        data: BookDetailDTO(searchedBook),
       }),
     );
   } catch (error) {
@@ -110,7 +112,7 @@ export const getBookByIdDetail = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Libro obtenido exitosamente",
-        result: bookResponseDTO(searchedBook),
+        data: bookResponseDTO(searchedBook),
       }),
     );
   } catch (error) {
@@ -136,7 +138,7 @@ export const createBook = async (req, res) => {
     return res.status(201).json(
       successCreateResponse({
         message: "Libro creado exitosamente",
-        result: bookResponseDTO(book),
+        data: bookResponseDTO(book),
       }),
     );
   } catch (error) {
@@ -171,7 +173,7 @@ export const updateBook = async (req, res) => {
     return res.status(202).json(
       successUpdateResponse({
         message: "Libro modificado exitosamente",
-        result: bookResponseDTO(updatedBook),
+        data: bookResponseDTO(updatedBook),
       }),
     );
   } catch (error) {

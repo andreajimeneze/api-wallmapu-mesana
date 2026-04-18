@@ -12,7 +12,7 @@ router.get('/admin/:id', jwtMiddleware, checkRole(['Admin']), getUserByIdAdmin);
 
 router.put('/:id', jwtMiddleware, authorizedRoles('Admin', 'Lector'), updateUser);
 
-router.put('/admin/:id', jwtMiddleware, authorizedRoles('Admin'), updateUser);
+router.put('/admin/:id', jwtMiddleware, authorizedRoles('Admin', 'Lector'), updateUser);
 
 router.post('/', createUser);
 

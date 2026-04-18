@@ -112,13 +112,13 @@ export const getBooksPaginationAndSearchService = async ({
   if (items === 0) {
     return {
       response: "No se encontraron libros",
-      result: paginationResponseDTO({
+      data: paginationResponseDTO({
         page: 0,
         pages: 0,
         items: 0,
         next: "none",
         prev: "none",
-        result: [],
+        data: [],
       }),
     };
   }
@@ -146,7 +146,7 @@ export const getBooksPaginationAndSearchService = async ({
 
   return {
     response: "Libros obtenidos exitosamente",
-    result: paginationResponseDTO({
+    data: paginationResponseDTO({
       page,
       pages,
       items,
@@ -158,7 +158,7 @@ export const getBooksPaginationAndSearchService = async ({
         page > 1
           ? `/books?page=${page - 1}&items=${limit}&search=${search}`
           : null,
-      result: result.map(bookResponseDTO),
+      data: result.map(bookResponseDTO),
     }),
   };
 };

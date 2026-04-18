@@ -38,13 +38,13 @@ export const getNewsPaginationAndSearchService = async ({
   if (items === 0) {
     return {
       response: "No se encontraron noticias",
-      result: paginationResponseDTO({
+      data: paginationResponseDTO({
         page: 0,
         pages: 0,
         items: 0,
         next: "none",
         prev: "none",
-        result: [],
+        data: [],
       }),
     };
   }
@@ -78,10 +78,9 @@ export const getNewsPaginationAndSearchService = async ({
       },
     ],
   });
-
+  
   return {
-    response: "Noticias obtenidas exitosamente",
-    result: paginationResponseDTO({
+    data: paginationResponseDTO({
       page,
       pages,
       items,
@@ -93,7 +92,7 @@ export const getNewsPaginationAndSearchService = async ({
         page > 1
           ? `/news?page=${page - 1}&items=${limit}&search=${search}`
           : null,
-      result: result.map(newsResponseDTO),
+      data: result.map(newsResponseDTO),
     }),
   };
 };

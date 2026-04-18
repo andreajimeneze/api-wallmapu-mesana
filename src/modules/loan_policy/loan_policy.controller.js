@@ -7,11 +7,11 @@ export const getAllLoanPolicies = async ( req, res ) => {
 
         const loanPolicies = await getAllLoanPoliciesService();
 
-        if(loanPolicies.length === 0) {
-            return res.status(404).json(notFoundResponse({resource: 'Políticas de préstamos'}));
-        };
+        // if(loanPolicies.length === 0) {
+        //     return res.status(404).json(notFoundResponse({resource: 'Políticas de préstamos'}));
+        // };
 
-        return res.status(200).json(succesGetResponse({resource: 'Políticas de préstamos', result: loanPolicies.map(baseLoanPolicyDTO)}));
+        return res.status(200).json(succesGetResponse({resource: 'Políticas de préstamos', data: loanPolicies.map(baseLoanPolicyDTO)}));
     } catch(error) {
         console.error(error);
         return res.status(500).json(internalServerResponse({
@@ -30,7 +30,7 @@ export const getPolicyById = async (req, res) => {
              return res.status(404).json(notFoundResponse({message: 'No existe la política de préstamo solicitada'}));
         };
 
-        return res.status(200).json(succesGetResponse({message: 'Política de préstamo obtenida con éxito', result: baseLoanPolicyDTO(selectedPolicy)}));
+        return res.status(200).json(succesGetResponse({message: 'Política de préstamo obtenida con éxito', data: baseLoanPolicyDTO(selectedPolicy)}));
 
     } catch(error) {
         console.error(error);
@@ -48,7 +48,7 @@ export const createLoanPolicy = async (req, res) => {
 
         const createdPolicy = await createLoanPolicy(policyDto);
 
-        return res.status(201).json(successCreateResponse({message: 'Política de préstamo creada exitosamente', result: baseLoanPolicyDTO(createdPolicy)}));
+        return res.status(201).json(successCreateResponse({message: 'Política de préstamo creada exitosamente', data: baseLoanPolicyDTO(createdPolicy)}));
     } catch(error) {
         console.error(error);
         return res.status(500).json(internalServerResponse({
@@ -66,7 +66,7 @@ export const updateLoanPolicy = async (req, res) => {
     try {
         const updatedPolicy = await updateLoanPolicy(id, policyDto);
 
-        return res.status(202).json(successUpdateResponse({message: 'Política de préstamos actualizada con éxito', result: updatedPolicy}));
+        return res.status(202).json(successUpdateResponse({message: 'Política de préstamos actualizada con éxito', data: updatedPolicy}));
 
     } catch(error) {
         console.error(error);
@@ -82,7 +82,7 @@ export const deletePolicy = async (req, res) => {
     try {
         const deletedPolicy = await deletePolicyService(id);
 
-        return res.status(202).json(successDeleteResponse({message: 'Política de préstamo eliminada con éxito', result: deletePolicy}));
+        return res.status(202).json(successDeleteResponse({message: 'Política de préstamo eliminada con éxito', data: deletePolicy}));
     } catch(error) {
         console.error(error);
         return res.status(500).json(internalServerResponse({

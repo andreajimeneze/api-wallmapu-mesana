@@ -23,7 +23,7 @@ export const loginWithGoogle = async (req, res) => {
       .json(
         succesGetResponse({
           message: "Logueo exitoso",
-          result: login
+          data: login
         }),
       );
   } catch (error) {

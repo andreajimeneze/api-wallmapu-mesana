@@ -31,7 +31,7 @@ export const createGalleryByNewsIdService = async (
     throw new Error("Imagen no puede ser asociada a una noticia inexistente");
   }
 
-  const uploadResults = await Promise.all(
+  const uploaddatas = await Promise.all(
     files.map((file, index) =>
       uploadImageCloud169(
         file.buffer,
@@ -42,7 +42,7 @@ export const createGalleryByNewsIdService = async (
   );
 
   const createdGallery = await Promise.all(
-    uploadResults.map((file, index) =>
+    uploaddatas.map((file, index) =>
       NewsGalleryModel.create(
         {
           alt: alts[index],

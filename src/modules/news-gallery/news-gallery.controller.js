@@ -36,7 +36,7 @@ export const getGalleryByNewsId = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Imagenes obtenidas exitosamente",
-        result: images.map(newsGalleryResponseDTO),
+        data: images.map(newsGalleryResponseDTO),
       }),
     );
   } catch (error) {
@@ -62,7 +62,7 @@ export const getImageByIdGallery = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Imagen obtenida exitosamente",
-        result: image,
+        data: image,
       }),
     );
   } catch (error) {
@@ -117,7 +117,7 @@ export const createGalleryByNewsId = async (req, res) => {
     res.status(201).json(
       successCreateResponse({
         message: "Imagen de galería creada exitosamente",
-        result: gallery.map(newsGalleryResponseDTO)
+        data: gallery.map(newsGalleryResponseDTO)
       }),
     );
   } catch (error) {

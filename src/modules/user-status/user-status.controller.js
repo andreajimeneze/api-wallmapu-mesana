@@ -19,7 +19,7 @@ export const getUsersStatus = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Status obtenidos exitosamente",
-        result: userStatus.map(responseUserStatusDTO),
+        data: userStatus.map(responseUserStatusDTO),
       }),
     );
   } catch (error) {
@@ -47,7 +47,7 @@ export const getUserStatusById = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Status obtenido exitosamente",
-        result: responseUserStatusDTO(userStatus)
+        data: responseUserStatusDTO(userStatus)
       }),
     );
   } catch (error) {

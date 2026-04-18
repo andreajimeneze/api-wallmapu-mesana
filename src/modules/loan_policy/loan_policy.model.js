@@ -24,10 +24,6 @@ export const LoanPolicy = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             default: 3,
             field: 'reservation_days'
-        },
-        finePerDay: {
-            type: DataTypes.INTEGER,
-            field: 'fine_per_day'
         }
     },
         {

@@ -42,13 +42,13 @@ export const getUsersPaginationSearchService = async ({
   if (items === 0) {
     return {
       response: "No se encontraron usuarios",
-      result: paginationResponseDTO({
+      data: paginationResponseDTO({
         page: 0,
         pages: 0,
         items: 0,
         next: "none",
         prev: "none",
-        result: [],
+        data: [],
       }),
     };
   }
@@ -90,7 +90,7 @@ export const getUsersPaginationSearchService = async ({
   });
   return {
     response: "Usuarios obtenidos exitosamente",
-    result: paginationResponseDTO({
+    data: paginationResponseDTO({
       page,
       pages,
       items,
@@ -102,7 +102,7 @@ export const getUsersPaginationSearchService = async ({
         page > 1
           ? `/users?page=${page - 1}&items=${limit}&search=${search}`
           : null,
-      result: result.map(userResponseDTO),
+      data: result.map(userResponseDTO),
     }),
   };
 };

@@ -24,7 +24,7 @@ export const getAllSubjects = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Descriptores obtenidos existosamente",
-        result: subjects.map(subjectResponseDTO),
+        data: subjects.map(subjectResponseDTO),
       }),
     );
   } catch (error) {
@@ -53,7 +53,7 @@ export const getSubjectById = async (req, res) => {
       .json(
         succesGetResponse({
           message: "Descriptor obtenido con éxito",
-          result: subjectResponseDTO(searchedSubject),
+          data: subjectResponseDTO(searchedSubject),
         }),
       );
   } catch (error) {

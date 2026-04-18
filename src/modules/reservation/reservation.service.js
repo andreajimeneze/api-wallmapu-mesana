@@ -1,4 +1,7 @@
 import { CopyModel, EditionModel, ReservationModel, ReservationStatusModel, UserModel } from "../../config/dbSequelize.js"
+import { getDefaultPolicy } from "../loan_policy/loan_policy.service.js";
+import { createReservationDTO } from "./reservation.dto.js";
+import { getCopyByIdService } from '../copies/copy.service.js';
 
 export const getAllReservationsService = async () => {
     return await ReservationModel.findAll({
@@ -45,7 +48,7 @@ export const getReservationByIdService = async (id) => {
                 include: [
                     {
                         model: EditionModel,
-                        as: 'editions',
+                        as: 'edition',
                         attributes: ['idEdition', 'bookId']
                     }
                 ]
@@ -77,7 +80,7 @@ export const getReservationsByUserIdService = async (userId) => {
                 include: [
                     {
                         model: EditionModel,
-                        as: 'editions',
+                        as: 'edition',
                         attributes: ['idEdition', 'bookId']
                     }
                 ]
@@ -106,7 +109,7 @@ export const getActiveReservationByUserIdAndCopyService = async (userId, copyId)
                 include: [
                     {
                         model: EditionModel,
-                        as: 'editions',
+                        as: 'edition',
                         attributes: ['idEdition', 'bookId']
                     }
                 ]
@@ -129,11 +132,44 @@ export const getActiveReservationByCopyService = async (copyId) => {
                 include: [
                     {
                         model: EditionModel,
-                        as: 'editions',
+                        as: 'edition',
                         attributes: ['idEdition', 'bookId']
                     }
                 ]
             }
         ]
     });
-}
+};
+
+export const createCopyReservationService = async (userId, copyId) => {
+
+
+    const existingCopy = await getCopyByIdService(copyId);
+
+    if(!existingCopy) {
+        throw new Error('Copia no existe');
+    };
+
+    const existingReserve = await getActiveReservationByUserIdAndCopyService(userId, copyId);
+
+    if(existingReserve) {
+        throw new Error('Ya tienes una reserva activa de este ejemplar');
+    };
+
+    const policy = await getDefaultPolicy();
+
+    const reservationDays = policy ?.reservationDays ?? 3;
+
+    const expirationDate = new Date(Date.now() + reservationDays * 24 * 60 * 60 * 1000);
+
+    const reservation = createReservationDTO ({
+        userId: userId,
+        copyId: copyId,
+        expirationDate: expirationDate,
+        reservationStatusId: 1
+    });
+
+    const createdReservation = await ReservationModel.create(reservation);
+
+    return await getReservationByIdService(createdReservation.idReservation);
+};

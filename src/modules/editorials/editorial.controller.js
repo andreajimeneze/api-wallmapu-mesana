@@ -28,7 +28,7 @@ export const getAllEditorials = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         resource: "Editoriales",
-        result: editorials.map(editorialResponseDTO),
+        data: editorials.map(editorialResponseDTO),
       }),
     );
   } catch (error) {
@@ -55,7 +55,7 @@ export const getEditorialById = async (req, res) => {
 
     return res
       .status(200)
-      .json(succesGetResponse({ resource: "Editorial", result: baseEditorialDTO(editorial) }));
+      .json(succesGetResponse({ resource: "Editorial", data: baseEditorialDTO(editorial) }));
   } catch (error) {
     return res.status(500).json(
       internalServerResponse({
@@ -85,7 +85,7 @@ export const updateEditorial = async (req, res) => {
     return res.status(202).json(
       succesGetResponse({
         resource: "Editorial",
-        result: updatedEditorial,
+        data: updatedEditorial,
       }),
     );
   } catch (error) {
@@ -109,7 +109,7 @@ export const createEditorial = async (req, res) => {
       .json(
         succesGetResponse({
           resource: "Editorial",
-          result: createdEditorial,
+          data: createdEditorial,
         }),
       );
   } catch (error) {

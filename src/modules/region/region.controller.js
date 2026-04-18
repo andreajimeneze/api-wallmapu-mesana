@@ -22,7 +22,7 @@ export const getAllRegions = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Regiones obtenidas exitosamente",
-        result: regions.map(responseRegionDTO),
+        data: regions.map(responseRegionDTO),
       }),
     );
   } catch (error) {
@@ -51,7 +51,7 @@ export const getRegionById = async (req, res) => {
       .json(
         succesGetResponse({
           message: "Región obtenida exitosamente",
-          result: responseRegionDTO(region),
+          data: responseRegionDTO(region),
         }),
       );
   } catch (error) {

@@ -1,5 +1,5 @@
 export const paginationResponseDTO =
-  ({ page, pages, items, next = 'none', prev = 'none', result = [] }) => {
+  ({ page, pages, items, next = 'none', prev = 'none', data = [] }) => {
 
     return {
       page,
@@ -7,7 +7,7 @@ export const paginationResponseDTO =
       items,
       next,
       prev,
-      result
+      data
     };
   };
 

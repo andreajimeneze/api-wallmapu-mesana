@@ -28,7 +28,7 @@ export const getAllProvinces = async (req, res) => {
       .json(
         succesGetResponse({
           message: "Provincias obtenidas exitosamente",
-          result: provinces.map(responseProvinceDTO),
+          data: provinces.map(responseProvinceDTO),
         }),
       );
   } catch (error) {
@@ -57,7 +57,7 @@ export const getProvinceById = async (req, res) => {
       .json(
         succesGetResponse({
           message: "Provincia obtenida exitosamente",
-          result: responseProvinceDTO(province),
+          data: responseProvinceDTO(province),
         }),
       );
   } catch (error) {

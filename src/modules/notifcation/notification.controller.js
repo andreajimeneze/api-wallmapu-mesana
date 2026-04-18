@@ -10,7 +10,7 @@ export const getAllNotifications = async (req, res) => {
             return res.status(404).json(notFoundResponse({ message: 'No existen notificaciones' }));
         };
 
-        return res.status(200).json(succesGetResponse({ message: 'Notificaciones obtenidas exitosamente', result: notifications.map(notificationDTO) }));
+        return res.status(200).json(succesGetResponse({ message: 'Notificaciones obtenidas exitosamente', data: notifications.map(notificationDTO) }));
 
     } catch (error) {
         console.error(error);
@@ -28,7 +28,7 @@ export const getNotificationById = async (req, res) => {
             return res.status(404).json(notFoundResponse({ message: 'No existe la notificación buscada' }));
         };
 
-        return res.status(200).json(succesGetResponse({ message: 'Notificación obtenida exitosamente', result: notificationDTO(notification) }));
+        return res.status(200).json(succesGetResponse({ message: 'Notificación obtenida exitosamente', data: notificationDTO(notification) }));
     } catch (error) {
         return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener la notificación' }));
     };
@@ -45,7 +45,7 @@ export const getNotificationsUnreadByUserId = async (req, res) => {
             return res.status(404).json(notFoundResponse({ message: 'No existen notificaciones no leídas' }));
         };
 
-        return res.status(200).json(succesGetResponse({ message: 'Notificación obtenida exitosamente', result: unreadNotifications.map(notificationDTO) }));
+        return res.status(200).json(succesGetResponse({ message: 'Notificación obtenida exitosamente', data: unreadNotifications.map(notificationDTO) }));
 
     } catch (error) {
         console.error(error);
@@ -60,7 +60,7 @@ export const createNotification = async (req, res) => {
 
         const newNotification = await createNotificationService(dtoNotification);
 
-        return res.status(201).json({ message: 'Notificación creada con éxito', result: notificationDTO(newNotification) });
+        return res.status(201).json({ message: 'Notificación creada con éxito', data: notificationDTO(newNotification) });
 
     } catch (error) {
         return res.status(500).json(internalServerResponse({ message: 'Error al intentar crear la notificación' }));
@@ -73,7 +73,7 @@ export const deleteNotificationById = async (req, res) => {
     try {
         const notification = await deleteNotificationByIdService(id);
 
-        return res.status(202).json(successDeleteResponse({ message: 'Notificación eliminada exitosamente', result: notification }));
+        return res.status(202).json(successDeleteResponse({ message: 'Notificación eliminada exitosamente', data: notification }));
 
     } catch (error) {
         return res.status(500).json(internalServerResponse({ message: 'Error al intentar eliminar la notificación' }));
@@ -86,7 +86,7 @@ export const deleteNotificationByUserId = async (req, res) => {
     try {
         const notification = await deleteNotificationByUserIdService(userId);
 
-        return res.status(202).json(successDeleteResponse({ message: 'Notificación eliminada exitosamente', result: notification }));
+        return res.status(202).json(successDeleteResponse({ message: 'Notificación eliminada exitosamente', data: notification }));
 
     } catch (error) {
         console.error(error);

@@ -4,7 +4,9 @@ import { checkRole, jwtMiddleware } from '../auth/auth.middleware.js';
 
 const router = express.Router();
 
-router.get('/', jwtMiddleware, checkRole(['Admin', 'Lector']), getBooksPaginationAndSearch);
+router.get('/pagination', 
+    //jwtMiddleware, checkRole(['Admin', 'Lector']), 
+    getBooksPaginationAndSearch);
 
 router.get('/', getAllBooks)
 

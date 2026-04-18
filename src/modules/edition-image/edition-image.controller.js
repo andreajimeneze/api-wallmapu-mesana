@@ -17,7 +17,7 @@ export const createCoverImage = async (req, res) => {
     return res.status(201).json(
       successCreateResponse({
         message: "Portada creada exitosamente",
-        result: coverImage,
+        data: coverImage,
       }),
     );
   } catch (error) {
@@ -34,9 +34,9 @@ export const deleteCoverImage = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await deleteCoverImageService(id);
+    const data = await deleteCoverImageService(id);
 
-    return res.status(202).json({ message: "Portada eliminada correctamente", result: result  });
+    return res.status(202).json({ message: "Portada eliminada correctamente", data: data  });
   } catch (error) {
     console.error(error);
     return res
