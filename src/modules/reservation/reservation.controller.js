@@ -1,6 +1,6 @@
-import { conflictResponse, internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse } from "../../core/responses/apiResponse.js";
+import { badRequestResponse, conflictResponse, internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse } from "../../core/responses/apiResponse.js";
 import { reservationResponseDTO } from "./reservation.dto.js";
-import { createCopyReservationService, getActiveReservationByCopyService, getAllReservationsService, getExpireOverdueService, getReservationByIdService, getReservationPendingById, getReservationsByUserIdService, updateStatusReservationsService } from "./reservation.service.js";
+import { createCopyReservationService, getActiveReservationByCopyService, getAllReservationsService, getExpireOverdueService, getReservationByIdService, getReservationPendingById, getReservationsByUserIdService, updateStatusCancelReservationService, updateStatusExpireOverdueReservationsService } from "./reservation.service.js";
 
 export const getAllReservations = async (req , res) => {
     try {
@@ -75,8 +75,6 @@ export const createReservation = async (req, res) => {
 
     const  user_id  = req.user.sub;
 
-console.log(user_id)
-
     try {
         const createdReserve = await createCopyReservationService(user_id, copy_id);
 
@@ -107,7 +105,7 @@ console.log(user_id)
 export const markAsExpireOverdue = async (req, res) => {
 
     try {
-        const markedExpireOverdue = await updateStatusReservationsService();
+        const markedExpireOverdue = await updateStatusExpireOverdueReservationsService();
 
 
         return res.status(200).json(succesGetResponse({message: 'Estados modificado con éxitos', data: markedExpireOverdue}))
@@ -117,4 +115,25 @@ export const markAsExpireOverdue = async (req, res) => {
         return res.status(500).json(internalServerResponse({message: 'Error al intentar actualizar reservas vencidas'}));
     }
 
-}
+};
+
+export const markAsCancelReserve = async (req, res) => {
+
+    const { id } = req.params;
+    const user = req.user;
+
+    try {
+        const markedCancel = await updateStatusCancelReservationService(id, user);
+
+        if(!markedCancel) {
+            return res.status(400).json(badRequestResponse({message: 'Reserva no está pendiente o ya fue cancelada'}))
+        };
+
+        return res.status(200).json(succesGetResponse({message: 'Estados modificado con éxitos', data: markedCancel}))
+
+    } catch(error) {
+        console.error(error);
+        return res.status(500).json(internalServerResponse({message: 'Error al intentar actualizar reservas vencidas'}));
+    }
+};
+

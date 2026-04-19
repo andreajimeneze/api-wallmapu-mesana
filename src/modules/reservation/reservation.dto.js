@@ -51,3 +51,10 @@ export const createReservationDTO = ({
         reservationStatusId: reservationStatusId
     }
 };
+
+export const updateReservationDTO = (id_reservation) => ({
+   
+        idReservation: id_reservation,
+        //reservationStatusId: reservation_status_id
+    
+})

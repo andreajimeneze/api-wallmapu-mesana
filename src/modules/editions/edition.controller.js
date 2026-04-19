@@ -40,10 +40,7 @@ export const getEditionPagination = async (req, res) => {
       id_editorial,
     });
 
-    console.log('result edition controller: ', result)
-    //const  result  = allEditionsWithPagination;
-
-    return res.status(200).json(
+     return res.status(200).json(
       succesGetResponse({
         resource: "Ediciones",
         data: result.data,

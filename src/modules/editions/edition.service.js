@@ -142,7 +142,6 @@ export const getAllEditionPaginationService = async ({
     subQuery: false,
   });
 
-  console.log('result en edition service: ', result.map(editionForBookResponseDTO))
     return {
     data: paginationResponseDTO({
       page,

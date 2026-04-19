@@ -1,6 +1,6 @@
 import { BookModel, CopyModel, EditionModel, ReservationModel, ReservationStatusModel, UserModel } from "../../config/dbSequelize.js"
 import { getDefaultPolicy } from "../loan_policy/loan_policy.service.js";
-import { createReservationDTO } from "./reservation.dto.js";
+import { createReservationDTO, updateReservationDTO } from "./reservation.dto.js";
 import { getCopyByIdService } from '../copies/copy.service.js';
 import { Op } from "sequelize";
 
@@ -152,9 +152,6 @@ export const getActiveReservationByCopyService = async (copyId) => {
 };
 
 export const createCopyReservationService = async (userId, copyId) => {
-
-    console.log('user en create service: ', userId);
-    console.log('copia en create service: ', copyId);
     const existingCopy = await getCopyByIdService(copyId);
 
     if(!existingCopy) {
@@ -220,7 +217,7 @@ export const getReservationPendingById = async (id) => {
     });
 };
 
-export const updateStatusReservationsService = async() => {
+export const updateStatusExpireOverdueReservationsService = async() => {
     const [updatedStatusCount ] = await ReservationModel.update(
         {reservationStatusId: 4},
     {
@@ -232,5 +229,37 @@ export const updateStatusReservationsService = async() => {
         }
     })
     return updatedStatusCount;
-}
+};
 
+export const updateStatusCancelReservationService = async(id, user) => {
+
+    const reservation = await ReservationModel.findOne({
+        where: {
+            idReservation: id
+        }
+    });
+
+    if(!reservation) {
+        throw new Error('Reserva no encontrada');
+    };
+
+    const isOwner = reservation.userId === user.id;
+    const isAdmin = user.role === 'Admin';
+
+    if(!isAdmin && !isOwner) {
+        throw new Error('No tiene autorización para cancelar la reserva');
+    };
+
+     const [updatedStatusCount ] = await ReservationModel.update(
+        {
+            reservationStatusId: 3
+        },
+    {
+        where: {
+            idReservation: id,
+            reservationStatusId: 1,
+        }
+    });
+
+    return updatedStatusCount;
+};
