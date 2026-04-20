@@ -183,7 +183,7 @@ idEdition
     const edition = await getEditionByIdService(editionId);
 
     if (!edition) {
-      throw new Error("Edición no existe");
+      throw new Error("Edición no encontrada");
     }
 
     const existingCopy = await CopyModel.findOne({
@@ -240,7 +240,7 @@ export const updateCopyService = async (id, copyData) => {
 
 
   if (!searchedCopy || searchedCopy === 0) {
-    throw new Error("No existe copia");
+    throw new Error("Copia no encontrada");
   }
 
   return await searchedCopy.update(copyData);
@@ -250,7 +250,7 @@ export const deleteCopyService = async (id) => {
   const selectedCopy = await CopyModel.findByPk(id);
 
   if (!selectedCopy) {
-    const error = new Error("Copia no existe");
+    const error = new Error("Copia no encontrada");
     error.status = 404;
     throw error;
   }

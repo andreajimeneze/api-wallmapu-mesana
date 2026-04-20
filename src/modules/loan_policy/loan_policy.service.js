@@ -14,6 +14,16 @@ export const getDefaultPolicy = async () => {
     return policy ? policy.reservationDays : 3;
 };
 
+export const getMaxLoanService = async () => {
+    const policy = await LoanPolicyModel.findOne();
+    return policy ? policy.maxDays : 14;
+};
+
+export const getReservationDaysService = async () => {
+    const policy = await LoanPolicyModel.findOne();
+    return policy ? policy.reservationDays : 3;
+}; 
+
 export const createLoanPolicyService = async (policyData) => {
     return await LoanPolicyModel.create(policyData);
 };

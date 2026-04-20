@@ -27,7 +27,7 @@ export const Loan = (sequelize, DataTypes) => {
       },
       returnDate: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
         field: "return_date",
       },
       loanStatusId: {

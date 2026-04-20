@@ -22,6 +22,7 @@ import {
   createBookAuthorService,
   deleteBookAuthorService,
 } from "../book_authors/book_author.service.js";
+//import { createPaginationService } from '../../core/services/basePagination.service.js'
 
 export const getBooksPaginationAndSearchService = async ({
   page,
@@ -163,7 +164,73 @@ export const getBooksPaginationAndSearchService = async ({
   };
 };
 
-export const getAllBooksService = async() => {
+// export const getBooksPaginationAndSearchService = createPaginationService({
+//   model: BookModel,
+//   searchFields: ['title'],
+//   includes: [
+//     {
+//       model: GenreModel,
+//       as: "genre",
+//       attributes: ["idGenre", "name"],
+//       required: false,
+//     },
+//     {
+//       model: AuthorModel,
+//       as: "authors",
+//       attributes: ["idAuthor", "name"],
+//       through: { attributes: [] },
+//     },
+//     {
+//       model: SubjectModel,
+//       as: "subjects",
+//       attributes: ["idSubject", "name"],
+//       through: { attributes: [] },
+//     },
+//     {
+//       model: EditionModel,
+//       as: "editions",
+//       required: false,
+//       attributes: [
+//         "idEdition",
+//         "isbn",
+//         "publicationYear",
+//         "pages",
+//         "coverImage",
+//       ],
+//       include: [
+//         {
+//           model: EditorialModel,
+//           as: "editorial",
+//           attributes: ["idEditorial", "name"],
+//         },
+//         {
+//           model: CopyModel,
+//           as: "copies",
+//           required: false,
+//           attributes: [
+//             "idCopy",
+//             "barcode",
+//             "signatureTopography",
+//             "copyNumber",
+//           ],
+//           include: [
+//             {
+//               model: CopyStatusModel,
+//               as: "status",
+//               attributes: ["idStatus", "name"],
+//             },
+//           ],
+//         },
+//       ],
+//     },
+//   ],
+//   idField: 'id_book',
+//   dtoMapper: bookResponseDTO,
+//   basePath: '/books'
+// })
+
+
+export const getAllBooksService = async () => {
   return await BookModel.findAll();
 };
 
@@ -281,7 +348,7 @@ export const updateBookService = async (id, bookData) => {
   const searchedBook = await BookModel.findByPk(id);
 
   if (!searchedBook) {
-    throw new Error("Libro no existe");
+    throw new Error("Libro no encontrado");
   }
 
   const transaction = await sequelize.transaction();

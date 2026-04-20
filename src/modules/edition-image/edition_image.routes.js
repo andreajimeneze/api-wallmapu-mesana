@@ -1,6 +1,6 @@
 import express from 'express';
 import { createCoverImage, deleteCoverImage } from './edition-image.controller.js';
-import { upload } from '../../core/services/multer.js';
+import { upload } from '../../core/lib/multer.js';
 
 const router = express.Router();
 

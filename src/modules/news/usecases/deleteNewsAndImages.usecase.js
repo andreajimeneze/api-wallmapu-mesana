@@ -4,7 +4,7 @@ import { getNewsByIdService } from "../news.service.js";
 import {
   deleteImageCloud,
   extractPublicId,
-} from "../../../core/services/cloudinary.service.js";
+} from "../../../core/lib/cloudinary.service.js";
 
 export const deleteNewsAndImages = async (id) => {
   const transaction = await sequelize.transaction();

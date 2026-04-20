@@ -1,5 +1,5 @@
 import express from 'express';
-import { upload } from "../../core/services/multer.js";
+import { upload } from "../../core/lib/multer.js";
 import {
   getNewsPaginationAndSearch,
   getNewsById,

@@ -15,7 +15,8 @@ import { Op } from "sequelize";
 import {
   deleteImageCloud,
   extractPublicId,
-} from "../../core/services/cloudinary.service.js";
+} from "../../core/lib/cloudinary.service.js";
+import { createPaginationService } from "../../core/services/basePagination.service.js";
 
 export const getAllEditionPaginationService = async ({
   page,
@@ -160,6 +161,8 @@ export const getAllEditionPaginationService = async ({
   };
 };
 
+
+
 export const getAllEditionsService = async () => {
   return await EditionModel.findAll({
     include: [
@@ -287,7 +290,7 @@ export const deleteEditionWithImageService = async (id) => {
 
     if (!edition) {
       await transaction.rollback();
-      const error = new Error("Edición no existe");
+      const error = new Error("Edición no encontrada");
       error.status = 404;
       throw error;
     }

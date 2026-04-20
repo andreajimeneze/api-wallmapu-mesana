@@ -2,7 +2,7 @@ import {
   deleteImageCloud,
   extractPublicId,
   uploadImageCloud169,
-} from "../../core/services/cloudinary.service.js";
+} from "../../core/lib/cloudinary.service.js";
 import { NewsGalleryModel, NewsModel } from "../../config/dbSequelize.js";
 import { generateFileName } from "../../core/utils/generateFileName.js";
 

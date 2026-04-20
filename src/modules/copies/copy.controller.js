@@ -117,7 +117,7 @@ export const getCopiesByIdEdition = async (req, res) => {
 
 export const getCopyById = async (req, res) => {
   const {id} = req.params;
-
+console.log('req.params id getcopybyid controller: ', id);
   try {
     const copyById = await getCopyByIdService(id);
 

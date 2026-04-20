@@ -2,7 +2,7 @@ import {
   deleteImageCloud,
   extractPublicId,
   uploadImageCloud710,
-} from "../../core/services/cloudinary.service.js";
+} from "../../core/lib/cloudinary.service.js";
 import { generateFileName } from "../../core/utils/generateFileName.js";
 import { EditionModel } from "../../config/dbSequelize.js";
 
@@ -19,7 +19,7 @@ export const deleteCoverImageService = async (id) => {
   const selectedEdition = await EditionModel.findByPk(id);
 
   if (!selectedEdition) {
-    const error = new Error("Edición no existe");
+    const error = new Error("Edición no encontrada");
     error.status = 404;
     throw error;
   }

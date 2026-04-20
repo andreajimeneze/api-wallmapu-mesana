@@ -1,7 +1,43 @@
-import { badRequestResponse, conflictResponse, internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse } from "../../core/responses/apiResponse.js";
+import { badRequestResponse, conflictResponse, internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse, successUpdateResponse } from "../../core/responses/apiResponse.js";
 import { reservationResponseDTO } from "./reservation.dto.js";
-import { createCopyReservationService, getActiveReservationByCopyService, getAllReservationsService, getExpireOverdueService, getReservationByIdService, getReservationPendingById, getReservationsByUserIdService, updateStatusCancelReservationService, updateStatusExpireOverdueReservationsService } from "./reservation.service.js";
+import { createCopyReservationService, getActiveReservationByCopyService, getAllReservationsService, getExpireOverdueService, getReservationByIdService, getReservationPendingById, getReservationsAndSearchService, getReservationsByUserIdService, markAsPickUpService, updateStatusCancelReservationService, updateStatusExpireOverdueReservationsService } from "./reservation.service.js";
 
+export const getReservationsAndSearch = async (req, res) => {
+      try {
+        let page = parseInt(req.query.page ?? 1);
+        let items = parseInt(req.query.items ?? 10);
+       const id_status = parseInt(req.query.id_status);
+
+              console.log('id_status reservation controller: ', req.query.id_status);
+    
+        if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
+          return res.status(400).json(
+            badRequestResponse({
+              message: "El número de página o items debe ser mayor a 0",
+            }),
+          );
+        }
+    
+        const result = await getReservationsAndSearchService({
+          page,
+          limit: items,
+          search: req.query.search ?? "",
+          status: id_status
+        });
+    
+        return res.status(200).json(
+          succesGetResponse({
+            message: "Reservas obtenidas exitosamente",
+            data: result.data,
+          }),
+        );
+      } catch (error) {
+        console.error(error);
+        return res
+          .status(500)
+          .json(internalServerResponse({ message: "Error al obtener las reservas" }));
+      }
+}
 export const getAllReservations = async (req , res) => {
     try {
         const allReservations = await getAllReservationsService();
@@ -19,7 +55,7 @@ export const getAllReservations = async (req , res) => {
 
 export const getReservationById = async (req, res) => {
     const {id} = req.params;
-
+console.log('req.params id getbyid controller: ', id);
     try {
         const reservation = await getReservationByIdService(id);
 
@@ -55,7 +91,7 @@ export const getReservationsByUserId = async (req, res) => {
 
 export const getActiveReservationByCopy = async (req, res) => {
     const {copyId} = req.params;
-
+console.log('req.params copyId getbyid controller: ', copyId);
     try {
         const activeReservationByCopy = await getActiveReservationByCopyService(copyId);
 
@@ -136,4 +172,20 @@ export const markAsCancelReserve = async (req, res) => {
         return res.status(500).json(internalServerResponse({message: 'Error al intentar actualizar reservas vencidas'}));
     }
 };
+
+export const markAsPickUp = async (req, res) => {
+    const { id } = req.params;
+    const { copyId } = req.body;
+
+console.log('id pickup controller: ', id);
+
+    try {
+        const pickUp = await markAsPickUpService(id, copyId);
+
+        return res.status(202).json(successUpdateResponse({message: 'Ejemplar marcado como retirado'}))
+    } catch(error) {
+        console.error(error);
+        return res.status(500).json(internalServerResponse({message: 'Error al intentar marcar como ejemplar retirado'}));
+    }
+}
 

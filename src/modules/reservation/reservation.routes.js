@@ -1,10 +1,12 @@
 import express from 'express';
-import { createReservation, getActiveReservationByCopy, getAllReservations, getReservationById, getReservationsByUserId, markAsCancelReserve, markAsExpireOverdue } from './reservation.controller.js';
+import { createReservation, getActiveReservationByCopy, getAllReservations, getReservationById, getReservationsAndSearch, getReservationsByUserId, markAsCancelReserve, markAsExpireOverdue, markAsPickUp } from './reservation.controller.js';
 import { authorizedRoles, jwtMiddleware } from '../auth/auth.middleware.js';
 
 const router = express.Router();
 
 router.get('/', getAllReservations);
+
+router.get('/pagination', getReservationsAndSearch);
 
 router.put('/expire-overdue', markAsExpireOverdue);
 
@@ -19,6 +21,9 @@ router.post('/', jwtMiddleware,
 
 router.put('/:id/cancel', jwtMiddleware, 
     authorizedRoles('Lector', 'Admin'), markAsCancelReserve);
+
+router.put('/:id/pickup', jwtMiddleware, 
+    authorizedRoles('Admin'), markAsPickUp);
 
 
 export default router;
