@@ -101,7 +101,8 @@ if (status && parseInt(status) > 0) {
         include,
         limit,
         offset,
-        distinct: true
+        distinct: true,
+        order: [['reservationDate', 'DESC']]
     });
 
     return {
@@ -169,12 +170,21 @@ export const getReservationByIdService = async (id) => {
             {
                 model: CopyModel,
                 as: 'copy',
-                attributes: ['idCopy', 'barcode', 'copyNumber', 'statusId'],
+                attributes: ['idCopy', 'barcode', 'copyNumber', 'signatureTopography', 'statusId'],
+                required: false,
                 include: [
                     {
                         model: EditionModel,
                         as: 'edition',
-                        attributes: ['idEdition', 'bookId']
+                        required: false,
+                        attributes: ['idEdition', 'bookId'],
+                        include: [
+                            {
+                                model: BookModel,
+                                as: 'book',
+                                attributes: ['idBook', 'title']
+                            }
+                        ]
                     }
                 ]
             },
@@ -382,7 +392,7 @@ export const updateStatusCancelReservationService = async (id, user) => {
 };
 
 export const markAsPickUpService = async (id, copyId) => {
-    const transaction = sequelize.transaction();
+    const transaction = await sequelize.transaction();
 
     try {
         const reserve = await ReservationModel.findByPk(id, {
@@ -390,7 +400,20 @@ export const markAsPickUpService = async (id, copyId) => {
                 {
                     model: CopyModel,
                     as: 'copy',
-                    attributes: ['idCopy', 'copyStatusId', 'barcode', 'signatureTopography'],
+                    attributes: ['idCopy', 'statusId', 'barcode', 'signatureTopography'],
+                    required: true,
+                    include: [
+                        {
+                            model: EditionModel,
+                            as: 'edition',
+                            include: [
+                                {
+                                    model: BookModel,
+                                    as: 'book'
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     model: UserModel,
@@ -398,10 +421,7 @@ export const markAsPickUpService = async (id, copyId) => {
                 }
             ],
             transaction: transaction,
-            lock: transaction.LOCK.UPDATE
         });
-
-        console.log('reserva en pickup service: ', reserve);
 
         if (!reserve) {
             throw new Error('Reserva no encontrada');
@@ -415,9 +435,7 @@ export const markAsPickUpService = async (id, copyId) => {
             throw new Error('No puede entregarse una reserva vencida. Debe reservar nuevamente');
         };
 
-        // const copy = reserve.copy;
-        console.log('copia pickup service', copy)
-        const copy = CopyModel.findByPk({ idCopy: copyId });
+        const copy = await CopyModel.findByPk( copyId, { transaction });
 
         if (!copy) {
             throw new Error('Copia no asociada a la reserva');
@@ -426,7 +444,7 @@ export const markAsPickUpService = async (id, copyId) => {
         if (copy.idCopy !== reserve.copyId) {
             throw new Error('Copia no coincide con la reserva');
         }
-        if (copy.copyStatusId !== 1) {
+        if (copy.statusId !== 1) {
             throw new Error('Ejemplar no está disponible');
         };
 
@@ -435,7 +453,7 @@ export const markAsPickUpService = async (id, copyId) => {
         dueDate.setDate(dueDate.getDate() + loanDate);
 
 
-        const loan = LoanModel.create({
+        const loan = await LoanModel.create({
             userId: reserve.userId,
             loanDate: new Date(),
             dueDate: dueDate,
@@ -444,12 +462,14 @@ export const markAsPickUpService = async (id, copyId) => {
         }, { transaction: transaction });
 
         await copy.update({
-            copyStatusId: 2
+            statusId: 2
         }, { transaction: transaction });
 
         await reserve.update({
             reservationStatusId: 2
         }, { transaction: transaction })
+
+        await transaction.commit();
 
         return loan;
 

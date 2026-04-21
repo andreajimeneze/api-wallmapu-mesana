@@ -117,7 +117,7 @@ export const getCopiesByIdEdition = async (req, res) => {
 
 export const getCopyById = async (req, res) => {
   const {id} = req.params;
-console.log('req.params id getcopybyid controller: ', id);
+
   try {
     const copyById = await getCopyByIdService(id);
 
@@ -133,17 +133,21 @@ console.log('req.params id getcopybyid controller: ', id);
 };
 
 export const createCopy = async (req, res) => {
- const { copy_number, signature_topography }  = req.body;
- const {editionId} = req.params;
+ const { copy_number, signature_topography, edition_id, status_id }  = req.body;
 
+ const editionId = edition_id;
+ const statusId = status_id;
+  
   const copyData = {
   signatureTopography: signature_topography,
+  barcode: signature_topography,
   copyNumber: copy_number,
-  editionId: editionId
+  editionId: editionId,
+  statusId: statusId
 };
  
   try {
-    const createdCopy = await createCopyService(editionId, copyData);
+    const createdCopy = await createCopyService(copyData);
 
     return res.status(201).json(
       successDeleteResponse({
@@ -158,7 +162,8 @@ export const createCopy = async (req, res) => {
     message: error.message,
   });
   }
-}
+};
+
 export const updateCopy = async (req, res) => {
   const { id } = req.params;
   const  copyData = req.body;

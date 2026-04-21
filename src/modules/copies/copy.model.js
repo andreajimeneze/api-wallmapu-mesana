@@ -11,12 +11,11 @@ export const Copy = (sequelize, DataTypes) => {
         field: "id_copy",
       },
       barcode: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.STRING,
         unique: true,
       },
       signatureTopography: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
         field: "signature_topography",
       },

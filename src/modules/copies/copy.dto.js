@@ -55,13 +55,12 @@ export const copyResponseDTO = (res) => ({
 export const createCopyDTO = ({
   signature_topography,
   copy_number,
-  editionId,
+  editionId,  // ← Esto es camelCase, pero el frontend envía edition_id
 }) => {
-  
   return {
     signatureTopography: signature_topography,
     copyNumber: Number(copy_number),
-    editionId: editionId,
+    editionId: editionId,  // ← Si llega undefined, se guarda undefined
     statusId: 1
   };
 };

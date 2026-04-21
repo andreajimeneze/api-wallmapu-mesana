@@ -68,10 +68,6 @@ export const createPaginationService = ({
 
     const offset = (page - 1) * limit;
 
-    //      console.log('🔍 CONFIGURACIÓN RECIBIDA:');
-    // console.log('- Modelo:', model.name);
-    // console.log('- Includes:', includes.map(inc => inc.as || inc.model.name));
-
     const result = await model.findAll({
       where,
       include: includes,
@@ -80,25 +76,6 @@ export const createPaginationService = ({
       distinct: true,
       order: [["updated_at", "DESC"]],
     });
-
-     console.log('📊 RESULTADO CRUDO:');
-    console.log('- Cantidad de registros:', result.length);
-    
-    if (result.length > 0) {
-      const firstItem = result[0];
-      console.log('- Primer item - ID:', firstItem[idField]);
-      console.log('- Primer item - keys:', Object.keys(firstItem.toJSON ? firstItem.toJSON() : firstItem));
-      console.log('- Tiene authors?', !!firstItem.authors);
-      console.log('- Tiene editions?', !!firstItem.editions);
-      console.log('- Tiene genre?', !!firstItem.genre);
-      
-      // Verifica si los includes están cargados
-      console.log('- Includes cargados:', {
-        authors: firstItem.authors?.length || 0,
-        editions: firstItem.editions?.length || 0,
-        genre: firstItem.genre ? 'sí' : 'no'
-      });
-    }
 
     return {
       response: `${model.name}s obtenidos exitosamente`,

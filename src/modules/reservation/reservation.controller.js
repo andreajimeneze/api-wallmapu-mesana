@@ -7,8 +7,6 @@ export const getReservationsAndSearch = async (req, res) => {
         let page = parseInt(req.query.page ?? 1);
         let items = parseInt(req.query.items ?? 10);
        const id_status = parseInt(req.query.id_status);
-
-              console.log('id_status reservation controller: ', req.query.id_status);
     
         if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
           return res.status(400).json(
@@ -37,7 +35,8 @@ export const getReservationsAndSearch = async (req, res) => {
           .status(500)
           .json(internalServerResponse({ message: "Error al obtener las reservas" }));
       }
-}
+};
+
 export const getAllReservations = async (req , res) => {
     try {
         const allReservations = await getAllReservationsService();
@@ -55,13 +54,13 @@ export const getAllReservations = async (req , res) => {
 
 export const getReservationById = async (req, res) => {
     const {id} = req.params;
-console.log('req.params id getbyid controller: ', id);
+
     try {
         const reservation = await getReservationByIdService(id);
 
         if(!reservation) {
             return res.status(404).json(notFoundResponse({message: 'Reservación no existe'}));
-        }
+        };
 
         return res.status(200).json(succesGetResponse({message: 'Reserva obtenida con éxito', data: reservationResponseDTO(reservation)}));
     } catch(error) {
@@ -91,7 +90,7 @@ export const getReservationsByUserId = async (req, res) => {
 
 export const getActiveReservationByCopy = async (req, res) => {
     const {copyId} = req.params;
-console.log('req.params copyId getbyid controller: ', copyId);
+
     try {
         const activeReservationByCopy = await getActiveReservationByCopyService(copyId);
 
@@ -175,12 +174,10 @@ export const markAsCancelReserve = async (req, res) => {
 
 export const markAsPickUp = async (req, res) => {
     const { id } = req.params;
-    const { copyId } = req.body;
-
-console.log('id pickup controller: ', id);
+    const { copy_id } = req.body;
 
     try {
-        const pickUp = await markAsPickUpService(id, copyId);
+        const pickUp = await markAsPickUpService(id, copy_id);
 
         return res.status(202).json(successUpdateResponse({message: 'Ejemplar marcado como retirado'}))
     } catch(error) {

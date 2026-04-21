@@ -176,11 +176,12 @@ export const getCopyByIdService = async (id) => {
   return await CopyModel.findByPk(id);
 };
 
-export const createCopyService = async (idEdition, copyData) => {
+export const createCopyService = async (copyData) => {
 
   try {
-idEdition
-    const edition = await getEditionByIdService(editionId);
+    const idEdition = copyData.editionId;
+
+    const edition = await getEditionByIdService(idEdition);
 
     if (!edition) {
       throw new Error("Edición no encontrada");
@@ -188,7 +189,7 @@ idEdition
 
     const existingCopy = await CopyModel.findOne({
       where: {
-        editionId: idEdition,
+        editionId: copyData.editionId,
         copyNumber: copyData.copyNumber
       }
     })
@@ -199,6 +200,7 @@ idEdition
 
     const existingSignature = await CopyModel.findOne({
       where: {
+        editionId: copyData.editionId,
         signatureTopography: copyData.signatureTopography
       },
       include: [
@@ -207,8 +209,14 @@ idEdition
           as: 'edition',
           required: true,
           where: {
-            bookId: edition.bookId
-          }
+            idEdition: copyData.editionId
+          },
+          include: [
+            {
+              model: BookModel,
+              as: 'book'
+            }
+          ]
         }
       ]
     })
@@ -220,12 +228,9 @@ idEdition
     return await CopyModel.create(copyData);
 
   } catch (error) {
-    console.error('copy service: ' ,error);
+    console.error('copy service: ' , error);
     throw error;
   }
-
-
-
 };
 
 export const updateCopyService = async (id, copyData) => {

@@ -15,7 +15,7 @@ export const baseReservationDTO = (res) => ({
 
 export const reservationResponseDTO = (res) => {
     const copy = res.copy;
-    const edition = copy?.edition;
+    const book = res.copy?.edition.book;
 
     return {
         id_reservation: res.idReservation,
@@ -27,17 +27,20 @@ export const reservationResponseDTO = (res) => {
         user_lastname: res.user?.userlastname,
         user_email: res.user?.email,
 
-        copy_id: res.copyId,
-        copy_barcode: copy?.barcode,
-        copy_signature: copy?.signatureTopography,
+        copy_id: copy.idCopy ?? null,
+        copy_barcode: copy.barcode ?? null,
+        copy_signature: copy.signatureTopography ?? null,
 
-        book_id: edition?.book?.idBook,
-        book_title: edition?.book?.title,
+        book_id: book?.idBook ?? null,
+        book_title: book?.title ?? null,
 
         reservation_status_id: res.reservationStatusId,
-        reservation_status_name: res.reservationStatus?.name
+        reservation_status_name: res.reservationStatus?.name ?? null
     };
 };
+
+
+
 export const createReservationDTO = ({
     expirationDate,
     userId,
