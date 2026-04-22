@@ -1,15 +1,15 @@
 export const baseUserDTO = (user) => ({
     id_user: user.idUser,
-    user_name: user.username,
-    user_lastname: user.userlastname,
-    user_email: user.email
+    name: user.username,
+    lastname: user.userlastname,
+    email: user.email
 });
 
 export const userResponseDTO = (user) => ({
     id_user: user.idUser,
-    user_name: user.username,
-    user_lastname: user.userlastname,
-    user_email: user.email,
+    name: user.username,
+    lastname: user.userlastname,
+    email: user.email,
     rut: user.rut,
     address: user.address,
     commune_id: user.communeId,
@@ -17,6 +17,18 @@ export const userResponseDTO = (user) => ({
     user_role_id: user.userRoleId,
     user_status_id: user.userStatusId,
     created_at: user.created_at,
-    updated_at: user.updated_at,
-    role: user.userRole?.role
+    updated_at: user.updated_at
 });
+
+export const updateUserDTO = (data, currentUser) => ({
+      username: data.name ?? currentUser.username,
+      userlastname: data.lastname ?? currentUser.userlastname,
+      rut: data.rut ?? currentUser.rut,
+      address: data.address ?? currentUser.address,
+      phoneNumber: data.phone ?? currentUser.phoneNumber,
+      communeId: data.commune_id ?? currentUser.communeId,
+      userStatusId: data.user_status_id ?? currentUser.userStatusId,
+      userRoleId: data.user_role_id ?? currentUser.userRoleId,
+});
+
+

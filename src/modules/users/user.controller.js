@@ -10,7 +10,7 @@ import {
   internalServerResponse,
   notFoundResponse,
 } from "../../core/responses/apiResponse.js";
-import { userResponseDTO } from "./user.dto.js";
+import { updateUserDTO, userResponseDTO } from "./user.dto.js";
 
 export const getUsersPaginationSearch = async (req, res) => {
   try {
@@ -104,8 +104,7 @@ export const getUserByIdAdmin = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { name, lastname, rut, address, phone } = req.body;
-  const { commune_id, userStatusId, userRoleId } = req.body;
+  const data = req.body;
 
   try {
     const userSelected = await getUserByIdService(id);
@@ -116,16 +115,11 @@ export const updateUser = async (req, res) => {
         .json(notFoundResponse({ message: "No existe usuario" }));
     }
 
-    const updatedUser = await updateUserService(id, {
-      username: name ?? userSelected.username,
-      userlastname: lastname ?? userSelected.userlastname,
-      rut: rut ?? userSelected.rut,
-      address: address ?? userSelected.address,
-      phoneNumber: phone ?? userSelected.phoneNumber,
-      communeId: commune_id ?? userSelected.communeId,
-      userStatusId: userStatusId ?? userSelected.userStatusId,
-      userRoleId: userRoleId ?? userSelected.userRoleId,
-    });
+    const dtoData = updateUserDTO(data, userSelected);
+
+    const updatedUser = await updateUserService(id, dtoData);
+    
+    console.log('usuario actualizado... controller: ', userResponseDTO(updatedUser));
 
     return res.status(200).json(
       succesGetResponse({

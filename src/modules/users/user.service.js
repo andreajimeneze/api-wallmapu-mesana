@@ -7,6 +7,7 @@ import {
 } from "../../config/dbSequelize.js";
 import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
 import { userResponseDTO } from "./user.dto.js";
+import { isProfileComplete } from '../auth/utils/profileComplete.js';
 
 export const getUsersPaginationSearchService = async ({
   page,
@@ -169,8 +170,9 @@ export const updateUserService = async (id, userData) => {
 
   if (!userSelected) return null;
 
-  return await userSelected.update({
-    ...userData,
-    updatedAt: new Date(),
+ return await userSelected.update({
+    ...userData
   });
+
+   
 };

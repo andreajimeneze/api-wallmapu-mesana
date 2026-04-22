@@ -6,13 +6,18 @@ const router = express.Router();
 
 router.get('/detailed/', jwtMiddleware, checkRole(['Admin']), getUsersPaginationSearch);
 
-router.get('/detailed/:id',jwtMiddleware, checkRole(['Admin', 'Lector']), getUserByIdUser);
+router.get('/detailed/:id', jwtMiddleware, checkRole(['Admin', 'Lector']), 
+    getUserByIdUser);
 
 router.get('/admin/:id', jwtMiddleware, checkRole(['Admin']), getUserByIdAdmin);
 
-router.put('/:id', jwtMiddleware, authorizedRoles(['Admin', 'Lector']), updateUser);
+router.put('/:id', 
+    //jwtMiddleware, authorizedRoles(['Lector']), 
+    updateUser);
 
-router.put('/admin/:id', jwtMiddleware, authorizedRoles(['Admin', 'Lector']), updateUser);
+router.put('/admin/:id', 
+    //jwtMiddleware, authorizedRoles(['Admin']),
+     updateUser);
 
 router.post('/', createUser);
 

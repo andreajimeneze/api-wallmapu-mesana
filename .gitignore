@@ -9,6 +9,7 @@ dist-ssr
 .vscode/*
 
 !.vscode/extensions.json
+.VSCodeCounter/
 .idea
 .DS_Store
 *.suo

@@ -1,6 +1,41 @@
 import { internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse } from "../../core/responses/apiResponse.js";
 import { createLoanDTO, loanResponseDTO } from "./loan.dto.js";
-import { createLoanService, getActiveLoansByBookIdService, getActiveLoansByCopyIdService, getActiveLoansByUserIdService, getAllLoansService, getLoanByIdService, getLoansOverDueService } from './loan.service.js';
+import { createLoanService, getActiveLoansByBookIdService, getActiveLoansByCopyIdService, getActiveLoansByUserIdService, getAllLoansService, getLoanByIdService, getLoansAndSearchService, getLoansOverDueService } from './loan.service.js';
+
+export const getLoansPaginationAndSearch = async (req, res) => {
+      try {
+        let page = parseInt(req.query.page ?? 1);
+        let items = parseInt(req.query.items ?? 10);
+        const id_status = parseInt(req.query.id_status);
+    
+        if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
+          return res.status(400).json(
+            badRequestResponse({
+              message: "El número de página o items debe ser mayor a 0",
+            }),
+          );
+        }
+    
+        const result = await getLoansAndSearchService({
+          page,
+          limit: items,
+          search: req.query.search ?? "",
+          status: id_status
+        });
+    
+        return res.status(200).json(
+          succesGetResponse({
+            message: "Préstamos obtenidos exitosamente",
+            data: result.data,
+          }),
+        );
+      } catch (error) {
+        console.error(error);
+        return res
+          .status(500)
+          .json(internalServerResponse({ message: "Error al obtener los préstamos" }));
+      }
+};
 
 export const getAllLoans = async (req, res) => {
     try {

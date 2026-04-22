@@ -55,3 +55,19 @@ export const updateLoanDTO = (loanData) => {
 
     return dto;
 };
+
+export const loanBasiResponseDTO = (res) => ({
+    id_loan: res.idLoan,
+  loan_date: res.loanDate,
+  due_date: res.dueDate,
+  return_date: res.returnDate,
+  copy_id: res.copyId,
+  user_id: res.userId,
+  loan_status_id: res.loanStatusId,
+  loan_status_name: res.loanStatus.name,
+  user_name: res.user.username,
+  user_lastname: res.user.lastname,
+  book_id: res.copy.edition.bookId,
+  book_title: res.copy.edition.title,
+  copy_barcode: res.copy.ebarcode
+})
