@@ -11,6 +11,7 @@ router.get('/pagination', getReservationsAndSearch);
 router.put('/expire-overdue', markAsExpireOverdue);
 
 router.get('/user/:userId', getReservationsByUserId);
+
 router.get('/copy/:copyId', getActiveReservationByCopy);
 
 router.get('/:id', getReservationById);

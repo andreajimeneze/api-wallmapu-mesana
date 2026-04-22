@@ -8,9 +8,12 @@ const app = express();
 
 // CORS
 app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+  origin: [
+    "http://localhost:4200",
+    "https://biblioteca-wallmapu-angular.vercel.app",
+    "https://wallmapumesana.cl"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
 }));
 
 app.use(express.json());
