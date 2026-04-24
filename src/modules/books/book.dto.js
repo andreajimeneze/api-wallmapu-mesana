@@ -68,7 +68,7 @@ export const updateBookDTO = ({ idBook, title, summary, genreId, authors = [], s
 };
 
 
-export const BookDetailDTO = (book) => {
+export const bookDetailDTO = (book) => {
   if (!book) return null;
 
   return {

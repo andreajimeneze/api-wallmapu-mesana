@@ -161,8 +161,6 @@ export const getAllEditionPaginationService = async ({
   };
 };
 
-
-
 export const getAllEditionsService = async () => {
   return await EditionModel.findAll({
     include: [
@@ -185,47 +183,40 @@ export const getAllEditionsService = async () => {
 };
 
 export const getEditionByIdService = async (id) => {
-  return await EditionModel.findByPk(id, {
+  return await EditionModel.findOne({
+    where: {
+      idEdition: id
+    },
     include: [
       {
         model: BookModel,
         as: "book",
+        //required: true,
         attributes: ['idBook', 'title']
       },
       {
         model: EditorialModel,
         as: "editorial",
+        //required: true,
         attribute: ['name']
-      },
-      // {
-      //   model: CopyModel,
-      //   as: "copies",
-      //   attributes: ['idCopy', 'copyNumber',  'barcode', 'created_at'],
-      //   include: [
-      //     {
-      //       model: CopyStatusModel,
-      //       as: 'status',
-      //       attributes: ['name']
-      //     }
-      //   ]
-      // },
-    ],
-  });
+      }
+    ],}
+  );
 };
 
-export const getEditionByBookIdService = async (idBook) => {
-  const edition = await EditionModel.findOne({
-    where: { bookId: idBook },
-  });
+// export const getEditionByBookIdService = async (idBook) => {
+//   const edition = await EditionModel.findOne({
+//     where: { bookId: idBook },
+//   });
 
-  if(!edition) {
-    const error = new Error("No existe edición para el libro");
-    error.status = 404;
-    throw error;
-  }
+//   if(!edition) {
+//     const error = new Error("No existe edición para el libro");
+//     error.status = 404;
+//     throw error;
+//   }
  
-  return editionResponseDTO(edition);
-};
+//   return editionResponseDTO(edition);
+// };
 
 export const createEditionService = async (editionData) => {
 
@@ -273,8 +264,9 @@ export const updateEditionService = async (id, editionData) => {
         { model: EditorialModel, as: "editorial" },
       ],
     });
+    console.log('update edition en service: ', updatedEdition);
 
-    return editionResponseDTO(updatedEdition);
+    return updatedEdition;
   } catch (error) {
     await transaction.rollback();
     throw error;

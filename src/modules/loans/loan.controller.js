@@ -1,6 +1,6 @@
-import { internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse } from "../../core/responses/apiResponse.js";
+import { internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse, successUpdateResponse } from "../../core/responses/apiResponse.js";
 import { createLoanDTO, loanResponseDTO } from "./loan.dto.js";
-import { createLoanService, getActiveLoansByBookIdService, getActiveLoansByCopyIdService, getActiveLoansByUserIdService, getAllLoansService, getLoanByIdService, getLoansAndSearchService, getLoansOverDueService } from './loan.service.js';
+import { createLoanService, getActiveLoansByBookIdService, getActiveLoansByCopyIdService, getActiveLoansByUserIdService, getAllLoansService, getLoanByIdService, getLoansAndSearchService, getLoansOverDueService, markLoanAsExpireOverdueService, returnLoanByCopyIdService } from './loan.service.js';
 
 export const getLoansPaginationAndSearch = async (req, res) => {
       try {
@@ -156,3 +156,27 @@ export const createLoan = async (req, res) => {
         return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener los préstamos vencidos' }));
     };
 };
+
+export const returnLoan = async (req, res) => {
+    const { copy_id } = req.params;
+
+    try {
+        const returnedLoan = await returnLoanByCopyIdService(copy_id);
+
+        return res.status(202).json(successUpdateResponse({message: 'Ejemplar devuelto con éxito', data: loanResponseDTO(returnedLoan)}));
+    } catch(error) {
+        console.error(error);
+        return res.status(500).json(internalServerResponse({message: 'Error al intentar actualizar el estado del ejemplar'}));
+    }
+}; 
+
+export const markLoanAsExpireOverdue = async (req, res) => {
+    try {
+        const markedAsExpireOverdue = await markLoanAsExpireOverdueService();
+
+        return res.status(202).json(successUpdateResponse({message: 'Préstamo vencido actualizado con éxito', data: markedAsExpireOverdue}));
+    } catch(error) {
+        console.error(error);
+        return res.status(500).json(internalServerResponse({message: 'Error al intentar actualizar el vencimiento del ejemplar'}));
+    }
+}

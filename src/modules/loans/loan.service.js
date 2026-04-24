@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
-import { BookModel, CopyModel, EditionModel, LoanModel, LoanStatusModel, UserModel } from "../../config/dbSequelize.js";
+import { BookModel, CopyModel, EditionModel, LoanModel, LoanStatusModel, sequelize, UserModel } from "../../config/dbSequelize.js";
 import { loanBasiResponseDTO } from "./loan.dto.js";
+import { getMaxLoanService } from "../loan_policy/loan_policy.service.js";
 
 export const getLoansAndSearchService = async ({
     page,
@@ -52,13 +53,13 @@ export const getLoansAndSearchService = async ({
         }
     ];
 
-const where = {};
+    const where = {};
 
-if (status && parseInt(status) > 0) {
-    include[2].where = {
-        idStatus: parseInt(status)  // ✅ Usa : no =
-    };
-}
+    if (status && parseInt(status) > 0) {
+        include[2].where = {
+            idStatus: parseInt(status)  // ✅ Usa : no =
+        };
+    }
 
     const items = await LoanModel.count({
         include,
@@ -139,7 +140,7 @@ export const getAllLoansService = async () => {
 
 export const getLoanByIdService = async (id) => {
     return await LoanModel.findByPk(id, {
-         include: [
+        include: [
             {
                 model: UserModel,
                 as: 'user'
@@ -164,7 +165,7 @@ export const getActiveLoansByUserIdService = async (userId) => {
                 [Op.in]: [1, 3]
             }
         },
-         include: [
+        include: [
             {
                 model: UserModel,
                 as: 'user'
@@ -185,11 +186,11 @@ export const getActiveLoansByCopyIdService = async (copyId) => {
     return await LoanModel.findAll({
         where: {
             copyId: copyId,
-             loanStatusId: {
+            loanStatusId: {
                 [Op.in]: [1, 3]
             }
         },
-         include: [
+        include: [
             {
                 model: UserModel,
                 as: 'user'
@@ -210,7 +211,7 @@ export const getActiveLoansByBookIdService = async (bookId) => {
     return await LoanModel.findAll({
         where: {
             loanStatusId: {
-                [Op.in]: [1,3]
+                [Op.in]: [1, 3]
             }
         },
         include: [
@@ -258,7 +259,7 @@ export const getLoansOverDueService = async () => {
             },
             loanStatusId: 1
         },
-                 include: [
+        include: [
             {
                 model: UserModel,
                 as: 'user'
@@ -276,5 +277,77 @@ export const getLoansOverDueService = async () => {
 };
 
 export const createLoanService = async (loanData) => {
-    return await LoanModel.create(loanData);
+    const loanPolicy = await getMaxLoanService();
+    const loanDate = new Date();
+    const maxDays = loanPolicy.maxDays ? loanPolicy.maxDays : 14;
+    const dueDate = loanDate + maxDays * 24 * 60 * 60 * 1000;
+
+    return await LoanModel.create({
+        userId: loanData.userId,
+        copyId: loanData.copyId,
+        loanDate: loanDate,
+        dueDate: dueDate,
+        loanStatusId: 1
+    });
+};
+
+export const returnLoanByCopyIdService = async (copyId) => {
+
+    const loan = await getActiveLoansByCopyIdService(copyId);
+
+    if (!loan) {
+        throw new Error('No existe préstamo activo para este ejemplar');
+    };
+
+    const copy = await CopyModel.findOne({
+        where: {
+            idCopy: loan.copyId
+        }
+    });
+
+    if (!copy) {
+        throw new Error('No existe copia asociado al préstamo');
+    };
+
+    if (loan.loanStatusId == 2) {
+        throw new Error('Ejemplar ya fue devuelto');
+    };
+
+    const transaction = await sequelize.transaction();
+
+    try {
+        const updatedLoan = await loan.update({
+            loanStatusId: 2
+        }, { transaction });
+        const updatedCopy = await copy.update({
+            statusId: 1
+        }, { transaction });
+
+        await transaction.commit();
+
+        return {
+            updatedLoan,
+            updatedCopy
+        }
+    } catch (error) {
+        await transaction.rollback();
+        throw new error;
+    }
+
+};
+
+export const markLoanAsExpireOverdueService = async () => {
+    const [affectedRows] = await LoanModel.update(
+        { loanStatusId: 3 },
+        {
+            where: {
+                dueDate: {
+                    [Op.lt]: new Date()
+                },
+                loanStatusId: 1
+            }
+        }
+    );
+
+    return affectedRows;
 };

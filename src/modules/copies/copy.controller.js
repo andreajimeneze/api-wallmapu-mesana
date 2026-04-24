@@ -133,7 +133,10 @@ export const getCopyById = async (req, res) => {
 };
 
 export const createCopy = async (req, res) => {
+  
  const { copy_number, signature_topography, edition_id, status_id }  = req.body;
+
+ console.log('req.body create copy en controller: ', req.body);
 
  const editionId = edition_id;
  const statusId = status_id;

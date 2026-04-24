@@ -345,13 +345,17 @@ export const getReservationPendingById = async (id) => {
 };
 
 export const updateStatusExpireOverdueReservationsService = async () => {
+    const today = new Date();
+    //tomorrow.setDate(tomorrow.getDate() + 1);
+    today.setHours(0, 0, 0, 0); 
+
     const [updatedStatusCount] = await ReservationModel.update(
         { reservationStatusId: 4 },
         {
             where: {
                 reservationStatusId: 1,
                 expirationDate: {
-                    [Op.lt]: new Date()
+                    [Op.lt]: today
                 }
             }
         })

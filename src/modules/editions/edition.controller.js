@@ -6,13 +6,12 @@ import {
   successDeleteResponse,
   successUpdateResponse,
 } from "../../core/responses/apiResponse.js";
-import { editionForBookResponseDTO, editionResponseDTO, createEditionDTO, baseEditionDTO } from "./edition.dto.js";
+import { editionResponseDTO, createEditionDTO, baseEditionDTO, editionDetailDTO } from "./edition.dto.js";
 import {
   createEditionService,
   deleteEditionWithImageService,
   getAllEditionPaginationService,
   getAllEditionsService,
-  getEditionByBookIdService,
   getEditionByIdService,
   updateEditionService,
 } from "./edition.service.js";
@@ -69,7 +68,7 @@ export const getAllEditions = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         resource: "Lista de ediciones",
-        data: allEditions.map(editionResponseDTO),
+        data: allEditions.map(editionDetailDTO),
       }),
     );
   } catch (error) {
@@ -125,7 +124,7 @@ export const getEditionByIdDetail = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         resource: "Edición",
-        data: editionResponseDTO(edition),
+        data: editionDetailDTO(edition),
       }),
     );
   } catch (error) {
@@ -138,32 +137,33 @@ export const getEditionByIdDetail = async (req, res) => {
   }
 };
 
-export const getEditionByBookId = async (req, res) => {
-  const { idBook } = req.params;
-  const { idEdition } = req.params;
-  try {
-    const editionByBook = getEditionByBookIdService(idBook, idEdition);
+// export const getEditionByBookId = async (req, res) => {
+//   const { idBook } = req.params;
+//   const { idEdition } = req.params;
+  
+//   try {
+//     const editionByBook = getEditionByBookIdService(idBook, idEdition);
 
-    if (!editionByBook) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "No existe edición" }));
-    }
+//     if (!editionByBook) {
+//       return res
+//         .status(404)
+//         .json(notFoundResponse({ message: "No existe edición" }));
+//     }
 
-    return res.status(200).json(
-      succesGetResponse({
-        resource: "Edición",
-        data: editionResponseDTO(editionByBook),
-      }),
-    );
-  } catch (error) {
-    return res.status(500).json(
-      internalServerResponse({
-        message: "Error al intentar obtener la edición del libro",
-      }),
-    );
-  }
-};
+//     return res.status(200).json(
+//       succesGetResponse({
+//         resource: "Edición",
+//         data: editionDetailDTO(editionByBook),
+//       }),
+//     );
+//   } catch (error) {
+//     return res.status(500).json(
+//       internalServerResponse({
+//         message: "Error al intentar obtener la edición del libro",
+//       }),
+//     );
+//   }
+// };
 
 export const createEdition = async (req, res) => {
   const dataEdition = req.body;
@@ -175,7 +175,7 @@ export const createEdition = async (req, res) => {
     return res.status(201).json(
       successCreateResponse({
         message: "Edición creada con éxito",
-        data: editionResponseDTO(createdEdition),
+        data: baseEditionDTO(createdEdition),
       }),
     );
   } catch (error) {
@@ -195,10 +195,12 @@ export const updateEdition = async (req, res) => {
   try {
     const editedEdition = await updateEditionService(id, editionData);
 
+    console.log('update edition en controller: ', baseEditionDTO(editedEdition))
+
     return res.status(202).json(
       successUpdateResponse({
         message: "Edición modificada con éxito",
-        data: editedEdition,
+        data: baseEditionDTO(editedEdition),
       }),
     );
   } catch (error) {

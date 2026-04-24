@@ -1,5 +1,5 @@
 import { baseStatusCopyDTO } from "../copy_status/copy_status.dto.js";
-import { editionBasicDTO, editionDetailDTO } from "../editions/edition.dto.js";
+import { baseEditionDTO, editionDetailDTO } from "../editions/edition.dto.js";
 
 export const baseCopyDTO = (res) => {
   if (!res) return null;
@@ -24,7 +24,7 @@ export const copyJoinResponseDTO = (res) => ({
   status: baseStatusCopyDTO(res.status),
   created_at: res.created_at,
   updated_at: res.updated_at,
-  edition: res.edition ? editionBasicDTO(res.edition) : null,
+  edition: res.edition ? baseEditionDTO(res.edition) : null,
 });
 
 export const copyByBookResponseDTO = (res) => ({

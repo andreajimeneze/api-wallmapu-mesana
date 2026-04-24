@@ -1,4 +1,4 @@
-import { baseBookDTO, BookDetailDTO, bookResponseDTO, createBookDTO } from "./book.dto.js";
+import { baseBookDTO, bookDetailDTO, bookResponseDTO, createBookDTO } from "./book.dto.js";
 import {
   getBooksPaginationAndSearchService,
   getBookByIdService,
@@ -67,7 +67,7 @@ export const getAllBooks = async(req, res) => {
       }),
     );
   }
-}
+};
 
 export const getBookById = async (req, res) => {
   const { id } = req.params;
@@ -84,7 +84,7 @@ export const getBookById = async (req, res) => {
     return res.status(200).json(
       succesGetResponse({
         message: "Libro obtenido exitosamente",
-        data: BookDetailDTO(searchedBook),
+        data: bookDetailDTO(searchedBook),
       }),
     );
   } catch (error) {
@@ -123,7 +123,6 @@ export const getBookByIdDetail = async (req, res) => {
     );
   }
 };
-
 
 export const createBook = async (req, res) => {
 
