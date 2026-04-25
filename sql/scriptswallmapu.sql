@@ -52,7 +52,7 @@ CREATE TABLE wm_genres (
 );
 
 CREATE TABLE wm_copy_status (
-  id_status SMALLINT PRIMARY KEY,
+  id_status SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name VARCHAR(30) UNIQUE NOT NULL
 );
 
@@ -84,7 +84,7 @@ CREATE TABLE wm_user_status (
 );
 
 CREATE TABLE wm_loan_status (
-  id_loan_status INTEGER PRIMARY KEY,
+  id_loan_status INTEGER GENERATED ALWAYS AS IDENTITY  PRIMARY KEY,
   name VARCHAR(45) NOT NULL
 );
 
@@ -170,7 +170,7 @@ CREATE TABLE wm_news_gallery (
 );
 
 CREATE TABLE IF NOT EXISTS wm_reservation_status (
-  id_status INTEGER PRIMARY KEY,
+  id_status INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name VARCHAR(30) UNIQUE NOT NULL
 );
 

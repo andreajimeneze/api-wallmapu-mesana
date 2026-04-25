@@ -11,9 +11,9 @@ import { jwtMiddleware, checkRole } from "../auth/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/news/:newsId", getGalleryByNewsId);
-
 router.get("/:id", getImageByIdGallery);
+
+router.get("/news/:newsId", getGalleryByNewsId);
 
 router.post(
   "/news/:id",

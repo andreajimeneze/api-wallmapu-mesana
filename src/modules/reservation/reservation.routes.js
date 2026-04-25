@@ -10,17 +10,17 @@ router.get('/pagination', getReservationsAndSearch);
 
 router.get('/pagination/user',  jwtMiddleware, authorizedRoles('Lector'), getReservationsAndSearchForUser);
 
-router.put('/expire-overdue', markAsExpireOverdue);
+router.get('/:id', getReservationById);
 
 router.get('/user/:userId', getReservationsByUserId);
 
 router.get('/copy/:copyId', getActiveReservationByCopy);
 
-router.get('/:id', getReservationById);
-
 router.post('/', jwtMiddleware, 
     authorizedRoles('Lector', 'Admin'), 
     createReservation);
+    
+router.put('/expire-overdue', markAsExpireOverdue);
 
 router.put('/:id/cancel', jwtMiddleware, 
     authorizedRoles('Lector', 'Admin'), markAsCancelReserve);

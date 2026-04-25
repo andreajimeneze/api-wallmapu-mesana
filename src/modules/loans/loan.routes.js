@@ -3,12 +3,12 @@ import { createLoan, getActiveLoansByBookId, getActiveLoansByCopyId, getActiveLo
 import { jwtMiddleware, authorizedRoles } from '../auth/auth.middleware.js';
 const router = express.Router();
 
+router.get('/', getAllLoans);
+
 router.get('/pagination', jwtMiddleware, 
     authorizedRoles('Admin'), getLoansPaginationAndSearch);
 
 // router.get('/user/pagination');
-
-router.get('/', getAllLoans);
 
 router.get('/:id', getLoanById);
 
