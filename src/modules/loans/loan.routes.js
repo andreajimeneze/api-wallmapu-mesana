@@ -1,11 +1,12 @@
 import express from 'express';
-import { getActiveLoansByBookId, getActiveLoansByCopyId, getActiveLoansByUserId, getAllLoans, getLoanById, getLoansOverDue, getLoansPaginationAndSearch, markLoanAsExpireOverdue, returnLoan } from './loan.controller.js';
-
+import { createLoan, getActiveLoansByBookId, getActiveLoansByCopyId, getActiveLoansByUserId, getAllLoans, getLoanById, getLoansOverDue, getLoansPaginationAndSearch, markLoanAsExpireOverdue, returnLoan } from './loan.controller.js';
+import { jwtMiddleware, authorizedRoles } from '../auth/auth.middleware.js';
 const router = express.Router();
 
-router.get('/pagination', getLoansPaginationAndSearch);
+router.get('/pagination', jwtMiddleware, 
+    authorizedRoles('Admin'), getLoansPaginationAndSearch);
 
-router.get('/user/pagination', getLoansPaginationAndSearch);
+// router.get('/user/pagination');
 
 router.get('/', getAllLoans);
 
@@ -19,8 +20,13 @@ router.get('/book/bookId', getActiveLoansByBookId);
 
 router.get('/overdue',  getLoansOverDue);
 
-router.put('/copy/:copyId/return', returnLoan);
+router.post('/', jwtMiddleware, 
+    authorizedRoles('Admin'), createLoan);
 
-router.put('/expire-overdue', markLoanAsExpireOverdue);
+router.put('/copy/:copyId/return',jwtMiddleware, 
+    authorizedRoles('Admin'), returnLoan);
+
+router.put('/expire-overdue', jwtMiddleware, 
+    authorizedRoles('Admin'), markLoanAsExpireOverdue);
 
 export default router;

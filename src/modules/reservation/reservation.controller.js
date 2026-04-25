@@ -1,6 +1,6 @@
 import { badRequestResponse, conflictResponse, internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse, successUpdateResponse } from "../../core/responses/apiResponse.js";
 import { reservationResponseDTO } from "./reservation.dto.js";
-import { createCopyReservationService, getActiveReservationByCopyService, getAllReservationsService, getExpireOverdueService, getReservationByIdService, getReservationPendingById, getReservationsAndSearchService, getReservationsByUserIdService, markAsPickUpService, updateStatusCancelReservationService, updateStatusExpireOverdueReservationsService } from "./reservation.service.js";
+import { createCopyReservationService, getActiveReservationByCopyService, getAllReservationsService, getExpireOverdueService, getReservationByIdService, getReservationPendingById, getReservationsAndSearchForUserService, getReservationsAndSearchService, getReservationsByUserIdService, markAsPickUpService, updateStatusCancelReservationService, updateStatusExpireOverdueReservationsService } from "./reservation.service.js";
 
 export const getReservationsAndSearch = async (req, res) => {
       try {
@@ -21,6 +21,45 @@ export const getReservationsAndSearch = async (req, res) => {
           limit: items,
           search: req.query.search ?? "",
           status: id_status
+        });
+    
+        return res.status(200).json(
+          succesGetResponse({
+            message: "Reservas obtenidas exitosamente",
+            data: result.data,
+          }),
+        );
+      } catch (error) {
+        console.error(error);
+        return res
+          .status(500)
+          .json(internalServerResponse({ message: "Error al obtener las reservas" }));
+      }
+};
+
+export const getReservationsAndSearchForUser = async (req, res) => {
+      
+        let page = parseInt(req.query.page ?? 1);
+        let items = parseInt(req.query.items ?? 10);
+        const id_status = parseInt(req.query.id_status);
+        const userId = req.user.sub;
+        console.log('user en pagination user controller: ', userId);
+    
+        if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
+          return res.status(400).json(
+            badRequestResponse({
+              message: "El número de página o items debe ser mayor a 0",
+            }),
+          );
+        }
+        try {
+    
+        const result = await getReservationsAndSearchForUserService({
+          page,
+          limit: items,
+          search: req.query.search ?? "",
+          status: id_status,
+          userId: userId
         });
     
         return res.status(200).json(

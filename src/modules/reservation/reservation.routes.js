@@ -1,5 +1,5 @@
 import express from 'express';
-import { createReservation, getActiveReservationByCopy, getAllReservations, getReservationById, getReservationsAndSearch, getReservationsByUserId, markAsCancelReserve, markAsExpireOverdue, markAsPickUp } from './reservation.controller.js';
+import { createReservation, getActiveReservationByCopy, getAllReservations, getReservationById, getReservationsAndSearch, getReservationsAndSearchForUser, getReservationsByUserId, markAsCancelReserve, markAsExpireOverdue, markAsPickUp } from './reservation.controller.js';
 import { authorizedRoles, jwtMiddleware } from '../auth/auth.middleware.js';
 
 const router = express.Router();
@@ -7,6 +7,8 @@ const router = express.Router();
 router.get('/', getAllReservations);
 
 router.get('/pagination', getReservationsAndSearch);
+
+router.get('/pagination/user',  jwtMiddleware, authorizedRoles('Lector'), getReservationsAndSearchForUser);
 
 router.put('/expire-overdue', markAsExpireOverdue);
 

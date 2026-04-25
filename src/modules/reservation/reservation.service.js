@@ -122,6 +122,125 @@ if (status && parseInt(status) > 0) {
     };
 };
 
+export const getReservationsAndSearchForUserService = async ({
+    page,
+    limit,
+    search,
+    status,
+    userId
+}) => {
+    console.log('userId en service: ', userId)
+    limit = Number.isInteger(Number(limit)) ? Number(limit) : 10;
+    page = Number.isInteger(Number(page)) ? Number(page) : 1;
+
+    const DEFAULT_LIMIT = 10;
+    const MAX_LIMIT = 100;
+
+    limit = Number(limit) || DEFAULT_LIMIT;
+    page = Number(page) || 1;
+
+    if (limit < 1) limit = DEFAULT_LIMIT;
+    if (limit > MAX_LIMIT) limit = MAX_LIMIT;
+
+    const include = [
+        {
+            model: UserModel,
+            as: 'user',
+            attributes: ['idUser', 'username', 'userlastname', 'email']
+        },
+        {
+            model: CopyModel,
+            as: 'copy',
+            attributes: ['idCopy', 'barcode', 'signatureTopography', 'copyNumber', 'statusId'],
+            include: [
+                {
+                    model: EditionModel,
+                    as: 'edition',
+                    attributes: ['idEdition', 'bookId'],
+                    include: [
+                        {
+                            model: BookModel,
+                            as: 'book',
+                            attributes: ['idBook', 'title']
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            model: ReservationStatusModel,
+            as: 'reservationStatus',
+            attributes: ['idStatus', 'name']
+        }
+    ];
+
+const where = {
+    userId: userId
+};
+
+if (status && parseInt(status) > 0) {
+    include[2].where = {
+        idStatus: parseInt(status)
+    };
+}
+
+    const items = await ReservationModel.count({
+        //include,
+        where,
+        //distinct: true,
+        col: 'id_reservation'
+    });
+
+    if (items === 0) {
+        return {
+            response: 'No se encontraron reservas',
+            data: paginationResponseDTO({
+                page: 0,
+                pages: 0,
+                items: 0,
+                next: 'none',
+                prev: 'none',
+                data: []
+            })
+        };
+    };
+
+    const pages = Math.ceil(items / limit);
+
+    if (page > pages && page > 0) {
+        page = search ? 1 : pages;
+    } else if (page < 1) {
+        page = 1;
+    };
+
+    const offset = (page - 1) * limit;
+
+    const result = await ReservationModel.findAll({
+        where,
+        include,
+        limit,
+        offset,
+        subquery: false,
+        order: [['reservationDate', 'DESC']]
+    });
+
+    return {
+        response: 'Reservas obtenidas exitosamente',
+        data: paginationResponseDTO({
+            page,
+            pages,
+            items,
+            next:
+                page < pages
+                    ? `/pagination?page=${page + 1}&items=${limit}&search=${search}` : null,
+            prev:
+                page > 1
+                    ? `/pagination?page=${page - 1}&items=${limit}&search=${search}` : null,
+            data: result.map(reservationResponseDTO)
+        })
+    };
+};
+
 export const getAllReservationsService = async () => {
     return await ReservationModel.findAll({
         include: [
@@ -374,9 +493,9 @@ export const updateStatusCancelReservationService = async (id, user) => {
         throw new Error('Reserva no encontrada');
     };
 
-    const isOwner = reservation.userId === user.id;
+    const isOwner = reservation.userId === user.sub;
     const isAdmin = user.role === 'Admin';
-
+console.log('is admin en servicio: ', isAdmin)
     if (!isAdmin && !isOwner) {
         throw new Error('No tiene autorización para cancelar la reserva');
     };
