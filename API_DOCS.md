@@ -2,10 +2,11 @@
 
 # TABLA RESUMEN DE ENDPOINTS
 
-| Método | Endpoint                          | Descripción                          |
-|--------|-----------------------------------|--------------------------------------|
+
 
 ## Noticias
+| Método | Endpoint                          | Descripción                           |
+|--------|-----------------------------------|---------------------------------------|
 | GET    | /news                             | Listado paginado de noticias          |
 | GET    | /news/{id}                        | Obtener noticia por ID                |
 | POST   | /news                             | Crear noticia                         |
@@ -14,6 +15,8 @@
 | POST   | /images                           | Crear noticia con imagen              |
 
 ## Galería de noticias
+| Método | Endpoint                          | Descripción                           |
+|--------|-----------------------------------|---------------------------------------|
 | GET    | /news-gallery/news/{newsId}       | Galería imágenes por ID noticia       |
 | POST   | /news-gallery/news/{newsId}       | Crear imagen por ID noticia           |
 | DELETE | /news-gallery/news/{newsId}       | Eliminar galería por ID noticia       |
@@ -21,6 +24,8 @@
 | DELETE | /news-gallery/{id}                | Eliminar imagen por ID                |
 
 ## Usuarios
+| Método | Endpoint                          | Descripción                           |
+|--------|-----------------------------------|---------------------------------------|
 | GET    | /users/detailed/users             | Listado paginado de usuarios          |
 | GET    | /users/detailed/{id}              | Usuario por ID                        |
 | POST   | /users                            | Crear usuario                         |
@@ -28,12 +33,16 @@
 | GET    | /users/admin/{id}                 | Usuario por ID (admin)                |
 
 ### Roles y estados de usuario
+| Método | Endpoint                          | Descripción                           |
+|--------|-----------------------------------|---------------------------------------|
 | GET    | /user-role                        | Listado de roles usuarios             |
 | GET    | /user-role/{id}                   | Rol por ID                            |
 | GET    | /user-status                      | Listado estado usuarios               |
 | GET    | /user-status/{id}                 | Estado por ID                         |
 
 ### Ubicación
+| Método | Endpoint                          | Descripción                           |
+|--------|-----------------------------------|---------------------------------------|
 | GET    | /regions                          | Listado de regiones                   |
 | GET    | /regions/{id}                     | Región por ID                         |
 | GET    | /provinces                        | Listado de provincias                 |
@@ -42,6 +51,8 @@
 | GET    | /communes/{id}                    | Comuna por ID                         |
 
 ## Libros
+| Método | Endpoint                          | Descripción                           |
+|--------|-----------------------------------|---------------------------------------|
 | GET    | /books/pagination                 | Listado paginado de libros            |
 | GET    | /books                            | Listado de libros                     |
 | GET    | /books/{id}                       | Obtener libro por ID                  |
@@ -50,6 +61,8 @@
 | DELETE | /books/{id}                       | Eliminar libro por ID                 |
 
 ### Autores y géneros
+| Método | Endpoint                          | Descripción                           |
+|--------|-----------------------------------|---------------------------------------|
 | GET    | /author                           | Listado de autores                    |
 | GET    | /author/{id}                      | Autor por ID                          |
 | POST   | /author                           | Crear autor                           |
@@ -57,12 +70,16 @@
 | GET    | /genre/{id}                       | Género por ID                         |
 
 ### Descriptores y relaciones
+| Método | Endpoint                          | Descripción                           |
+|--------|-----------------------------------|---------------------------------------|
 | GET    | /book-subject                     | Listado de descriptores               |
 | GET    | /book-subject/{id}                | Descriptor por ID                     |
 | DELETE | /book-author/{bookId}/{authorId}  | Eliminar relación libro-autor         |
 | DELETE | /book-subject/{bookId}/{subjectId}| Eliminar relación libro-subject       |
 
 ### Editoriales y ediciones
+| Método | Endpoint                          | Descripción                           |
+|--------|-----------------------------------|---------------------------------------|
 | GET    | /editorial                        | Listado de editoriales                |
 | GET    | /editorial/{id}                   | Editorial por ID                      |
 | POST   | /editorial                        | Crear editorial                       |
@@ -78,6 +95,8 @@
 | PUT    | /edition-image/{id}               | Eliminar portada libro                |
 
 ### Copias
+| Método | Endpoint                          | Descripción                           |
+|--------|-----------------------------------|---------------------------------------|
 | GET    | /copy                             | Listado de copias                     |
 | GET    | /copy/{id}                        | Copia por ID                          |
 | GET    | /copy/book/{bookId}               | Copia por ID book                     |
@@ -90,6 +109,8 @@
 | GET    | /copy-status/{id}                 | Estado de copia por ID                |
 
 ## Préstamos
+| Método | Endpoint                          | Descripción                           |
+|--------|-----------------------------------|---------------------------------------|
 | GET    | /loans/pagination                 | Listado paginado de préstamos         |
 | GET    | /loans                            | Listado de préstamos                  |
 | GET    | /loans/{id}                       | Préstamo por ID                       |
@@ -108,6 +129,8 @@
 | GET    | /loan-status                      | Listado de estados de préstamos       |
 
 ## Reservas
+| Método | Endpoint                          | Descripción                           |
+|--------|-----------------------------------|---------------------------------------|
 | GET    | /reservations/pagination          | Listado paginado reservas (admin)     |
 | GET    | /reservations/pagination/user     | Listado paginado reservas (user)      |
 | GET    | /reservations                     | Listado de reservas                   |
@@ -121,6 +144,8 @@
 | GET    | /reservation-status               | Listado de estados de reservas        |
 
 ## Notificaciones
+| Método | Endpoint                          | Descripción                           |
+|--------|-----------------------------------|---------------------------------------|
 | GET    | /notifications                    | Listado de notificaciones             |
 | GET    | /notifications/{id}               | Notificación por ID                   |
 | GET    | /notifications/user/{userId}      | Notificaciones por USER ID            |
