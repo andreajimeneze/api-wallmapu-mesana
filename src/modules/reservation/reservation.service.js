@@ -185,9 +185,7 @@ if (status && parseInt(status) > 0) {
 }
 
     const items = await ReservationModel.count({
-        //include,
         where,
-        //distinct: true,
         col: 'id_reservation'
     });
 
@@ -220,7 +218,7 @@ if (status && parseInt(status) > 0) {
         include,
         limit,
         offset,
-        subquery: false,
+        subQuery: false,
         order: [['reservationDate', 'DESC']]
     });
 

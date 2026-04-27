@@ -1,6 +1,6 @@
 import { internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse, successUpdateResponse } from "../../core/responses/apiResponse.js";
 import { createLoanDTO, loanBasicResponseDTO, loanResponseDTO } from "./loan.dto.js";
-import { createLoanService, getActiveLoanByBarcodeService, getActiveLoansByBookIdService, getActiveLoansByCopyIdService, getActiveLoansByUserIdService, getAllLoansService, getLoanByIdService, getLoansAndSearchService, getLoansOverDueService, markLoanAsExpireOverdueService, returnLoanByCopyIdService } from './loan.service.js';
+import { createLoanService, getActiveLoanByBarcodeService, getActiveLoansByBookIdService, getActiveLoansByCopyIdService, getActiveLoansByUserIdService, getAllLoansService, getLoanByIdService, getLoansAndSearchForUserService, getLoansAndSearchService, getLoansOverDueService, markLoanAsExpireOverdueService, returnLoanByCopyIdService } from './loan.service.js';
 
 export const getLoansPaginationAndSearch = async (req, res) => {
       try {
@@ -22,6 +22,51 @@ export const getLoansPaginationAndSearch = async (req, res) => {
           search: req.query.search ?? "",
           status: id_status
         });
+    
+        return res.status(200).json(
+          succesGetResponse({
+            message: "Préstamos obtenidos exitosamente",
+            data: result.data,
+          }),
+        );
+      } catch (error) {
+        console.error(error);
+        return res
+          .status(500)
+          .json(internalServerResponse({ message: "Error al obtener los préstamos" }));
+      }
+};
+
+export const getLoansPaginationAndSearchForUser = async (req, res) => {
+      try {
+        let page = parseInt(req.query.page ?? 1);
+        let items = parseInt(req.query.items ?? 10);
+        const id_status = parseInt(req.query.id_status);
+        const userId = req.user.sub;
+    
+        if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
+          return res.status(400).json(
+            badRequestResponse({
+              message: "El número de página o items debe ser mayor a 0",
+            }),
+          );
+        }
+    
+        const result = await getLoansAndSearchForUserService({
+          page,
+          limit: items,
+          search: req.query.search ?? "",
+          status: id_status,
+          userId: userId
+        });
+
+        if(!result || result.length === 0) {
+            return res.status(200).json(
+          succesGetResponse({
+            message: "No existen préstamos actualmente"
+          }),
+        );
+        }
     
         return res.status(200).json(
           succesGetResponse({
