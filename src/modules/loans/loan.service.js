@@ -1,7 +1,9 @@
 import { Op } from "sequelize";
 import { BookModel, CopyModel, EditionModel, LoanModel, LoanStatusModel, sequelize, UserModel } from "../../config/dbSequelize.js";
-import { loanBasiResponseDTO } from "./loan.dto.js";
+import { loanBasicResponseDTO } from "./loan.dto.js";
 import { getMaxLoanService } from "../loan_policy/loan_policy.service.js";
+import { paginationResponseDTO } from '../../core/responses/paginationResponse.js';
+import { Copy } from "../copies/copy.model.js";
 
 export const getLoansAndSearchService = async ({
     page,
@@ -49,7 +51,7 @@ export const getLoansAndSearchService = async ({
         {
             model: LoanStatusModel,
             as: 'loanStatus',
-            attributes: ['idStatus', 'name']
+            attributes: ['idLoanStatus', 'name']
         }
     ];
 
@@ -57,7 +59,7 @@ export const getLoansAndSearchService = async ({
 
     if (status && parseInt(status) > 0) {
         include[2].where = {
-            idStatus: parseInt(status)  // ✅ Usa : no =
+            idLoanStatus: parseInt(status)  // ✅ Usa : no =
         };
     }
 
@@ -113,7 +115,7 @@ export const getLoansAndSearchService = async ({
             prev:
                 page > 1
                     ? `/pagination?page=${page - 1}&items=${limit}&search=${search}` : null,
-            data: result.map(loanBasiResponseDTO)
+            data: result.map(loanBasicResponseDTO)
         })
     };
 };
@@ -132,7 +134,8 @@ export const getAllLoansService = async () => {
             },
             {
                 model: LoanStatusModel,
-                as: 'loanStatus'
+                as: 'loanStatus',
+                attributes: ['idLoanStatus', 'name']
             }
         ]
     });
@@ -151,14 +154,15 @@ export const getLoanByIdService = async (id) => {
             },
             {
                 model: LoanStatusModel,
-                as: 'loanStatus'
+                as: 'loanStatus',
+                attributes: ['idLoanStatus', 'name']
             }
         ]
     })
 };
 
 export const getActiveLoansByUserIdService = async (userId) => {
-    return LoanModel.findAll({
+    return await LoanModel.findAll({
         where: {
             userId: userId,
             loanStatusId: {
@@ -176,14 +180,15 @@ export const getActiveLoansByUserIdService = async (userId) => {
             },
             {
                 model: LoanStatusModel,
-                as: 'loanStatus'
+                as: 'loanStatus',
+                attributes: ['idLoanStatus', 'name']
             }
         ]
     })
 };
 
 export const getActiveLoansByCopyIdService = async (copyId) => {
-    return await LoanModel.findAll({
+    return await LoanModel.findOne({
         where: {
             copyId: copyId,
             loanStatusId: {
@@ -201,7 +206,8 @@ export const getActiveLoansByCopyIdService = async (copyId) => {
             },
             {
                 model: LoanStatusModel,
-                as: 'loanStatus'
+                as: 'loanStatus',
+                attributes: ['idLoanStatus', 'name']
             }
         ]
     })
@@ -219,6 +225,7 @@ export const getActiveLoansByBookIdService = async (bookId) => {
                 model: CopyModel,
                 as: 'copy',
                 required: true,
+                attributes: ['idCopy', 'barcode'],
                 include: [
                     {
                         model: EditionModel,
@@ -228,6 +235,7 @@ export const getActiveLoansByBookIdService = async (bookId) => {
                             {
                                 model: BookModel,
                                 as: 'book',
+                                attributes: ['idBook', 'title'],
                                 required: true,
                                 where: {
                                     idBook: bookId
@@ -240,11 +248,13 @@ export const getActiveLoansByBookIdService = async (bookId) => {
             {
                 model: UserModel,
                 as: 'user',
+                attributes: ['idUser', 'username', 'userlastname'],
                 required: false
             },
             {
                 model: LoanStatusModel,
                 as: 'loanStatus',
+                attributes: ['idLoanStatus', 'name'],
                 required: false
             }
         ]
@@ -252,7 +262,7 @@ export const getActiveLoansByBookIdService = async (bookId) => {
 };
 
 export const getLoansOverDueService = async () => {
-    return LoanModel.findAll({
+    return await LoanModel.findAll({
         where: {
             dueDate: {
                 [Op.lt]: new Date()
@@ -270,7 +280,8 @@ export const getLoansOverDueService = async () => {
             },
             {
                 model: LoanStatusModel,
-                as: 'loanStatus'
+                as: 'loanStatus',
+                attributes: ['idLoanStatus', 'name']
             }
         ]
     })
@@ -325,13 +336,15 @@ export const returnLoanByCopyIdService = async (copyId) => {
 
         await transaction.commit();
 
-        return {
-            updatedLoan,
-            updatedCopy
-        }
+        // return {
+        //     loan: updatedLoan,
+        //     copy: updatedCopy            
+        // }
+
+        return updatedLoan
     } catch (error) {
         await transaction.rollback();
-        throw new error;
+        throw error;
     }
 
 };
@@ -351,3 +364,46 @@ export const markLoanAsExpireOverdueService = async () => {
 
     return affectedRows;
 };
+
+export const getActiveLoanByBarcodeService = async (barcode) => {
+    return await LoanModel.findOne({
+        where: {
+            loanStatusId: {
+                [Op.in]: [1]
+            }
+        },
+        include: [
+            {
+                model: CopyModel,
+                as: 'copy',
+                required: true,
+                where: {
+                    barcode: barcode
+                },
+                include: [
+                    {
+                        model: EditionModel,
+                        as: 'edition',
+                        required: true,
+                        include: [
+                            {
+                                model: BookModel,
+                                as: 'book'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                model: UserModel,
+                as: 'user'
+            },
+            {
+                model: LoanStatusModel,
+                as: 'loanStatus',
+                //attributes: [['idLoanStatus', 'id_status'],
+                //    'name']
+            }
+        ]
+    })
+}

@@ -129,7 +129,7 @@ export const getReservationsAndSearchForUserService = async ({
     status,
     userId
 }) => {
-    console.log('userId en service: ', userId)
+
     limit = Number.isInteger(Number(limit)) ? Number(limit) : 10;
     page = Number.isInteger(Number(page)) ? Number(page) : 1;
 
@@ -353,9 +353,7 @@ export const getActiveReservationByUserIdAndCopyService = async (userId, copyId)
         where: {
             userId: userId,
             copyId: copyId,
-            reservationStatusId: {
-                [Op.ne]: 1
-            }
+            reservationStatusId: 1
         },
         include: [
             {
@@ -406,7 +404,9 @@ export const createCopyReservationService = async (userId, copyId) => {
 
     const existingReserve = await getActiveReservationByUserIdAndCopyService(userId, copyId);
 
+    console.log('reserva encontrada en copyreservation create en servicio: ', existingCopy);
     if (existingReserve) {
+        console.log(existingReserve)
         throw new Error('Ya tienes una reserva activa de este ejemplar');
     };
 
@@ -495,7 +495,7 @@ export const updateStatusCancelReservationService = async (id, user) => {
 
     const isOwner = reservation.userId === user.sub;
     const isAdmin = user.role === 'Admin';
-console.log('is admin en servicio: ', isAdmin)
+
     if (!isAdmin && !isOwner) {
         throw new Error('No tiene autorización para cancelar la reserva');
     };

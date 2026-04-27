@@ -264,7 +264,6 @@ export const updateEditionService = async (id, editionData) => {
         { model: EditorialModel, as: "editorial" },
       ],
     });
-    console.log('update edition en service: ', updatedEdition);
 
     return updatedEdition;
   } catch (error) {

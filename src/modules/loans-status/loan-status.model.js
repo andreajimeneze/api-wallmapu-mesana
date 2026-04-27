@@ -17,9 +17,7 @@ export const LoanStatus = (sequelize, DataTypes) => {
     },
     {
       tableName: "wm_loan_status",
-      timestamps: true,
-      createdAt: 'created_at',
-      updatedAt: 'updated_at'
+      timestamps: false
     },
   );
 

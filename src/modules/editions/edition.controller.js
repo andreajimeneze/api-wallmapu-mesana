@@ -195,8 +195,6 @@ export const updateEdition = async (req, res) => {
   try {
     const editedEdition = await updateEditionService(id, editionData);
 
-    console.log('update edition en controller: ', baseEditionDTO(editedEdition))
-
     return res.status(202).json(
       successUpdateResponse({
         message: "Edición modificada con éxito",

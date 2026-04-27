@@ -118,8 +118,6 @@ export const updateUser = async (req, res) => {
     const dtoData = updateUserDTO(data, userSelected);
 
     const updatedUser = await updateUserService(id, dtoData);
-    
-    console.log('usuario actualizado... controller: ', userResponseDTO(updatedUser));
 
     return res.status(200).json(
       succesGetResponse({

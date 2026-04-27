@@ -43,7 +43,6 @@ export const getReservationsAndSearchForUser = async (req, res) => {
         let items = parseInt(req.query.items ?? 10);
         const id_status = parseInt(req.query.id_status);
         const userId = req.user.sub;
-        console.log('user en pagination user controller: ', userId);
     
         if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
           return res.status(400).json(

@@ -5,7 +5,9 @@ export const loanResponseDTO = (res) => ({
     loan_date: res.loanDate,
     due_date: res.dueDate,
     return_date: res.returnDate,
-    status: res.status,
+    loan_status_id: res.loan,
+    created_at: res.createdAt,
+    updated_at: res.updatedAt
 });
 
 export const createLoanDTO = ({
@@ -29,45 +31,45 @@ export const createLoanDTO = ({
 export const updateLoanDTO = (loanData) => {
     const dto = {};
 
-    if(loanData.loan_date === '') {
+    if(loanData.loan_date != undefined) {
         dto.loanDate = loanData.loan_date
     };
 
-    if(loanData.due_date === '') {
+    if(loanData.due_date != undefined) {
         dto.dueDate = loanData.due_date
     };
 
-    if(loanData.return_date === '') {
+    if(loanData.return_date != undefined) {
         dto.returnDate = loanData.return_date
     };
 
-    if(loanData.user_id === 0) {
+    if(loanData.user_id != undefined) {
         dto.userId = loanData.user_id
     };
 
-    if(loanData.copy_id === 0) {
+    if(loanData.copy_id != undefined) {
         dto.copyId = loanData.copy_id
     };
 
-    if(loanData.status === '') {
+    if(loanData.status != undefined) {
         dto.status = loanData.status
     };
 
     return dto;
 };
 
-export const loanBasiResponseDTO = (res) => ({
-    id_loan: res.idLoan,
+export const loanBasicResponseDTO = (res) => ({
+  id_loan: res.idLoan,
   loan_date: res.loanDate,
   due_date: res.dueDate,
   return_date: res.returnDate,
-  copy_id: res.copyId,
-  user_id: res.userId,
   loan_status_id: res.loanStatusId,
   loan_status_name: res.loanStatus.name,
-  user_name: res.user.username,
-  user_lastname: res.user.lastname,
+  user_id: res.userId,
+  user_name: res.user.username + " " + res.user.userlastname,
+  copy_id: res.copyId,
+  copy_barcode: res.copy.barcode,
+  copy_signature: res.copy.signatureTopography,
   book_id: res.copy.edition.bookId,
-  book_title: res.copy.edition.title,
-  copy_barcode: res.copy.ebarcode
+  book_title: res.copy.edition.book.title,
 })

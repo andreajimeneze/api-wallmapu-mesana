@@ -127,11 +127,6 @@ export const getAllCopiesAvailableService = async (bookId) => {
             as: 'loanStatus',
             required: false,
             attributes: ['idLoanStatus', 'name']
-            // where: {
-            //   name: {
-            //     [Op.notIn]: ['Devuelto', 'Vencido']
-            //   }
-
             }
         ]
       },
@@ -145,19 +140,14 @@ export const getAllCopiesAvailableService = async (bookId) => {
             as: 'reservationStatus',
             required: false,
             attributes: ['idStatus', 'name']
-            // where: {
-            //   name: {
-            //     [Op.ne]: 'Pendiente de retiro'
-            //   }
-            // }
           }
         ]
       }
     ],
   });
 
-  const data = activeCopies.filter(copy => {
-    const hasActiveLoan = copy.loan && copy.loan.loanStatus && !['devuelto', 'vencido'];
+    const data = activeCopies.filter(copy => {
+    const hasActiveLoan = copy.loan && copy.loan.loanStatus && !['Devuelto', 'Vencido'];
     const hasActiveReservation = copy.reservations && copy.reservations.some(reserve => 
       reserve.reservationStatus && reserve.reservationStatus.name == 'Pendiente de retiro'
     );

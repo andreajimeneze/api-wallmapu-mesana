@@ -1,6 +1,6 @@
 import { internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse, successUpdateResponse } from "../../core/responses/apiResponse.js";
-import { createLoanDTO, loanResponseDTO } from "./loan.dto.js";
-import { createLoanService, getActiveLoansByBookIdService, getActiveLoansByCopyIdService, getActiveLoansByUserIdService, getAllLoansService, getLoanByIdService, getLoansAndSearchService, getLoansOverDueService, markLoanAsExpireOverdueService, returnLoanByCopyIdService } from './loan.service.js';
+import { createLoanDTO, loanBasicResponseDTO, loanResponseDTO } from "./loan.dto.js";
+import { createLoanService, getActiveLoanByBarcodeService, getActiveLoansByBookIdService, getActiveLoansByCopyIdService, getActiveLoansByUserIdService, getAllLoansService, getLoanByIdService, getLoansAndSearchService, getLoansOverDueService, markLoanAsExpireOverdueService, returnLoanByCopyIdService } from './loan.service.js';
 
 export const getLoansPaginationAndSearch = async (req, res) => {
       try {
@@ -74,13 +74,13 @@ export const getActiveLoansByUserId = async (req, res) => {
     const { userId } = req.params;
 
     try {
-        const activeLoans = getActiveLoansByUserIdService(userId);
+        const activeLoans = await getActiveLoansByUserIdService(userId);
 
         if (activeLoans.length === 0) {
-            return res.status(200).json(succesGetResponse({ message: 'No existen préstamos activos para el usuario' }));
+            return res.status(200).json(succesGetResponse({ message: 'No existen préstamos activos para el usuario'}));
         };
 
-        return res.status(200).json(succesGetResponse({ message: 'Préstamos activos obtenidos correctamente', data: loanResponseDTO(activeLoans) }))
+        return res.status(200).json(succesGetResponse({ message: 'Préstamos activos obtenidos correctamente', data: activeLoans.map(loanResponseDTO) }))
 
     } catch (error) {
         console.error(error);
@@ -92,13 +92,13 @@ export const getActiveLoansByCopyId = async (req, res) => {
     const {copyId} = req.params;
 
     try {
-         const activeLoans = getActiveLoansByCopyIdService(copyId);
+         const activeLoan = await getActiveLoansByCopyIdService(copyId);
 
-        if (activeLoans.length === 0) {
+        if (!activeLoan) {
             return res.status(404).json(notFoundResponse({ message: 'No existen copias con préstamos activo' }));
         };
 
-        return res.status(200).json(succesGetResponse({ message: 'Copias con préstamos activos obtenidos correctamente', data: loanResponseDTO(activeLoans) }))
+        return res.status(200).json(succesGetResponse({ message: 'Copias con préstamos activos obtenidos correctamente', data: loanResponseDTO(activeLoan) }))
 
 
     } catch (error) {
@@ -111,13 +111,13 @@ export const getActiveLoansByBookId = async (req, res) => {
     const {bookId} = req.params;
 
     try {
-         const activeLoansByBook = getActiveLoansByBookIdService(copyId);
+         const activeLoansByBook = await getActiveLoansByBookIdService(bookId);
 
         if (activeLoansByBook.length === 0) {
             return res.status(200).json(succesGetResponse({ message: 'No existen libros con préstamos activos' }));
         };
 
-        return res.status(200).json(succesGetResponse({ message: 'Libros con préstamos activos obtenidos correctamente', data: loanResponseDTO(activeLoansByBook) }))
+        return res.status(200).json(succesGetResponse({ message: 'Libros con préstamos activos obtenidos correctamente', data: activeLoansByBook.map(loanBasicResponseDTO) }))
 
 
     } catch (error) {
@@ -144,8 +144,9 @@ export const getLoansOverDue = async (req, res) => {
 
 export const createLoan = async (req, res) => {
     const data = req.body;
+    console.log('data que llega al controller en create loan: ', req.body)
     const loanDto = createLoanDTO(data);
-
+console.log('loan dto create loan controller: ', loanDto)
     try {
 
         await createLoanService(loanDto);
@@ -158,10 +159,11 @@ export const createLoan = async (req, res) => {
 };
 
 export const returnLoan = async (req, res) => {
-    const { copy_id } = req.params;
+    const { copyId } = req.params;
+    console.log('id de la copia en return loan controller: ', req.params);
 
     try {
-        const returnedLoan = await returnLoanByCopyIdService(copy_id);
+        const returnedLoan = await returnLoanByCopyIdService(copyId);
 
         return res.status(202).json(successUpdateResponse({message: 'Ejemplar devuelto con éxito', data: loanResponseDTO(returnedLoan)}));
     } catch(error) {
@@ -178,5 +180,22 @@ export const markLoanAsExpireOverdue = async (req, res) => {
     } catch(error) {
         console.error(error);
         return res.status(500).json(internalServerResponse({message: 'Error al intentar actualizar el vencimiento del ejemplar'}));
+    }
+};
+
+export const getActiveLoanByBarcode = async (req, res) => {
+  
+    const { barcode } = req.params;
+    
+    try {
+        const loan = await getActiveLoanByBarcodeService(barcode);
+        
+        if(!loan || loan.length === 0) {
+            return res.status(404).json(notFoundResponse({message: 'Préstamo no encontrado'}))
+        }
+        return res.status(200).json(succesGetResponse({message: 'Préstamo obtenido con éxito', data: loanBasicResponseDTO(loan)}));
+    } catch(error) {
+        console.error(error);
+        return res.status(500).json(internalServerResponse({message: 'Error al intentar obtener el préstamo'}));
     }
 }
