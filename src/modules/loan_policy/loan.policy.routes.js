@@ -1,9 +1,11 @@
 import express from 'express';
-import { createLoanPolicy, deletePolicy, getAllLoanPolicies, getPolicyById, updateLoanPolicy } from './loan_policy.controller.js';
+import { createLoanPolicy, deletePolicy, getAllLoanPolicies, getDefaultPolicy, getPolicyById, updateLoanPolicy } from './loan_policy.controller.js';
 
 const router = express.Router();
 
 router.get('/', getAllLoanPolicies);
+
+router.get('/default', getDefaultPolicy);
 
 router.get('/:id', getPolicyById);
 

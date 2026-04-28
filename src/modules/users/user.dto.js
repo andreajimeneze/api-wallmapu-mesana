@@ -1,3 +1,7 @@
+import { responseCommuneDTO } from "../commune/commune.dto.js";
+import { responseUserRoleDTO } from "../user-role/user-role.dto.js";
+import { responseUserStatusDTO } from "../user-status/user-status.dto.js";
+
 export const baseUserDTO = (user) => ({
     id_user: user.idUser,
     name: user.username,
@@ -18,6 +22,24 @@ export const userResponseDTO = (user) => ({
     user_status_id: user.userStatusId,
     created_at: user.created_at,
     updated_at: user.updated_at
+});
+
+export const userCompleteResponseDTO = (user) => ({
+    id_user: user.idUser,
+    name: user.username,
+    lastname: user.userlastname,
+    email: user.email,
+    rut: user.rut,
+    address: user.address,
+    commune_id: user.communeId,
+    phone: user.phoneNumber,
+    user_role_id: user.userRoleId,
+    user_status_id: user.userStatusId,
+    created_at: user.created_at,
+    updated_at: user.updated_at,
+    commune: responseCommuneDTO(user.commune),
+    user_role: responseUserRoleDTO(user.userRole),
+    user_status: responseUserStatusDTO(user.userStatus)
 });
 
 export const updateUserDTO = (data, currentUser) => ({

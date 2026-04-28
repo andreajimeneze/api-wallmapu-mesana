@@ -6,7 +6,7 @@ import {
   UserStatusModel,
 } from "../../config/dbSequelize.js";
 import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
-import { userResponseDTO } from "./user.dto.js";
+import { userCompleteResponseDTO, userResponseDTO } from "./user.dto.js";
 import { isProfileComplete } from '../auth/utils/profileComplete.js';
 
 export const getUsersPaginationSearchService = async ({
@@ -103,7 +103,7 @@ export const getUsersPaginationSearchService = async ({
         page > 1
           ? `/users?page=${page - 1}&items=${limit}&search=${search}`
           : null,
-      data: result.map(userResponseDTO),
+      data: result.map(userCompleteResponseDTO),
     }),
   };
 };

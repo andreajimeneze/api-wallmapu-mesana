@@ -383,7 +383,7 @@ export const getLoansOverDueService = async () => {
             dueDate: {
                 [Op.lt]: new Date()
             },
-            loanStatusId: 1
+            loanStatusId: 3
         },
         include: [
             {
@@ -392,7 +392,19 @@ export const getLoansOverDueService = async () => {
             },
             {
                 model: CopyModel,
-                as: 'copy'
+                as: 'copy',
+                include: [
+                    {
+                        model: EditionModel,
+                        as: 'edition',
+                        include: [
+                            {
+                                model: BookModel,
+                                as: 'book'
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 model: LoanStatusModel,

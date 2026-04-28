@@ -1,5 +1,5 @@
 import { BookModel, CopyModel, EditionModel, LoanModel, ReservationModel, ReservationStatusModel, sequelize, UserModel } from "../../config/dbSequelize.js"
-import { getDefaultPolicy, getMaxLoanService } from "../loan_policy/loan_policy.service.js";
+import { getDefaultPolicyService, getMaxLoanService } from "../loan_policy/loan_policy.service.js";
 import { createReservationDTO, reservationResponseDTO, updateReservationDTO } from "./reservation.dto.js";
 import { getCopyByIdService } from '../copies/copy.service.js';
 import { Op } from "sequelize";
@@ -408,7 +408,7 @@ export const createCopyReservationService = async (userId, copyId) => {
         throw new Error('Ya tienes una reserva activa de este ejemplar');
     };
 
-    const policy = await getDefaultPolicy();
+    const policy = await getDefaultPolicyService();
 
     const reservationDays = policy?.reservationDays ?? 3;
 

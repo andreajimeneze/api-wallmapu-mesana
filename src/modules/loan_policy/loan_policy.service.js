@@ -8,10 +8,9 @@ export const getLoanPolicyByIdService = async (id) => {
     return await LoanPolicyModel.findByPk(id);
 };
 
-export const getDefaultPolicy = async () => {
-    const policy = await LoanPolicyModel.findOne();
-
-    return policy ? policy.reservationDays : 3;
+export const getDefaultPolicyService = async () => {
+    return await LoanPolicyModel.findOne({
+    });
 };
 
 export const getMaxLoanService = async () => {
