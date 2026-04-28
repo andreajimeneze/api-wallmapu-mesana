@@ -179,7 +179,7 @@ export const getLoansOverDue = async (req, res) => {
             return res.status(200).json(succesGetResponse({ message: 'No existen préstamos vencidos' }));
         };
 
-        return res.status(200).json(succesGetResponse({ message: 'Préstamos vencidos obtenidos correctamente', data: overDueLoans.map(loanResponseDTO) }))
+        return res.status(200).json(succesGetResponse({ message: 'Préstamos vencidos obtenidos correctamente', data: overDueLoans.map(loanBasicResponseDTO) }))
 
     } catch (error) {
         console.error(error);

@@ -10,7 +10,7 @@ const path = "edition";
 
 export const createCoverImageService = async (file) => {
   const filename = generateFileName(path);
-  const {url, public_id} = await uploadImageCloud710(file.buffer, path, filename);
+  const { url, public_id } = await uploadImageCloud710(file.buffer, path, filename);
 
   return url;
 };
@@ -24,20 +24,20 @@ export const deleteCoverImageService = async (id) => {
     throw error;
   }
 
-  if (!selectedEdition.coverImage || selectedEdition.coverImage === null) {
-    const error = new Error("La edición no tiene imagen de portada");
-    error.status = 404;
-    throw error;
+  if (selectedEdition.coverImage) {
+    const publicId = extractPublicId(selectedEdition.coverImage);
+
+    if (publicId) {
+      try {
+        await deleteImageCloud(publicId);
+      } catch (e) {
+        console.log("Imagen ya eliminada o error controlado");
+      }
+    }
   }
 
-  const publicId = extractPublicId(selectedEdition.coverImage);
-
-  if (publicId) {
-    await deleteImageCloud(publicId);
-  }
-
+ 
   await selectedEdition.update({ coverImage: null });
 
-
-  return true;
+  return true; 
 };

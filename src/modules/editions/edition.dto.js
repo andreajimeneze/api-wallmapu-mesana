@@ -104,12 +104,26 @@ export const updateEditionDTO = ({
 };
 
 export const editionResponseDTO = (res) => ({
-   id_edition: res.idEdition,
+  id_edition: res.idEdition,
   edition: res.edition,
   isbn: res.isbn,
   publication_year: res.publicationYear,
   pages: res.pages,
   cover_image: res.coverImage,
    book_id: res.bookId,
+   created_at: res.createdAt,
+   updated_at: res.updatedAt,
    editorial: baseEditorialDTO(res.editorial),
 });
+
+export const basicResponseEditionWithCopies = (res) => ({
+  id_edition: res.idEdition,
+  edition: res.edition,
+  isbn: res.isbn,
+  created_at: res.createdAt,
+  cover_image: res.coverImage,
+  copies: res.copies ?
+      res.copies.map((copy) => ({
+        ...baseCopyDTO(copy)
+      })) : []
+})

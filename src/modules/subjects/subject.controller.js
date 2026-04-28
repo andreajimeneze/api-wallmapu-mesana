@@ -5,8 +5,11 @@ import {
 } from "../../core/responses/apiResponse.js";
 import { subjectResponseDTO } from "./subject.dto.js";
 import {
+  createSubjectService,
+  deleteSubjectService,
   getAllSubjectsService,
   getSubjectByIdService,
+  updateSubjectService,
 } from "./subject.service.js";
 
 export const getAllSubjects = async (req, res) => {
@@ -62,6 +65,91 @@ export const getSubjectById = async (req, res) => {
       .json(
         internalServerResponse({
           message: "Error al intentar obtener el descriptor",
+        }),
+      );
+  }
+};
+
+export const createSubject = async (req, res) => {
+   const { name } = req.body;
+
+  try {
+    const createdSubject= await createSubjectService(name);
+
+    res.status(201).json(
+          successCreateResponse({
+            message: "Descriptor creado exitosamente",
+            data: subjectResponseDTO(createSubject),
+          }),
+        );
+      } catch (error) {
+        console.error(error);
+        if (error.code === "CONFLICT") {
+          res.status(409).json(
+            conflictResponse({
+              message: error.message || "Nombre del descriptor ya existe",
+            }),
+          );
+        } else {
+          res.status(error.status || 500).json(error.message ||
+            internalServerResponse({
+              message: error.message || "Error al intentar crear el descriptor",
+            }),
+          );
+        }
+      }
+}
+
+export const updateSubject = async (req, res) => {
+  const { name } = req.body;
+
+  try {
+    const updatedSubject = await updateSubjectService(name);
+
+    res.status(202).json(
+          successUpdateResponse({
+            message: "Descriptor creado exitosamente",
+            data: subjectResponseDTO(updatedSubject),
+          }),
+        );
+      } catch (error) {
+        console.error(error);
+        if (error.code === "CONFLICT") {
+          res.status(409).json(
+            conflictResponse({
+              message: error.message || "Nombre del descriptor ya existe",
+            }),
+          );
+        } else {
+          res.status(error.status || 500).json(error.message ||
+            internalServerResponse({
+              message: error.message || "Error al intentar actualizar el descriptor",
+            }),
+          );
+        }
+      }
+}
+
+export const deleteSubject= async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedSubject = await deleteSubjectService(id);
+
+     return res
+      .status(202)
+      .json(
+        succesGetResponse({
+          message: "Descriptor eliminado exitosamente",
+          data: deletedSubject,
+        }),
+      );
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        internalServerResponse({
+          message: "Error al intentar eliminar al descriptor",
         }),
       );
   }

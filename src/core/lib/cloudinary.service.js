@@ -69,11 +69,12 @@ export const deleteImageCloud = async (publicId) => {
     resource_type: "image",
   });
 
-  if (data.data !== "ok") {
-    throw new Error("No se pudo eliminar la imagen en Cloudinary");
-  }
+  if (data.result !== "ok" && data.result !== "not found") {
+  throw new Error("No se pudo eliminar la imagen en Cloudinary");
+}
 
-  return data;
+console.log('cloudinary: ', data)
+  return data.result;
 };
 
 export const extractPublicId = (url) => {

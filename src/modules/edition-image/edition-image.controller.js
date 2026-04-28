@@ -1,6 +1,7 @@
 import {
   internalServerResponse,
   successCreateResponse,
+  successDeleteResponse,
 } from "../../core/responses/apiResponse.js";
 import {
   createCoverImageService,
@@ -34,9 +35,9 @@ export const deleteCoverImage = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const data = await deleteCoverImageService(id);
+    const deletedCoverImage = await deleteCoverImageService(id);
 
-    return res.status(202).json({ message: "Portada eliminada correctamente", data: data  });
+    return res.status(200).json(successDeleteResponse({ message: "Portada eliminada correctamente", data: deletedCoverImage  }));
   } catch (error) {
     console.error(error);
     return res

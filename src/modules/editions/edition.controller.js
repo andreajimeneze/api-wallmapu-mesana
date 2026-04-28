@@ -6,7 +6,7 @@ import {
   successDeleteResponse,
   successUpdateResponse,
 } from "../../core/responses/apiResponse.js";
-import { editionResponseDTO, createEditionDTO, baseEditionDTO, editionDetailDTO } from "./edition.dto.js";
+import { editionResponseDTO, createEditionDTO, baseEditionDTO, editionDetailDTO, editionForBookResponseDTO } from "./edition.dto.js";
 import {
   createEditionService,
   deleteEditionWithImageService,
@@ -171,6 +171,8 @@ export const createEdition = async (req, res) => {
   const editionDto = createEditionDTO(dataEdition);
   try {
     const createdEdition = await createEditionService(editionDto);
+
+    console.log(JSON.stringify(baseEditionDTO(createdEdition), null, 2));
 
     return res.status(201).json(
       successCreateResponse({

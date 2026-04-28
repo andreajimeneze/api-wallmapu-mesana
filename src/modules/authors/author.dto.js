@@ -16,4 +16,4 @@ export const createAuthorDTO = ({author}) => {
   return {
     name: author.name
   }
-}
+};

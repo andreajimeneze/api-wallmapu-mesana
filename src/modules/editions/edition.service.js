@@ -8,9 +8,9 @@ import {
   GenreModel,
   CopyStatusModel,
 } from "../../config/dbSequelize.js";
-import {  editionForBookResponseDTO, updateEditionDTO } from "./edition.dto.js";
+import { editionForBookResponseDTO, updateEditionDTO } from "./edition.dto.js";
 import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
-import { editionResponseDTO} from "./edition.dto.js";
+import { editionResponseDTO } from "./edition.dto.js";
 import { Op } from "sequelize";
 import {
   deleteImageCloud,
@@ -143,7 +143,7 @@ export const getAllEditionPaginationService = async ({
     subQuery: false,
   });
 
-    return {
+  return {
     data: paginationResponseDTO({
       page,
       pages,
@@ -171,12 +171,13 @@ export const getAllEditionsService = async () => {
       {
         model: EditorialModel,
         as: "editorial",
+        attributes: ['idEditorial', 'name']
       },
       {
         model: CopyModel,
         as: 'copies',
         required: true,
-        attributes: ['idCopy', 'barcode', 'copyNumber', 'signatureTopography', 'createdAt' ]
+        attributes: ['idCopy', 'barcode', 'copyNumber', 'signatureTopography', 'createdAt']
       }
     ],
   });
@@ -200,7 +201,8 @@ export const getEditionByIdService = async (id) => {
         //required: true,
         attribute: ['name']
       }
-    ],}
+    ],
+  }
   );
 };
 
@@ -214,7 +216,7 @@ export const getEditionByIdService = async (id) => {
 //     error.status = 404;
 //     throw error;
 //   }
- 
+
 //   return editionResponseDTO(edition);
 // };
 
@@ -222,18 +224,21 @@ export const createEditionService = async (editionData) => {
 
   const editionCreated = await EditionModel.create(editionData);
 
-  const edition = await EditionModel.findByPk(editionCreated.idEdition, {
-    include: [
-      {
-        model: BookModel,
-        as: "book",
-      },
-      {
-        model: EditorialModel,
-        as: "editorial",
-      },
-    ],
-  });
+  const edition = await EditionModel.findByPk(
+    editionCreated.idEdition,
+    {
+      include: [
+        {
+          model: BookModel,
+          as: "book",
+        },
+        {
+          model: EditorialModel,
+          as: "editorial",
+        },
+      ],
+    }
+  );
 
   return edition;
 };
@@ -287,7 +292,7 @@ export const deleteEditionWithImageService = async (id) => {
     }
 
     if (copyEdition > 0) {
-       await transaction.rollback();
+      await transaction.rollback();
       const error = new Error(
         `Edición ${edition.edition} tiene copias asociadas. Debe eliminar las copias primero`,
       );
@@ -296,17 +301,17 @@ export const deleteEditionWithImageService = async (id) => {
     }
 
     const coverImage = edition.coverImage;
-
-    await edition.destroy();
-    await transaction.commit();
-
+    console.log('portada libro a eliminar: ', coverImage);
     if (coverImage && coverImage.trim() !== "") {
       const publicId = extractPublicId(coverImage);
+      console.log('publicId de cloudinary: ', publicId)
       await deleteImageCloud(publicId);
+      await edition.destroy();
+      await transaction.commit();
     }
     return true;
   } catch (error) {
-     if (transaction.finished !== 'commit' && transaction.finished !== 'rollback') {
+    if (transaction.finished !== 'commit' && transaction.finished !== 'rollback') {
       await transaction.rollback();
     }
     throw error;

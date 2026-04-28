@@ -72,7 +72,7 @@ export const getAllCopiesByBookService = async (bookId) => {
 };
 
 export const getCopiesByEditionIdService = async (editionId) => {
-  
+
   const copy = await CopyModel.findAll(
     {
       where: { editionId: editionId },
@@ -127,7 +127,7 @@ export const getAllCopiesAvailableService = async (bookId) => {
             as: 'loanStatus',
             required: false,
             attributes: ['idLoanStatus', 'name']
-            }
+          }
         ]
       },
       {
@@ -146,20 +146,40 @@ export const getAllCopiesAvailableService = async (bookId) => {
     ],
   });
 
-    const data = activeCopies.filter(copy => {
-    const hasActiveLoan = copy.loan && copy.loan.loanStatus && !['Devuelto', 'Vencido'];
-    const hasActiveReservation = copy.reservations && copy.reservations.some(reserve => 
-      reserve.reservationStatus && reserve.reservationStatus.name == 'Pendiente de retiro'
+  const data = activeCopies.map(copy => {
+    const loans = Array.isArray(copy.loan)
+      ? copy.loan
+      : (copy.loan ? [copy.loan] : []);
+
+    const reservations = Array.isArray(copy.reservations)
+      ? copy.reservations
+      : [];
+
+    const hasActiveLoan = loans.some(loan =>
+      loan.loanStatus &&
+      !['Devuelto', 'Vencido'].includes(loan.loanStatus.name)
     );
 
-    return !hasActiveLoan && !hasActiveReservation;
-  })
-  .map(copy => ({
-    ...copy.toJSON(),
-    availability_status: 'disponible'
-  }))
+    const hasActiveReservation = reservations.some(reserve =>
+      reserve.reservationStatus &&
+      reserve.reservationStatus.name === 'Pendiente de retiro'
+    );
 
-  return data
+    let availability_status = 'disponible';
+
+    if (hasActiveLoan) {
+      availability_status = 'en préstamo';
+    } else if (hasActiveReservation) {
+      availability_status = 'reservado';
+    }
+
+    return {
+      ...copy.toJSON(),
+      availability_status
+    };
+  });
+
+  return data;
 };
 
 export const getCopyByIdService = async (id) => {
@@ -215,10 +235,14 @@ export const createCopyService = async (copyData) => {
       throw new Error('Signatura ya existe para ese libro');
     };
 
-    return await CopyModel.create(copyData);
+    const createdCopy = await CopyModel.create(copyData);
+
+    const newCopy = await getCopyByIdService(createdCopy.idCopy);
+
+    return newCopy;
 
   } catch (error) {
-    console.error('copy service: ' , error);
+    console.error('copy service: ', error);
     throw error;
   }
 };
