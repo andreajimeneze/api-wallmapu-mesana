@@ -193,7 +193,7 @@ export const updateBook = async (req, res) => {
 
 export const deleteBook = async (req, res) => {
   const { id } = req.params;
-
+console.log('id delete controller: ', id);
   try {
     await deleteBookService(id);
     return res
@@ -202,7 +202,7 @@ export const deleteBook = async (req, res) => {
   } catch (error) {
     if (
       error.message ===
-      "El libro tiene autores, descriptores o ediciones asociadas"
+      "El libro tiene ediciones asociadas" || error.message ===  "Debe eliminar las ediciones para poder borrar el libro"
     ) {
       return res.status(409).json(conflictResponse({ message: error.message }));
     }

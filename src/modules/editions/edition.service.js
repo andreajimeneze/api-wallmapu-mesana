@@ -306,9 +306,9 @@ export const deleteEditionWithImageService = async (id) => {
       const publicId = extractPublicId(coverImage);
       console.log('publicId de cloudinary: ', publicId)
       await deleteImageCloud(publicId);
-      await edition.destroy();
-      await transaction.commit();
     }
+    await edition.destroy();
+    await transaction.commit();
     return true;
   } catch (error) {
     if (transaction.finished !== 'commit' && transaction.finished !== 'rollback') {

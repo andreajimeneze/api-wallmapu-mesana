@@ -98,8 +98,8 @@ export const getBooksPaginationAndSearchService = async ({
 
   const where = search
     ? {
-        [Op.or]: [{ title: { [Op.iLike]: `%${search}%` } }],
-      }
+      [Op.or]: [{ title: { [Op.iLike]: `%${search}%` } }],
+    }
     : {};
 
   const items = await BookModel.count({
@@ -316,30 +316,42 @@ export const updateBookService = async (id, bookData) => {
 };
 
 export const deleteBookService = async (id) => {
+
+  const bookToDelete = await getBookByIdService(id);
+
+  const authorsExists = await BookAuthorModel.findAll({
+    where: { idBook: id },
+  });
+
+  const subjectsExists = await BookSubjectModel.findAll({
+    where: { idBook: id },
+  });
+
+  const editionsExists = await EditionModel.findAll({
+    where: { bookId: id },
+  });
+
+  if (editionsExists.length > 0) {
+    throw new Error(
+      "Debe eliminar las ediciones para poder borrar el libro",
+    );
+  }
+
+  const transaction = await sequelize.transaction();
   try {
-    const bookToDelete = await getBookByIdService(id);
+    if (authorsExists.length > 0) {
+      await deleteBookAuthorService(id, transaction)
+    };
 
-    const authorsExists = await BookAuthorModel.findOne({
-      where: { idBook: id },
-    });
+    if (subjectsExists.length > 0) {
+      await deleteBookSubjectService(id, transaction);
+    };
 
-    const subjectsExists = await BookSubjectModel.findOne({
-      where: { idBook: id },
-    });
-
-    const editionsExists = await EditionModel.findOne({
-      where: { bookId: id },
-    });
-
-    if (authorsExists || subjectsExists || editionsExists) {
-      throw new Error(
-        "El libro tiene autores, descriptores o ediciones asociadas",
-      );
-    }
-
-    await bookToDelete.destroy(id);
+    await bookToDelete.destroy({ transaction });
+    await transaction.commit();
     return true;
   } catch (error) {
+    await transaction.rollback();
     throw error;
   }
 };

@@ -19,10 +19,10 @@ export const createBookSubjectsService = async (
   await BookSubjectModel.bulkCreate(bookSubjects, options);
 };
 
-export const deleteBookSubjectService = async (idBook, options = {}) => {
+export const deleteBookSubjectService = async (idBook, transaction = null) => {
   await BookSubjectModel.destroy({
     where: { idBook },
-    options,
+      ...(transaction && { transaction })
   });
 
   return true;

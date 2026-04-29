@@ -274,6 +274,20 @@ export const deleteCopyService = async (id) => {
     throw error;
   }
 
-  await selectedCopy.destroy();
-  return true;
+  try {
+    await selectedCopy.destroy();
+    return true;
+  } catch (error) {
+    if (error instanceof ForeignKeyConstraintError) {
+      if (error.index?.includes("loan")) {
+        throw new Error("No se puede eliminar porque existen préstamos asociados");
+      }
+
+      if (error.index?.includes("reservation")) {
+        throw new Error("No se puede eliminar porque existen reservas asociadas");
+      }
+
+      throw new Error("No se puede eliminar porque existen registros relacionados");
+    }
+  }
 };

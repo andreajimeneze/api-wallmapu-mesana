@@ -20,12 +20,10 @@ export const createBookAuthorService = async (
 export const deleteBookAuthorService = async (idBook, transaction = null) => {
 
   try {
-    await BookAuthorModel.destroy(
-      {
-        where: { idBook },
-      },
-      transaction,
-    );
+    await BookAuthorModel.destroy({
+     where: { idBook },   
+      ...(transaction && { transaction })
+    });
 
     return true;
   } catch (error) {
