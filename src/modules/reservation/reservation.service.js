@@ -4,8 +4,11 @@ import { createReservationDTO, reservationResponseDTO, updateReservationDTO } fr
 import { getCopyByIdService } from '../copies/copy.service.js';
 import { Op } from "sequelize";
 import { Copy } from "../copies/copy.model.js";
-import { createPaginationService } from "../../core/services/basePagination.service.js";
+//import { createPaginationService } from "../../core/services/basePagination.service.js";
 import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
+import { normalizePagination } from "../../core/helpers/nomalizePagination.js";
+import { calculatePagination } from "../../core/helpers/calculatePagintation.js";
+
 
 export const getReservationsAndSearchService = async ({
     page,
@@ -13,17 +16,9 @@ export const getReservationsAndSearchService = async ({
     search,
     status
 }) => {
-    limit = Number.isInteger(Number(limit)) ? Number(limit) : 10;
-    page = Number.isInteger(Number(page)) ? Number(page) : 1;
-
-    const DEFAULT_LIMIT = 10;
-    const MAX_LIMIT = 100;
-
-    limit = Number(limit) || DEFAULT_LIMIT;
-    page = Number(page) || 1;
-
-    if (limit < 1) limit = DEFAULT_LIMIT;
-    if (limit > MAX_LIMIT) limit = MAX_LIMIT;
+    
+      const { page: currentPage, limit: currentLimit } =
+      normalizePagination(page, limit);
 
     const include = [
         {
@@ -61,7 +56,7 @@ const where = {};
 
 if (status && parseInt(status) > 0) {
     include[2].where = {
-        idStatus: parseInt(status)  // ✅ Usa : no =
+        idStatus: parseInt(status) 
     };
 }
 
@@ -86,15 +81,9 @@ if (status && parseInt(status) > 0) {
         };
     };
 
-    const pages = Math.ceil(items / limit);
 
-    if (page > pages && page > 0) {
-        page = search ? 1 : pages;
-    } else if (page < 1) {
-        page = 1;
-    };
-
-    const offset = (page - 1) * limit;
+    const { page: safePage, pages, offset} = calculatePagination(items, currentPage, currentLimit);
+ 
 
     const result = await ReservationModel.findAll({
         where,
@@ -394,25 +383,51 @@ export const getActiveReservationByCopyService = async (copyId) => {
 };
 
 export const createCopyReservationService = async (userId, copyId) => {
-    const existingCopy = await getCopyByIdService(copyId);
+
+    const [existingCopy, existingReserve, policy] = await Promise.all([
+        getCopyByIdService(copyId),
+        getActiveReservationByUserIdAndCopyService(userId, copyId),
+        getDefaultPolicyService()
+    ])
 
     if (!existingCopy) {
-        throw new Error('Copia no encontrada');
+        const error = new Error('Copia no encontrada');
+        error.status = 404;
+        throw error;
     };
 
-    const existingReserve = await getActiveReservationByUserIdAndCopyService(userId, copyId);
-
-    console.log('reserva encontrada en copyreservation create en servicio: ', existingCopy);
     if (existingReserve) {
-        console.log(existingReserve)
-        throw new Error('Ya tienes una reserva activa de este ejemplar');
+        const error = new Error('Ya tienes una reserva activa de este ejemplar');
+        error.status = 409;
+        throw error;
     };
-
-    const policy = await getDefaultPolicyService();
 
     const reservationDays = policy?.reservationDays ?? 3;
 
-    const expirationDate = new Date(Date.now() + reservationDays * 24 * 60 * 60 * 1000);
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + reservationDays);
+    expirationDate.setHours(23, 59, 59, 999);
+
+    const [maxBooksReservated, maxBooksLoaned] = await Promise.all([
+        ReservationModel.count({
+            where: {
+                userId: userId,
+                reservationStatusId: 1
+            }
+        }),
+        LoanModel.count({
+            where: {
+                userId: userId,
+                loanStatusId: 1
+            }
+        })
+    ])
+
+    if (maxBooksReservated + maxBooksLoaned >= policy.maxBooks) {
+        const error = new Error('Usuario excede número de reservas y préstamos autorizados');
+        error.status = 409;
+        throw error;
+    };
 
     const reservation = createReservationDTO({
         userId,
@@ -422,8 +437,6 @@ export const createCopyReservationService = async (userId, copyId) => {
     });
 
     return await ReservationModel.create(reservation);
-
-    //return await getReservationByIdService(createdReservation.idReservation);
 };
 
 export const getExpireOverdueService = async () => {
@@ -463,8 +476,9 @@ export const getReservationPendingById = async (id) => {
 
 export const updateStatusExpireOverdueReservationsService = async () => {
     const today = new Date();
-    //tomorrow.setDate(tomorrow.getDate() + 1);
-    today.setHours(0, 0, 0, 0); 
+    today.setHours(23, 59, 59, 999);
+
+
 
     const [updatedStatusCount] = await ReservationModel.update(
         { reservationStatusId: 4 },
@@ -472,7 +486,7 @@ export const updateStatusExpireOverdueReservationsService = async () => {
             where: {
                 reservationStatusId: 1,
                 expirationDate: {
-                    [Op.lt]: today
+                    [Op.lte]: today
                 }
             }
         })
@@ -545,34 +559,60 @@ export const markAsPickUpService = async (id, copyId) => {
         });
 
         if (!reserve) {
-            throw new Error('Reserva no encontrada');
+            const error = new Error('Reserva no encontrada');
+            error.status = 404;
+            throw error;
         };
 
         if (reserve.reservationStatusId !== 1) {
-            throw new Error('No puede marcar como retirada una reserva pendiente');
+            const error = new Error('No puede marcar como retirada una reserva pendiente');
+            error.status = 409;
+            throw error;
         };
 
         if (reserve.expirationDate < new Date()) {
-            throw new Error('No puede entregarse una reserva vencida. Debe reservar nuevamente');
+            const error = new Error('No puede entregarse una reserva vencida. Debe reservar nuevamente');
+            error.status = 409;
+            throw error;
         };
 
-        const copy = await CopyModel.findByPk( copyId, { transaction });
+        const copy = reserve.copy;
 
         if (!copy) {
-            throw new Error('Copia no asociada a la reserva');
+            const error = new Error('Copia no asociada a la reserva');
+            error.status = 409;
+            throw error;
         }
 
-        if (copy.idCopy !== reserve.copyId) {
-            throw new Error('Copia no coincide con la reserva');
+        if (copy.idCopy !== copyId) {
+            const error = new Error('Copia no coincide con la reserva');
+            error.status = 409;
+            throw error;
         }
         if (copy.statusId !== 1) {
-            throw new Error('Ejemplar no está disponible');
+            const error = new Error('Ejemplar no está disponible');
+            error.status = 409;
+            throw error;
         };
 
-        const loanDate = await getMaxLoanService();
+        const [loanDate, policy, maxBooks] = await Promise.all([
+            getMaxLoanService(),
+            getDefaultPolicyService(),
+            LoanModel.count({
+                where: {
+                    userId: reserve.userId
+                }
+            })
+        ])
+
         const dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + loanDate);
 
+        if (maxBooks > policy.maxBooks) {
+            const error = new Error('Usuario excede el máximo de préstamos permitidos');
+            error.status = 409;
+            throw error;
+        }
 
         const loan = await LoanModel.create({
             userId: reserve.userId,

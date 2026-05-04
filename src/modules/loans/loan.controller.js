@@ -189,9 +189,8 @@ export const getLoansOverDue = async (req, res) => {
 
 export const createLoan = async (req, res) => {
     const data = req.body;
-    console.log('data que llega al controller en create loan: ', req.body)
     const loanDto = createLoanDTO(data);
-console.log('loan dto create loan controller: ', loanDto)
+
     try {
 
         await createLoanService(loanDto);
@@ -199,7 +198,7 @@ console.log('loan dto create loan controller: ', loanDto)
         return res.status(201).json(successCreateResponse({resource: 'Loan'}));
     } catch (error) {
         console.error(error);
-        return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener los préstamos vencidos' }));
+        return res.status(error.status || 500).json(error.message || 'Error al intentar obtener los préstamos vencidos' );
     };
 };
 

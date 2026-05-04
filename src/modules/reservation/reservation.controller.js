@@ -6,8 +6,8 @@ export const getReservationsAndSearch = async (req, res) => {
       try {
         let page = parseInt(req.query.page ?? 1);
         let items = parseInt(req.query.items ?? 10);
-       const id_status = parseInt(req.query.id_status);
-    
+        const id_status = parseInt(req.query.id_status);
+
         if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
           return res.status(400).json(
             badRequestResponse({
@@ -20,7 +20,7 @@ export const getReservationsAndSearch = async (req, res) => {
           page,
           limit: items,
           search: req.query.search ?? "",
-          status: id_status
+          status: id_status || 0
         });
     
         return res.status(200).json(
@@ -30,7 +30,7 @@ export const getReservationsAndSearch = async (req, res) => {
           }),
         );
       } catch (error) {
-        console.error(error);
+        console.error('reservation admin controller: ', error);
         return res
           .status(500)
           .json(internalServerResponse({ message: "Error al obtener las reservas" }));
@@ -154,7 +154,11 @@ export const createReservation = async (req, res) => {
         return res.status(201).json(successCreateResponse({resource: 'Reserva'}));
     } catch(error) {
         console.error(error);
-        return res.status(500).json(internalServerResponse({message: 'Error al intentar crear la reserva'}));
+       return res
+      .status(error.status || 500)
+      .json({
+        message: error.message || "Error al intentar crear la reserva",
+      });
     }
 };
 
@@ -220,7 +224,10 @@ export const markAsPickUp = async (req, res) => {
         return res.status(202).json(successUpdateResponse({message: 'Ejemplar marcado como retirado'}))
     } catch(error) {
         console.error(error);
-        return res.status(500).json(internalServerResponse({message: 'Error al intentar marcar como ejemplar retirado'}));
+       return res
+      .status(error.status || 500)
+      .json({
+        message: error.message || 'Error al intentar marcar como ejemplar retirado'});
     }
 }
 

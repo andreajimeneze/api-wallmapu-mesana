@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { ForeignKeyConstraintError, Op } from "sequelize";
 import {
   BookModel,
   CopyModel,

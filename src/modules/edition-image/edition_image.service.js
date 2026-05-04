@@ -3,7 +3,7 @@ import {
   extractPublicId,
   uploadImageCloud710,
 } from "../../core/lib/cloudinary.service.js";
-import { generateFileName } from "../../core/utils/generateFileName.js";
+import { generateFileName } from "../../core/helpers/generateFileName.js";
 import { EditionModel } from "../../config/dbSequelize.js";
 
 const path = "edition";

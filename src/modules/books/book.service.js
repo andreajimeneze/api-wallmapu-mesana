@@ -13,7 +13,7 @@ import {
 } from "../../config/dbSequelize.js";
 import { bookResponseDTO, updateBookDTO } from "./book.dto.js";
 import { Op } from "sequelize";
-import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
+import { emptyPaginationDTO, paginationRequestDTO, paginationResponseDTO } from "../../core/responses/paginationResponse.js";
 import {
   createBookSubjectsService,
   deleteBookSubjectService,
@@ -22,73 +22,45 @@ import {
   createBookAuthorService,
   deleteBookAuthorService,
 } from "../book_authors/book_author.service.js";
+import { normalizePagination } from "../../core/helpers/nomalizePagination.js";
+import { paginationUrl } from "../../core/helpers/paginationUrl.js";
 
-export const getBooksPaginationAndSearchService = async ({
-  page,
-  limit,
-  search,
-}) => {
-  limit = Number.isInteger(Number(limit)) ? Number(limit) : 10;
-  page = Number.isInteger(Number(page)) ? Number(page) : 1;
+export const getBooksPaginationAndSearchService = async (params) => {
+  const { page, limit, search } = paginationRequestDTO(params);
 
-  const DEFAULT_LIMIT = 10;
-  const MAX_LIMIT = 100;
-
-  limit = Number(limit) || DEFAULT_LIMIT;
-  page = Number(page) || 1;
-
-  if (limit < 1) limit = DEFAULT_LIMIT;
-  if (limit > MAX_LIMIT) limit = MAX_LIMIT;
+  normalizePagination(page, limit);
 
   const include = [
     {
       model: GenreModel,
       as: "genre",
-      attributes: ["idGenre", "name"],
       required: false,
     },
     {
       model: AuthorModel,
       as: "authors",
-      attributes: ["idAuthor", "name"],
       through: { attributes: [] },
     },
     {
       model: SubjectModel,
       as: "subjects",
-      attributes: ["idSubject", "name"],
       through: { attributes: [] },
     },
     {
       model: EditionModel,
       as: "editions",
-      attributes: [
-        "idEdition",
-        "isbn",
-        "publicationYear",
-        "pages",
-        "coverImage",
-      ],
       include: [
         {
           model: EditorialModel,
           as: "editorial",
-          attributes: ["idEditorial", "name"],
         },
         {
           model: CopyModel,
           as: "copies",
-          attributes: [
-            "idCopy",
-            "barcode",
-            "signatureTopography",
-            "copyNumber",
-          ],
           include: [
             {
               model: CopyStatusModel,
               as: "status",
-              attributes: ["idStatus", "name"],
             },
           ],
         },
@@ -102,25 +74,21 @@ export const getBooksPaginationAndSearchService = async ({
     }
     : {};
 
-  const items = await BookModel.count({
-    include,
+
+  const offset = (page - 1) * limit;
+
+
+  const { count: items, rows: result } = await BookModel.findAndCountAll({
     where,
+    include,
+    limit,
+    offset,
     distinct: true,
-    col: "id_book",
+    order: [["updated_at", "DESC"]],
   });
 
   if (items === 0) {
-    return {
-      response: "No se encontraron libros",
-      data: paginationResponseDTO({
-        page: 0,
-        pages: 0,
-        items: 0,
-        next: "none",
-        prev: "none",
-        data: [],
-      }),
-    };
+    return emptyPaginationDTO({ page, pages, items, next, prev, data })
   }
 
   const pages = Math.ceil(items / limit);
@@ -133,31 +101,14 @@ export const getBooksPaginationAndSearchService = async ({
     page = 1;
   }
 
-  const offset = (page - 1) * limit;
-
-  const result = await BookModel.findAll({
-    where,
-    include,
-    limit,
-    offset,
-    distinct: true,
-    order: [["updated_at", "DESC"]],
-  });
-
+  const urlResponse = paginationUrl('pagination', page, pages, limit, search);
   return {
     response: "Libros obtenidos exitosamente",
     data: paginationResponseDTO({
       page,
       pages,
       items,
-      next:
-        page < pages
-          ? `/books?page=${page + 1}&items=${limit}&search=${search}`
-          : null,
-      prev:
-        page > 1
-          ? `/books?page=${page - 1}&items=${limit}&search=${search}`
-          : null,
+      urlResponse,
       data: result.map(bookResponseDTO),
     }),
   };

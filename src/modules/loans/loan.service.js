@@ -59,7 +59,7 @@ export const getLoansAndSearchService = async ({
 
     if (status && parseInt(status) > 0) {
         include[2].where = {
-            idLoanStatus: parseInt(status)  // ✅ Usa : no =
+            idLoanStatus: parseInt(status)
         };
     }
 
@@ -177,7 +177,7 @@ export const getLoansAndSearchForUserService = async ({
 
     if (status && parseInt(status) > 0) {
         include[2].where = {
-            idLoanStatus: parseInt(status)  
+            idLoanStatus: parseInt(status)
         };
     }
 
@@ -415,11 +415,78 @@ export const getLoansOverDueService = async () => {
     })
 };
 
+export const getLoansOverDueByIdService = async (userId) => {
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + maxDays);
+    dueDate.setHours(23, 59, 59, 999);
+
+    return await LoanModel.findOne({
+        where: {
+            dueDate: {
+                [Op.lt]: dueDate
+            },
+            userId: userId
+        },
+        include: [
+            {
+                model: UserModel,
+                as: 'user'
+            },
+            {
+                model: CopyModel,
+                as: 'copy',
+                include: [
+                    {
+                        model: EditionModel,
+                        as: 'edition',
+                        include: [
+                            {
+                                model: BookModel,
+                                as: 'book'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                model: LoanStatusModel,
+                as: 'loanStatus',
+                attributes: ['idLoanStatus', 'name']
+            }
+        ]
+    })
+};
+
 export const createLoanService = async (loanData) => {
     const loanPolicy = await getMaxLoanService();
     const loanDate = new Date();
     const maxDays = loanPolicy.maxDays ? loanPolicy.maxDays : 14;
-    const dueDate = loanDate + maxDays * 24 * 60 * 60 * 1000;
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + maxDays);
+    dueDate.setHours(23, 59, 59, 999);
+
+    const maxBooks = await LoanModel.count({
+        where: {
+            userId: loanData.userId,
+        }
+    });
+
+    console.log('libros prestados al usuario service: ', maxBooks);
+    console.log('loanPolicy maxBooks service: ', loanPolicy.maxBooks);
+
+    if (maxBooks >= loanPolicy.maxBooks) {
+        const error = new Error('Usuario excede el número de préstamos autorizados');
+        error.status = 409;
+        throw error;
+    };
+
+    const overdueLoans = await getLoansOverDueByIdService(loanData.userId);
+
+    if (overdueLoans != null) {
+        const error = new Error('Usuario tiene un préstamo vencido');
+        error.status = 409;
+        throw error;
+    };
 
     return await LoanModel.create({
         userId: loanData.userId,

@@ -19,6 +19,7 @@ import {
 export const getEditionPagination = async (req, res) => {
   try {
     let { id_author, id_genre, id_editorial } = req.query;
+    console.log(req.query.id_author);
     let page = parseInt(req.query.page ?? 1);
     let limit = parseInt(req.query.limit ?? 10);
 

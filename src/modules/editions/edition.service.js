@@ -9,7 +9,7 @@ import {
   CopyStatusModel,
 } from "../../config/dbSequelize.js";
 import { editionForBookResponseDTO, updateEditionDTO } from "./edition.dto.js";
-import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
+import { paginationRequestDTO, paginationResponseDTO } from "../../core/responses/paginationResponse.js";
 import { editionResponseDTO } from "./edition.dto.js";
 import { Op } from "sequelize";
 import {
@@ -17,30 +17,17 @@ import {
   extractPublicId,
 } from "../../core/lib/cloudinary.service.js";
 import { createPaginationService } from "../../core/services/basePagination.service.js";
+import { normalizePagination } from "../../core/helpers/nomalizePagination.js";
+import { paginationUrl } from "../../core/helpers/paginationUrl.js";
 
-export const getAllEditionPaginationService = async ({
-  page,
-  limit,
-  search,
-  id_author,
-  id_genre,
-  id_editorial,
-}) => {
+export const getAllEditionPaginationService = async (params, id_author, id_genre, id_editorial) => {
+  const { page, limit, search, filter } = paginationRequestDTO(params);
+
   id_author = Number(id_author) || 0;
   id_genre = Number(id_genre) || 0;
   id_editorial = Number(id_editorial) || 0;
 
-  limit = Number.isInteger(Number(limit)) ? Number(limit) : 10;
-  page = Number.isInteger(Number(page)) ? Number(page) : 1;
-
-  const DEFAULT_LIMIT = 10;
-  const MAX_LIMIT = 100;
-
-  limit = Number(limit) || DEFAULT_LIMIT;
-  page = Number(page) || 1;
-
-  if (limit < 1) limit = DEFAULT_LIMIT;
-  if (limit > MAX_LIMIT) limit = MAX_LIMIT;
+  normalizePagination(page, limit);
 
   const include = [
     {
@@ -52,12 +39,10 @@ export const getAllEditionPaginationService = async ({
         {
           model: GenreModel,
           as: "genre",
-          attributes: ["idGenre", "name"],
         },
         {
           model: AuthorModel,
           as: "authors",
-          attributes: ["id_author", "name"],
           required: id_author > 0,
           where: id_author > 0 ? { idAuthor: id_author } : undefined,
         },
@@ -66,7 +51,6 @@ export const getAllEditionPaginationService = async ({
     {
       model: EditorialModel,
       as: "editorial",
-      attributes: ["idEditorial", "name"],
       required: false,
     },
     {
@@ -102,25 +86,18 @@ export const getAllEditionPaginationService = async ({
     where["$book.genre_id$"] = id_genre;
   }
 
-  const items = await EditionModel.count({
+  const offset = (page - 1) * limit;
+
+  const { count: items, rows: result } = await EditionModel.findAndCountAll({
     where,
     include,
+    limit,
+    offset,
     distinct: true,
-    col: "id_edition",
   });
 
   if (items === 0) {
-    return {
-      response: "No se encontraron ediciones",
-      data: paginationResponseDTO({
-        page: 0,
-        pages: 0,
-        items: 0,
-        next: "none",
-        prev: "none",
-        data: [],
-      }),
-    };
+    return emptyPaginationDTO({ page, pages, items, next, prev, data });
   }
 
   const pages = Math.ceil(items / limit);
@@ -133,29 +110,13 @@ export const getAllEditionPaginationService = async ({
     page = 1;
   }
 
-  const offset = (page - 1) * limit;
-
-  const result = await EditionModel.findAll({
-    where,
-    limit,
-    offset,
-    include,
-    subQuery: false,
-  });
-
+  const urlResponse = paginationUrl('pagination', page, pages, limit, search);
   return {
     data: paginationResponseDTO({
       page,
       pages,
       items,
-      next:
-        page < pages
-          ? `/edition/pagination?page=${page + 1}&limit=${limit}&search=${search}`
-          : null,
-      prev:
-        page > 1
-          ? `/edition/pagination?page=${page - 1}&limit=${limit}&search=${search}`
-          : null,
+      urlResponse,
       data: result.map(editionForBookResponseDTO),
     }),
   };

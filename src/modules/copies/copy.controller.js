@@ -188,10 +188,10 @@ export const deleteCopy = async (req, res) => {
   const { id } = req.params;
 
   try {
-    await deleteCopyService(id);
+    const deletedCopy = await deleteCopyService(id);
 
-    return res.status(202).json(
-      successDeleteResponse({ message: "Copia eliminada exitosamente" }),
+    return res.status(200).json(
+      successDeleteResponse({ message: "Copia eliminada exitosamente", data: deletedCopy }),
     );
   } catch (error) {
     console.error(error);

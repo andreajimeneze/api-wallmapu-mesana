@@ -27,9 +27,9 @@ export const reservationResponseDTO = (res) => {
         user_lastname: res.user?.userlastname,
         user_email: res.user?.email,
 
-        copy_id: copy.idCopy ?? null,
-        copy_barcode: copy.barcode ?? null,
-        copy_signature: copy.signatureTopography ?? null,
+        copy_id: copy?.idCopy ?? null,
+        copy_barcode: copy?.barcode ?? null,
+        copy_signature: copy?.signatureTopography ?? null,
 
         book_id: book?.idBook ?? null,
         book_title: book?.title ?? null,

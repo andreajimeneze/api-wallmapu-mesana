@@ -126,4 +126,12 @@ export const basicResponseEditionWithCopies = (res) => ({
       res.copies.map((copy) => ({
         ...baseCopyDTO(copy)
       })) : []
-})
+});
+
+export const queryRequestEditionDTO = ({id_author, id_genre, id_editorial} = {}) => {
+  return {
+    id_author: Number(id_author) || 0,
+    id_genre: Number(id_genre) || 0,
+    id_editorial: Number(id_editorial) || 0
+  }
+}

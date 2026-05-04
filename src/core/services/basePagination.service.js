@@ -1,96 +1,70 @@
 import { paginationResponseDTO } from "../responses/paginationResponse.js";
+import { normalizePagination } from '../helpers/nomalizePagination.js';
+import { buildSearchWhere } from "../helpers/paginationSearch.js";
+import { calculatePagination } from "../helpers/calculatePagintation.js";
+import { paginationUrl } from "../helpers/paginationUrl.js";
+import { emptyPaginationDTO } from "../responses/paginationResponse.js";
 
 export const createPaginationService = ({
-  model,          
-  searchFields,    
-  includes,        
-  dtoMapper,      
-  basePath,
-  idField,       
-  customWhere = {}, 
+  model,
+  searchFields = [],
+  includes = [],
+  dtoMapper,
+  idField,
+  customWhere = {},
+  entityName = "Registros"
 }) => {
+
   return async ({ page, limit, search }) => {
-    // Validación de parámetrosW
-    limit = Number.isInteger(Number(limit)) ? Number(limit) : 10;
-    page = Number.isInteger(Number(page)) ? Number(page) : 1;
 
-    const DEFAULT_LIMIT = 10;
-    const MAX_LIMIT = 100;
+    const { page: currentPage, limit: currentLimit } =
+      normalizePagination(page, limit);
 
-    limit = Number(limit) || DEFAULT_LIMIT;
-    page = Number(page) || 1;
+    const where = {
+      ...customWhere,
+      ...buildSearchWhere(search, searchFields)
+    };
 
-    if (limit < 1) limit = DEFAULT_LIMIT;
-    if (limit > MAX_LIMIT) limit = MAX_LIMIT;
-
-    // Configuración de búsqueda
-    const where = { ...customWhere };
-    
-    if (search && search.trim() !== "") {
-      const searchConditions = searchFields.map(field => ({
-        [field]: { [Op.iLike]: `%${search}%` }
-      }));
-      where[Op.or] = searchConditions;
-    }
-
-
-
-    // Contar items
     const items = await model.count({
-      include: includes,
       where,
       distinct: true,
-      col:  idField,
+      col: idField,
     });
 
     if (items === 0) {
-      return {
-        response: `No se encontraron ${model.name}s`,
-        data: paginationResponseDTO({
-          page: 0,
-          pages: 0,
-          items: 0,
-          next: "none",
-          prev: "none",
-          data: [],
-        }),
-      };
+      return emptyPagination(entityName);
     }
 
-    const pages = Math.ceil(items / limit);
-    const haveSearch = search && search.trim() !== "";
-
-    if (page > pages && page > 0) {
-      page = haveSearch ? 1 : pages;
-    } else if (page < 1) {
-      page = 1;
-    }
-
-    const offset = (page - 1) * limit;
+    const { page: safePage, pages, offset } =
+      calculatePagination(items, currentPage, currentLimit);
 
     const result = await model.findAll({
       where,
       include: includes,
-      limit,
+      limit: currentLimit,
       offset,
-      distinct: true,
       order: [["updated_at", "DESC"]],
+      subQuery: false,
+      distinct: true
     });
 
+    const links = paginationUrl(
+      basePath,
+      safePage,
+      pages,
+      currentLimit,
+      search
+    );
+
     return {
-      response: `${model.name}s obtenidos exitosamente`,
+      response: `${entityName} obtenidos exitosamente`,
       data: paginationResponseDTO({
-        page,
+        page: safePage,
         pages,
         items,
-        next: page < pages 
-          ? `${basePath}?page=${page + 1}&items=${limit}&search=${search}`
-          : null,
-        prev: page > 1
-          ? `${basePath}?page=${page - 1}&items=${limit}&search=${search}`
-          : null,
-        data: result.map(dtoMapper),
-      }),
+        ...links,
+        data: result.map(dtoMapper)
+      })
     };
   };
 };
