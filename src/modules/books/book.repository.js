@@ -1,0 +1,140 @@
+import { Op } from "sequelize";
+import {
+    BookModel,
+    EditionModel,
+    EditorialModel,
+    GenreModel,
+    SubjectModel,
+    AuthorModel,
+    CopyModel,
+    CopyStatusModel,
+    sequelize,
+    BookAuthorModel,
+    BookSubjectModel,
+} from "../../config/dbSequelize.js";
+
+export const getBookPaginationRepository = async ({ page, limit, search }) => {
+    const include = [
+        {
+            model: GenreModel,
+            as: "genre",
+            required: false,
+        },
+        {
+            model: AuthorModel,
+            as: "authors",
+            through: { attributes: [] },
+        },
+        {
+            model: SubjectModel,
+            as: "subjects",
+            through: { attributes: [] },
+        },
+        {
+            model: EditionModel,
+            as: "editions",
+            include: [
+                {
+                    model: EditorialModel,
+                    as: "editorial",
+                },
+                {
+                    model: CopyModel,
+                    as: "copies",
+                    include: [
+                        {
+                            model: CopyStatusModel,
+                            as: "status",
+                        },
+                    ],
+                },
+            ],
+        },
+    ];
+
+    const where = search
+        ? {
+            [Op.or]: [{ title: { [Op.iLike]: `%${search}%` } }],
+        }
+        : {};
+
+
+    const offset = (page - 1) * limit;
+
+    return await BookModel.findAndCountAll({
+        where,
+        include,
+        limit,
+        offset,
+        distinct: true,
+        order: [['updated_at', 'DESC']]
+    });
+};
+
+export const findAllBooksRepository = async() => {
+    return await BookModel.findAll();
+};
+
+export const findBookByIdRepository = async(id) => {
+    return await BookModel.findByPk(id, {
+    include: [
+      {
+        model: GenreModel,
+        as: "genre",
+        attributes: ["idGenre", "name"],
+      },
+      {
+        model: AuthorModel,
+        as: "authors",
+        attributes: ["idAuthor", "name"],
+        through: { attributes: [] },
+      },
+      {
+        model: SubjectModel,
+        as: "subjects",
+        attributes: ["idSubject", "name"],
+        through: { attributes: [] },
+      },
+      {
+        model: EditionModel,
+        as: "editions",
+        include: [
+          {
+            model: EditorialModel,
+            as: 'editorial'
+          },
+          {
+            model: CopyModel,
+            as: "copies",
+            include: [
+              {
+                model: CopyStatusModel,
+                as: "status",
+                attributes: ["name"],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+};
+
+export const findBookByTitleRepository = async(title) => {
+    return await BookModel.findOne({
+        where: { title: { [Op.iLike]: title.trim() } }
+    });
+};
+
+export const createBookRepository = async(data, options = {}) => {
+    return await BookModel.create(data, {options});
+};
+
+export const updateBookRepository = async(data) => {
+    return BookModel.update(
+        { title: data.title },
+        { summary: data.summary },
+        { genreId: data.genreId },
+        { where: { idBook: data.idBook }}
+    );
+};

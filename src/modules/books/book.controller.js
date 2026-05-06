@@ -156,6 +156,7 @@ export const updateBook = async (req, res) => {
 
   const genreId = parseInt(genre_id);
   const idBook = parseInt(id);
+
   const bookData = {
     idBook,
     title,
@@ -166,7 +167,7 @@ export const updateBook = async (req, res) => {
   };
 
   try {
-    const updatedBook = await updateBookService(idBook, bookData);
+    const updatedBook = await updateBookService(bookData);
 
     return res.status(202).json(
       successUpdateResponse({
@@ -193,7 +194,7 @@ export const updateBook = async (req, res) => {
 
 export const deleteBook = async (req, res) => {
   const { id } = req.params;
-console.log('id delete controller: ', id);
+
   try {
     await deleteBookService(id);
     return res

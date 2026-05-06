@@ -262,10 +262,10 @@ export const deleteEditionWithImageService = async (id) => {
     }
 
     const coverImage = edition.coverImage;
-    console.log('portada libro a eliminar: ', coverImage);
+
     if (coverImage && coverImage.trim() !== "") {
       const publicId = extractPublicId(coverImage);
-      console.log('publicId de cloudinary: ', publicId)
+
       await deleteImageCloud(publicId);
     }
     await edition.destroy();

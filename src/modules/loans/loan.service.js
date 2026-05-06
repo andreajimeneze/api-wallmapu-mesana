@@ -219,7 +219,6 @@ export const getLoansAndSearchForUserService = async ({
         order: [['created_at', 'DESC']]
     });
 
-    console.log('result pagination loan service: ', result)
     return {
         response: 'Préstamos obtenidos exitosamente',
         data: paginationResponseDTO({
@@ -470,9 +469,6 @@ export const createLoanService = async (loanData) => {
             userId: loanData.userId,
         }
     });
-
-    console.log('libros prestados al usuario service: ', maxBooks);
-    console.log('loanPolicy maxBooks service: ', loanPolicy.maxBooks);
 
     if (maxBooks >= loanPolicy.maxBooks) {
         const error = new Error('Usuario excede el número de préstamos autorizados');

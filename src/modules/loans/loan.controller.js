@@ -204,7 +204,6 @@ export const createLoan = async (req, res) => {
 
 export const returnLoan = async (req, res) => {
     const { copyId } = req.params;
-    console.log('id de la copia en return loan controller: ', req.params);
 
     try {
         const returnedLoan = await returnLoanByCopyIdService(copyId);

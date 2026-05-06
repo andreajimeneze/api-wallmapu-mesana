@@ -1,7 +1,9 @@
-import { BookAuthorModel } from "../../config/dbSequelize.js";
+//import { BookAuthorModel } from "../../config/dbSequelize.js";
+
+import { findAllBookAuthorRepository, bulkCreateBookAuthorRepository, deleteBookAuthorRepository, updateBookAuthorRepository } from "./book_author.repository.js";
 
 export const getAllBookAuthorService = async () => {
-  return await findAll();
+  return await findAllBookAuthorRepository();
 }
 
 export const createBookAuthorService = async (
@@ -14,18 +16,17 @@ export const createBookAuthorService = async (
     idAuthor,
   }));
 
-  return await BookAuthorModel.bulkCreate(bookAuthors, options);
+  return await bulkCreateBookAuthorRepository(bookAuthors, options);
 };
 
-export const deleteBookAuthorService = async (idBook, transaction = null) => {
+export const updateBookAuthorService = async(idBook, authors = []) => {
+  return await updateBookAuthorRepository(idBook, authors);
+};
+
+export const deleteBookAuthorService = async (idBook,  options = {}) => {
 
   try {
-    await BookAuthorModel.destroy({
-     where: { idBook },   
-      ...(transaction && { transaction })
-    });
-
-    return true;
+    return await deleteBookAuthorRepository( idBook, options );
   } catch (error) {
     console.error(error);
     throw error;

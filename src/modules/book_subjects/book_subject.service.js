@@ -1,7 +1,9 @@
-import { BookSubjectModel } from "../../config/dbSequelize.js";
+//import { BookSubjectModel } from "../../config/dbSequelize.js";
+
+import { findOneRepository, deleteBookSubjectRepository, bulkCreateBookSubjectRepository, updateBookSubjectRepository } from "./book_subject.respository.js";
 
 export const getBookSubjectsByIdService = async (id) => {
-  return await findOne({
+  return await findOneRepository({
     where: { idBook: id },
   });
 };
@@ -16,14 +18,21 @@ export const createBookSubjectsService = async (
     idSubject,
   }));
 
-  await BookSubjectModel.bulkCreate(bookSubjects, options);
+  return await bulkCreateBookSubjectRepository(bookSubjects, options);
 };
 
-export const deleteBookSubjectService = async (idBook, transaction = null) => {
-  await BookSubjectModel.destroy({
-    where: { idBook },
-      ...(transaction && { transaction })
-  });
-
-  return true;
+export const updateBookSubjectService = async(idBook, subjects = []) => {
+  return await updateBookSubjectRepository(idBook, subjects);
 };
+
+export const deleteBookSubjectService = async (idBook, options = []) => {
+  try {
+      return await deleteBookSubjectRepository(
+    idBook, options
+  );
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+  
