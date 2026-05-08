@@ -1,9 +1,9 @@
-import { UserStatusModel } from "../../config/dbSequelize.js";
+import { findAllUserStatusRepository, findUserStatusByIdRepository } from "./user-status.repository.js";
 
 export const getUsersStatusService = async () => {
-    return await UserStatusModel.findAll();
-} 
+    return await findAllUserStatusRepository();
+} ;
 
 export const getUserStatusByIdService = async (id) => {
-    return await UserStatusModel.findByPk(id);
-}
+    return await findUserStatusByIdRepository(id);
+};

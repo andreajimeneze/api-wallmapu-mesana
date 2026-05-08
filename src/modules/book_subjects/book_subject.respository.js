@@ -1,5 +1,14 @@
 import { BookSubjectModel } from "../../config/dbSequelize.js";
 
+
+export const findAllBookSubjectByIdBookRepository = async (id) => {
+    return await BookSubjectModel.findAll({
+        where: {
+            idBook: id
+        }
+    })
+};
+
 export const findOneRepository = async (id) => {
     return await BookSubjectModel.findOne({
         where: { idBook: id }
@@ -31,6 +40,17 @@ export const deleteBookSubjectRepository = async (idBook, idSubject) => {
             idBook: idBook,
             idSubject: idSubject
         }
+    });
+
+    return true;
+};
+
+export const deleteBookSubjectByIdBookRepository = async (idBook, options = {}) => {
+    await BookSubjectModel.destroy({
+        where: {
+            idBook: idBook
+        },
+        ...options
     });
 
     return true;

@@ -158,7 +158,6 @@ export const updateBook = async (req, res) => {
   const idBook = parseInt(id);
 
   const bookData = {
-    idBook,
     title,
     summary,
     genreId,
@@ -167,7 +166,7 @@ export const updateBook = async (req, res) => {
   };
 
   try {
-    const updatedBook = await updateBookService(bookData);
+    const updatedBook = await updateBookService(idBook, bookData);
 
     return res.status(202).json(
       successUpdateResponse({

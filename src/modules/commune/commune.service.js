@@ -1,26 +1,9 @@
-import { CommuneModel, ProvinceModel } from "../../config/dbSequelize.js";
+import { findAllCommunsWithProvinceRepository, findCommuneByIdWithProvinceRepository } from "./commune.repository.js";
 
 export const getAllCommuneService = async () => {
-    const communes = await CommuneModel.findAll({
-        order: [['commune', 'ASC']],
-        include: [{
-            model: ProvinceModel,
-            as: 'province',
-            attributes: ['idProvince', 'province', 'regionId']
-        }]
-    });
-   
-    return communes;
-}
+    return await findAllCommunsWithProvinceRepository();    
+};
 
-export const getCommuneByIdService = (id) => {
-    return CommuneModel.findByPk(id, {
-    include: [
-      {
-        model: ProvinceModel,
-        as: "province",
-        attributes: ['idProvince', 'province', 'regionId']
-      },
-    ],
-  });
-}
+export const getCommuneByIdService = async (id) => {
+    return await findCommuneByIdWithProvinceRepository(id);
+};

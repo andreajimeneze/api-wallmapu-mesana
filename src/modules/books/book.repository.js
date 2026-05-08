@@ -130,11 +130,18 @@ export const createBookRepository = async(data, options = {}) => {
     return await BookModel.create(data, {options});
 };
 
-export const updateBookRepository = async(data) => {
-    return BookModel.update(
-        { title: data.title },
-        { summary: data.summary },
-        { genreId: data.genreId },
-        { where: { idBook: data.idBook }}
-    );
+export const updateBookRepository = async(idBook, data) => {
+    return BookModel.update( data, {
+        where: {
+            idBook: idBook
+        }
+    } );
+};
+
+export const deleteBookRepository = async(idBook) => {
+    return BookModel.destroy({
+        where: {
+            idBook: idBook
+        }
+    });
 };

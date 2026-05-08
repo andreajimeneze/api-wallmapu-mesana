@@ -4,6 +4,14 @@ export const findAllBookAuthorRepository = async () => {
     return await BookAuthorModel.findAll();
 };
 
+export const findAllBookAuthorByIdBookRepository = async (id) => {
+    return await BookAuthorModel.findAll({
+        where: {
+            idBook: id
+        }
+    });
+};
+
 export const findBookAuthorByIdRepository = async (id) => {
     return await BookAuthorModel.findByPk(id);
 };
@@ -41,6 +49,17 @@ export const deleteBookAuthorRepository = async (idBook, idAuthor) => {
             idBook: idBook,
             idAuthor: idAuthor
         }
+    });
+    
+    return true;
+};
+
+export const deleteBookAuthorByIdBookRepository = async (idBook, options = {}) => {
+   await BookAuthorModel.destroy({
+        where: {
+            idBook: idBook
+        },
+        ...options
     });
     
     return true;

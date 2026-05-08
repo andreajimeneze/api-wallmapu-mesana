@@ -16,9 +16,11 @@ import { Op } from "sequelize";
 import { emptyPaginationDTO, paginationRequestDTO, paginationResponseDTO } from "../../core/responses/paginationResponse.js";
 import { normalizePagination } from "../../core/helpers/nomalizePagination.js";
 import { paginationUrl } from "../../core/helpers/paginationUrl.js";
-import { createBookRepository, findBookByIdRepository, findBookByTitleRepository, getBookPaginationRepository } from "./book.repository.js";
+import { createBookRepository, findBookByIdRepository, findBookByTitleRepository, getBookPaginationRepository, updateBookRepository } from "./book.repository.js";
 import { createBookAuthorService, deleteBookAuthorService, updateBookAuthorService } from "../book_authors/book_author.service.js";
 import { createBookSubjectsService, deleteBookSubjectService, updateBookSubjectService } from "../book_subjects/book_subject.service.js";
+import { deleteBookAuthorByIdBookRepository, findAllBookAuthorByIdBookRepository } from "../book_authors/book_author.repository.js";
+import { deleteBookSubjectByIdBookRepository, findAllBookSubjectByIdBookRepository } from "../book_subjects/book_subject.respository.js";
 
 
 export const getBooksPaginationAndSearchService = async (params) => {
@@ -100,8 +102,8 @@ export const createBookService = async (bookData) => {
   }
 };
 
-export const updateBookService = async (data) => {
-  const searchedBook = await findBookByIdRepository(data.idBook);
+export const updateBookService = async (idBook, data) => {
+  const searchedBook = await findBookByIdRepository(idBook);
 
   if (!searchedBook) {
     const error = new Error("Libro no encontrado");
@@ -114,14 +116,14 @@ export const updateBookService = async (data) => {
   try {
     const bookDto = updateBookDTO(data);
 
-    const updatedBook = await searchedBook.update(bookDto, { transaction });
+    const updatedBook = await updateBookRepository(searchedBook.idBook, bookDto, { transaction });
 
-    await updateBookSubjectService(updatedBook.idBook, bookDto.subjects, { transaction });
+    await updateBookSubjectService(searchedBook.idBook, bookDto.subjects, { transaction });
 
-    await updateBookAuthorService(updatedBook.idBook, bookDto.authors, { transaction });
+    await updateBookAuthorService(searchedBook.idBook, bookDto.authors, { transaction });
 
     await transaction.commit();
-    return updatedBook;
+    return searchedBook;
   } catch (error) {
     await transaction.rollback();
     throw error;
@@ -132,13 +134,9 @@ export const deleteBookService = async (id) => {
 
   const bookToDelete = await getBookByIdService(id);
 
-  const authorsExists = await BookAuthorModel.findAll({
-    where: { idBook: id },
-  });
+  const authorsExists = await findAllBookAuthorByIdBookRepository(id);
 
-  const subjectsExists = await BookSubjectModel.findAll({
-    where: { idBook: id },
-  });
+  const subjectsExists = await findAllBookSubjectByIdBookRepository(id);
 
   const editionsExists = await EditionModel.findAll({
     where: { bookId: id },
@@ -153,11 +151,11 @@ export const deleteBookService = async (id) => {
   const transaction = await sequelize.transaction();
   try {
     if (authorsExists.length > 0) {
-      await deleteBookAuthorService(id, transaction)
+      await deleteBookAuthorByIdBookRepository(id, transaction)
     };
 
     if (subjectsExists.length > 0) {
-      await deleteBookSubjectService(id, transaction);
+      await deleteBookSubjectByIdBookRepository(id, transaction);
     };
 
     await bookToDelete.destroy({ transaction });

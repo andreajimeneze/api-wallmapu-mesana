@@ -56,9 +56,9 @@ export const createBookDTO = ({ title,
   }
 };
 
-export const updateBookDTO = ({ idBook, title, summary, genreId, authors = [], subjects = [] }) => {
+export const updateBookDTO = ({  title, summary, genreId, authors = [], subjects = [] }) => {
   return {
-    idBook: Number(idBook),
+    //idBook: Number(idBook),
     title: title.trim(),
     summary,
     genre_id: genreId ? Number(genreId) : undefined,
