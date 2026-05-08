@@ -1,22 +1,10 @@
 import { ProvinceModel, RegionModel } from "../../config/dbSequelize.js";
+import { findAllProvincesWithRegionRepository, findProvinceByIdWhitRegionRepository } from "./province.repository.js";
 
 export const getAllProvincesService = async () => {
-    return await ProvinceModel.findAll({
-        order: [['province', 'ASC']],
-        include: [{
-            model: RegionModel,
-            as: 'region',
-            attributes: ['idRegion', 'region']
-        }]
-    });
-}
+    return await findAllProvincesWithRegionRepository();
+};
 
 export const getProvinceByIdService = async (id) => {
-    return await ProvinceModel.findByPk(id, {
-        include: [{
-            model: RegionModel,
-            as: 'region',
-            attributes: ['idRegion', 'region']
-        }]
-    });
-}
+    return findProvinceByIdWhitRegionRepository(id);
+};

@@ -1,11 +1,9 @@
-import { RegionModel } from "../../config/dbSequelize.js";
+import { findAllRegionsRepository, findRegionByIdRepository } from "./region.repository.js";
 
 export const getAllRegionsService = async () => {
-    return await RegionModel.findAll({
-        order: [['region', 'ASC']]
-    });
-}
+    return await findAllRegionsRepository();
+};
 
 export const getRegionByIdService = async (id) => {
-    return await RegionModel.findByPk(id);
-}
+    return await findRegionByIdRepository(id);
+};
