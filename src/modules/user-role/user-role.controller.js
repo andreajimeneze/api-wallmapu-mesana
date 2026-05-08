@@ -1,4 +1,4 @@
-import { getUserRolesService, getUserRoleByIdService } from "./user-role.service.js";
+import { getUserRoleByIdService, getAllUserRolesService } from "./user-role.service.js";
 import {
   internalServerResponse,
   notFoundResponse,
@@ -8,7 +8,7 @@ import { responseUserRoleDTO } from "./user-role.dto.js";
 
 export const getUserRoles = async (req, res) => {
   try {
-    const userRoles = await getUserRolesService();
+    const userRoles = await getAllUserRolesService();
 
     if (!userRoles) {
       return res

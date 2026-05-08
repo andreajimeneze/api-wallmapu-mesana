@@ -1,9 +1,9 @@
-import { UserRoleModel } from "../../config/dbSequelize.js";
+import { findAllUserRolesRepository, findUserRoleByIdRepository } from "./user-role.repository.js";
 
-export const getUserRolesService = async () => {
-    return UserRoleModel.findAll();
-}
+export const getAllUserRolesService = async () => {
+    return await findAllUserRolesRepository();
+};
 
 export const getUserRoleByIdService = async (id) => {
-    return await UserRoleModel.findByPk(id);
-}
+    return await findUserRoleByIdRepository(id);
+};
