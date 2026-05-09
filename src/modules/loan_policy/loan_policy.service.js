@@ -1,16 +1,9 @@
 import { LoanPolicyModel } from "../../config/dbSequelize.js";
+import { findDefaultLoanPolicyRepository, updateLoanPolicyRepository } from "./loan_policy.repository.js";
 
-export const getAllLoanPoliciesService = async () => {
-    return await LoanPolicyModel.findAll();
-};
-
-export const getLoanPolicyByIdService = async (id) => {
-    return await LoanPolicyModel.findByPk(id);
-};
 
 export const getDefaultPolicyService = async () => {
-    return await LoanPolicyModel.findOne({
-    });
+    return await findDefaultLoanPolicyRepository();
 };
 
 export const getMaxLoanService = async () => {
@@ -23,28 +16,6 @@ export const getReservationDaysService = async () => {
     return policy ? policy.reservationDays : 3;
 }; 
 
-export const createLoanPolicyService = async (policyData) => {
-    return await LoanPolicyModel.create(policyData);
-};
-
 export const updateLoanPolicyService = async (id, policyData) => {
-    const selectedPolicy = await LoanPolicyModel.findByPk(id);
-
-    if (!selectedPolicy) {
-        throw new Error('No existe política de préstamo solicitada');
-    };
-
-    return await selectedPolicy.update(policyData);
-};
-
-export const deletePolicyService = async (id) => {
-    const selectedPolicy = await LoanPolicyModel.findByPk(id);
-
-    if (!selectedPolicy) {
-        throw new Error('No existe política de préstamo solicitada');
-    };
-
-    await selectedPolicy.destroy();
-
-    return true;
+    return updateLoanPolicyRepository(id, policyData);
 };

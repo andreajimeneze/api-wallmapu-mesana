@@ -1,5 +1,5 @@
-import { LoanStatusModel } from "../../config/dbSequelize.js";
+import { findAllLoanStatusRepository } from "./loan-status.repository.js";
 
 export const getAllLoanStatusService = async () => {
-    return await LoanStatusModel.findAll();
+    return await findAllLoanStatusRepository();
 };

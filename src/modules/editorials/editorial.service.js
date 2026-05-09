@@ -1,41 +1,18 @@
 import { EditorialModel } from "../../config/dbSequelize.js";
+import { createEditorialRepository, findAllEditorialsRepository, findEditorialByIdRepository, updateEditorialRepository } from "./editorial.repository.js";
 
 export const getAllEditorialsService = async () => {
-    const editorials = await EditorialModel.findAll({
-       order: [['name', 'ASC']]
-    });
-
-    return editorials;
-}
+    return await findAllEditorialsRepository();
+};
 
 export const getEditorialByIdService = async (id) => {
-  return await EditorialModel.findByPk(id);
+  return await findEditorialByIdRepository(id);
 };
 
-export const createEditorialService = async (editorial) => {
-  const existingEditorial = await findOne({
-    where: {
-      editorial: { [Op.iLike]: editorial.trim() },
-    },
-  });
-
-  if (existingEditorial) {
-    throw new Error("Editorial ya existe");
-  }
-
-  return EditorialModel.create({
-    editorial: editorial.editorial,
-  });
+export const createEditorialService = async (name) => {
+  return createEditorialRepository(name);
 };
 
-export const updateEditorialService = async (id, editorial) => {
-    const editorialSelected = EditorialModel.findByPk(id);
-
-    if(!editorialSelected) {
-        throw new Error('Editorial no encontrada');
-    }
-
-    return editorialSelected.update({
-        editorial: editorial || editorialSelected.editorial
-    })
-}
+export const updateEditorialService = async (id, name) => {
+    return updateEditorialRepository(id, name);
+};
