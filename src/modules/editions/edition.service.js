@@ -19,6 +19,7 @@ import {
 import { createPaginationService } from "../../core/services/basePagination.service.js";
 import { normalizePagination } from "../../core/helpers/nomalizePagination.js";
 import { paginationUrl } from "../../core/helpers/paginationUrl.js";
+import { createEditionRepository, findAllEditionsRepository, findEditionByIdRepository, updateEditionRepository } from "./editions.repository.js";
 
 export const getAllEditionPaginationService = async (params, id_author, id_genre, id_editorial) => {
   const { page, limit, search, filter } = paginationRequestDTO(params);
@@ -123,48 +124,11 @@ export const getAllEditionPaginationService = async (params, id_author, id_genre
 };
 
 export const getAllEditionsService = async () => {
-  return await EditionModel.findAll({
-    include: [
-      {
-        model: BookModel,
-        as: "book",
-      },
-      {
-        model: EditorialModel,
-        as: "editorial",
-        attributes: ['idEditorial', 'name']
-      },
-      {
-        model: CopyModel,
-        as: 'copies',
-        required: true,
-        attributes: ['idCopy', 'barcode', 'copyNumber', 'signatureTopography', 'createdAt']
-      }
-    ],
-  });
+  return await findAllEditionsRepository();
 };
 
 export const getEditionByIdService = async (id) => {
-  return await EditionModel.findOne({
-    where: {
-      idEdition: id
-    },
-    include: [
-      {
-        model: BookModel,
-        as: "book",
-        //required: true,
-        attributes: ['idBook', 'title']
-      },
-      {
-        model: EditorialModel,
-        as: "editorial",
-        //required: true,
-        attribute: ['name']
-      }
-    ],
-  }
-  );
+  return await findEditionByIdRepository(id);
 };
 
 // export const getEditionByBookIdService = async (idBook) => {
@@ -182,60 +146,11 @@ export const getEditionByIdService = async (id) => {
 // };
 
 export const createEditionService = async (editionData) => {
-
-  const editionCreated = await EditionModel.create(editionData);
-
-  const edition = await EditionModel.findByPk(
-    editionCreated.idEdition,
-    {
-      include: [
-        {
-          model: BookModel,
-          as: "book",
-        },
-        {
-          model: EditorialModel,
-          as: "editorial",
-        },
-      ],
-    }
-  );
-
-  return edition;
+  return await createEditionRepository(editionData);
 };
 
 export const updateEditionService = async (id, editionData) => {
-  const transaction = await sequelize.transaction();
-
-  try {
-    const searchedEdition = await EditionModel.findByPk(id, { transaction });
-
-    if (!searchedEdition) {
-      await transaction.rollback();
-      return null;
-    }
-
-    const editionDto = updateEditionDTO(editionData);
-
-    await searchedEdition.update(editionDto, { transaction });
-
-    await transaction.commit();
-    const updatedEdition = await EditionModel.findByPk(id, {
-      include: [
-        {
-          model: BookModel,
-          as: "book",
-          include: [{ model: GenreModel, as: "genre" }],
-        },
-        { model: EditorialModel, as: "editorial" },
-      ],
-    });
-
-    return updatedEdition;
-  } catch (error) {
-    await transaction.rollback();
-    throw error;
-  }
+  return updateEditionRepository(id, editionData);
 };
 
 export const deleteEditionWithImageService = async (id) => {

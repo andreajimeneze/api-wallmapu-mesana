@@ -4,9 +4,7 @@ import { checkRole, jwtMiddleware } from '../auth/auth.middleware.js';
 
 const router = express.Router();
 
-router.get('/pagination', 
-    //jwtMiddleware, checkRole(['Admin']), 
-    getAllAuthorsPagination);
+router.get('/pagination', jwtMiddleware, checkRole(['Admin']), getAllAuthorsPagination);
 router.get('/', getAllAuthors);
 router.get('/:id', getAuthorById);
 router.post('/', jwtMiddleware, checkRole(['Admin']), createAuthor);

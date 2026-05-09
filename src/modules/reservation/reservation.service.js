@@ -1,5 +1,5 @@
 import { BookModel, CopyModel, EditionModel, LoanModel, ReservationModel, ReservationStatusModel, sequelize, UserModel } from "../../config/dbSequelize.js"
-import { getDefaultPolicyService, getMaxLoanService } from "../loan_policy/loan_policy.service.js";
+import { getDefaultPolicyService, getMaxDaysLoanService } from "../loan_policy/loan_policy.service.js";
 import { createReservationDTO, reservationResponseDTO, updateReservationDTO } from "./reservation.dto.js";
 import { getCopyByIdService } from '../copies/copy.service.js';
 import { Op } from "sequelize";
@@ -8,6 +8,7 @@ import { Copy } from "../copies/copy.model.js";
 import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
 import { normalizePagination } from "../../core/helpers/nomalizePagination.js";
 import { calculatePagination } from "../../core/helpers/calculatePagintation.js";
+import { getLoansOverDueByUserIdService } from "../loans/loan.service.js";
 
 
 export const getReservationsAndSearchService = async ({
@@ -384,10 +385,11 @@ export const getActiveReservationByCopyService = async (copyId) => {
 
 export const createCopyReservationService = async (userId, copyId) => {
 
-    const [existingCopy, existingReserve, policy] = await Promise.all([
+    const [existingCopy, existingReserve, policy, overdueLoans] = await Promise.all([
         getCopyByIdService(copyId),
         getActiveReservationByUserIdAndCopyService(userId, copyId),
-        getDefaultPolicyService()
+        getDefaultPolicyService(),
+        getLoansOverDueByUserIdService(userId)
     ])
 
     if (!existingCopy) {
@@ -401,6 +403,12 @@ export const createCopyReservationService = async (userId, copyId) => {
         error.status = 409;
         throw error;
     };
+
+    if(overdueLoans.length > 0) {
+        const error = new Error('No puede realizar reserva con préstamos vencidos');
+        error.status = 409;
+        throw error;
+    }
 
     const reservationDays = policy?.reservationDays ?? 3;
 
@@ -596,11 +604,12 @@ export const markAsPickUpService = async (id, copyId) => {
         };
 
         const [loanDate, policy, maxBooks] = await Promise.all([
-            getMaxLoanService(),
+            getMaxDaysLoanService(),
             getDefaultPolicyService(),
             LoanModel.count({
                 where: {
-                    userId: reserve.userId
+                    userId: reserve.userId,
+                    loanStatusId: {[Op.in]: [1, 3]}
                 }
             })
         ])

@@ -6,7 +6,7 @@ export const getDefaultPolicyService = async () => {
     return await findDefaultLoanPolicyRepository();
 };
 
-export const getMaxLoanService = async () => {
+export const getMaxDaysLoanService = async () => {
     const policy = await LoanPolicyModel.findOne();
     return policy ? policy.maxDays : 14;
 };

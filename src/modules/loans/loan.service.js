@@ -1,10 +1,10 @@
-import { Op } from "sequelize";
 import { BookModel, CopyModel, EditionModel, LoanModel, LoanStatusModel, sequelize, UserModel } from "../../config/dbSequelize.js";
 import { loanBasicResponseDTO } from "./loan.dto.js";
-import { getMaxLoanService } from "../loan_policy/loan_policy.service.js";
+import { getMaxDaysLoanService } from "../loan_policy/loan_policy.service.js";
 import { paginationResponseDTO } from '../../core/responses/paginationResponse.js';
 import { Copy } from "../copies/copy.model.js";
-
+import { findActiveLoansByBookIdRepository, findActiveLoansByCopyIdRepository, findActiveLoansByUserIdRepository, findAllLoansRepository, findLoanByIdRepository, findLoansOverDueRepository } from "./loan.repository.js";
+import { Op } from "sequelize";
 export const getLoansAndSearchService = async ({
     page,
     limit,
@@ -235,229 +235,41 @@ export const getLoansAndSearchForUserService = async ({
         })
     };
 };
+
 export const getAllLoansService = async () => {
-    return await LoanModel.findAll({
-        order: [['loanDate', 'DESC']],
-        include: [
-            {
-                model: UserModel,
-                as: 'user'
-            },
-            {
-                model: CopyModel,
-                as: 'copy'
-            },
-            {
-                model: LoanStatusModel,
-                as: 'loanStatus',
-                attributes: ['idLoanStatus', 'name']
-            }
-        ]
-    });
+    return await findAllLoansRepository();
 };
 
 export const getLoanByIdService = async (id) => {
-    return await LoanModel.findByPk(id, {
-        include: [
-            {
-                model: UserModel,
-                as: 'user'
-            },
-            {
-                model: CopyModel,
-                as: 'copy'
-            },
-            {
-                model: LoanStatusModel,
-                as: 'loanStatus',
-                attributes: ['idLoanStatus', 'name']
-            }
-        ]
-    })
+    return await findLoanByIdRepository(id);
 };
 
 export const getActiveLoansByUserIdService = async (userId) => {
-    return await LoanModel.findAll({
-        where: {
-            userId: userId,
-            loanStatusId: {
-                [Op.in]: [1, 3]
-            }
-        },
-        include: [
-            {
-                model: UserModel,
-                as: 'user'
-            },
-            {
-                model: CopyModel,
-                as: 'copy'
-            },
-            {
-                model: LoanStatusModel,
-                as: 'loanStatus',
-                attributes: ['idLoanStatus', 'name']
-            }
-        ]
-    })
+    return await findActiveLoansByUserIdRepository(userId);
 };
 
 export const getActiveLoansByCopyIdService = async (copyId) => {
-    return await LoanModel.findOne({
-        where: {
-            copyId: copyId,
-            loanStatusId: {
-                [Op.in]: [1, 3]
-            }
-        },
-        include: [
-            {
-                model: UserModel,
-                as: 'user'
-            },
-            {
-                model: CopyModel,
-                as: 'copy'
-            },
-            {
-                model: LoanStatusModel,
-                as: 'loanStatus',
-                attributes: ['idLoanStatus', 'name']
-            }
-        ]
-    })
+    return await findActiveLoansByCopyIdRepository(copyId);
 };
 
 export const getActiveLoansByBookIdService = async (bookId) => {
-    return await LoanModel.findAll({
-        where: {
-            loanStatusId: {
-                [Op.in]: [1, 3]
-            }
-        },
-        include: [
-            {
-                model: CopyModel,
-                as: 'copy',
-                required: true,
-                attributes: ['idCopy', 'barcode'],
-                include: [
-                    {
-                        model: EditionModel,
-                        as: 'edition',
-                        required: true,
-                        include: [
-                            {
-                                model: BookModel,
-                                as: 'book',
-                                attributes: ['idBook', 'title'],
-                                required: true,
-                                where: {
-                                    idBook: bookId
-                                }
-                            }
-                        ]
-                    },
-                ]
-            },
-            {
-                model: UserModel,
-                as: 'user',
-                attributes: ['idUser', 'username', 'userlastname'],
-                required: false
-            },
-            {
-                model: LoanStatusModel,
-                as: 'loanStatus',
-                attributes: ['idLoanStatus', 'name'],
-                required: false
-            }
-        ]
-    })
+    return await findActiveLoansByBookIdRepository(bookId);
 };
 
 export const getLoansOverDueService = async () => {
-    return await LoanModel.findAll({
-        where: {
-            dueDate: {
-                [Op.lt]: new Date()
-            },
-            loanStatusId: 3
-        },
-        include: [
-            {
-                model: UserModel,
-                as: 'user'
-            },
-            {
-                model: CopyModel,
-                as: 'copy',
-                include: [
-                    {
-                        model: EditionModel,
-                        as: 'edition',
-                        include: [
-                            {
-                                model: BookModel,
-                                as: 'book'
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                model: LoanStatusModel,
-                as: 'loanStatus',
-                attributes: ['idLoanStatus', 'name']
-            }
-        ]
-    })
+    return await findLoansOverDueRepository();
 };
 
-export const getLoansOverDueByIdService = async (userId) => {
-    const dueDate = new Date();
-    dueDate.setDate(dueDate.getDate() + maxDays);
-    dueDate.setHours(23, 59, 59, 999);
+export const getLoansOverDueByUserIdService = async (userId) => {
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
 
-    return await LoanModel.findOne({
-        where: {
-            dueDate: {
-                [Op.lt]: dueDate
-            },
-            userId: userId
-        },
-        include: [
-            {
-                model: UserModel,
-                as: 'user'
-            },
-            {
-                model: CopyModel,
-                as: 'copy',
-                include: [
-                    {
-                        model: EditionModel,
-                        as: 'edition',
-                        include: [
-                            {
-                                model: BookModel,
-                                as: 'book'
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                model: LoanStatusModel,
-                as: 'loanStatus',
-                attributes: ['idLoanStatus', 'name']
-            }
-        ]
-    })
+    return await findLoansOverDueRepository(userId, today);
 };
 
 export const createLoanService = async (loanData) => {
-    const loanPolicy = await getMaxLoanService();
+    const loanPolicy = await getMaxDaysLoanService();
+    console.log('loanPolicy en createLoanService: ', loanPolicy);
     const loanDate = new Date();
     const maxDays = loanPolicy.maxDays ? loanPolicy.maxDays : 14;
     const dueDate = new Date();
@@ -467,6 +279,7 @@ export const createLoanService = async (loanData) => {
     const maxBooks = await LoanModel.count({
         where: {
             userId: loanData.userId,
+            loanStatusId: {[Op.in]: [1, 3]}
         }
     });
 
