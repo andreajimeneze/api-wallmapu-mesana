@@ -45,7 +45,6 @@ export const getAllAuthorsPagination = async (req, res) => {
     return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener los autores' }));
   }
 };
-
 export const getAllAuthors = async (req, res) => {
   try {
     const allAuthors = await getAllAuthorsService();
@@ -73,7 +72,6 @@ export const getAllAuthors = async (req, res) => {
       );
   }
 };
-
 export const getAuthorById = async (req, res) => {
   const { id } = req.params;
 
@@ -105,7 +103,6 @@ export const getAuthorById = async (req, res) => {
       );
   }
 };
-
 export const createAuthor = async (req, res) => {
   const { name } = req.body;
 
@@ -114,7 +111,7 @@ export const createAuthor = async (req, res) => {
 
     res.status(201).json(
       successCreateResponse({
-        message: "Author creado exitosamente",
+        message: "Autor creado exitosamente",
         data: authorResponseDTO(createdAuthor),
       }),
     );
@@ -135,7 +132,6 @@ export const createAuthor = async (req, res) => {
     }
   }
 }
-
 export const updateAuthor = async (req, res) => {
   const { id_author, name } = req.body;
 
@@ -146,7 +142,7 @@ export const updateAuthor = async (req, res) => {
 
     res.status(202).json(
       successUpdateResponse({
-        message: "Author creado exitosamente",
+        message: "Autor actaulizado exitosamente",
         data: authorResponseDTO(updatedAuthor),
       }),
     );

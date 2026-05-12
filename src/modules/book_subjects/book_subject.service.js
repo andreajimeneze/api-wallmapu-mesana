@@ -1,6 +1,6 @@
 //import { BookSubjectModel } from "../../config/dbSequelize.js";
 
-import { findOneRepository, deleteBookSubjectRepository, bulkCreateBookSubjectRepository, updateBookSubjectRepository } from "./book_subject.respository.js";
+import { deleteBookSubjectRepository, bulkCreateBookSubjectRepository, updateBookSubjectRepository } from "./book_subject.respository.js";
 
 export const getBookSubjectsByIdService = async (id) => {
   return await findOneRepository({

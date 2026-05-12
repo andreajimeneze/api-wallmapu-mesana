@@ -1,20 +1,20 @@
 import { BookAuthorModel } from "../../config/dbSequelize.js";
 
-export const findAllBookAuthorRepository = async () => {
-    return await BookAuthorModel.findAll();
-};
+// export const findAllBookAuthorRepository = async () => {
+//     return await BookAuthorModel.findAll();
+// };
 
-export const findAllBookAuthorByIdBookRepository = async (id) => {
-    return await BookAuthorModel.findAll({
-        where: {
-            idBook: id
-        }
-    });
-};
+// export const findAllBookAuthorByIdBookRepository = async (id) => {
+//     return await BookAuthorModel.findAll({
+//         where: {
+//             idBook: id
+//         }
+//     });
+// };
 
-export const findBookAuthorByIdRepository = async (id) => {
-    return await BookAuthorModel.findByPk(id);
-};
+// export const findBookAuthorByIdRepository = async (id) => {
+//     return await BookAuthorModel.findByPk(id);
+// };
 
 export const findOneBookAuthorRepository = async (id) => {
     return await BookAuthorModel.findOne({

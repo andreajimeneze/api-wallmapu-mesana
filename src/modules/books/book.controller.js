@@ -4,8 +4,7 @@ import {
   getBookByIdService,
   createBookService,
   updateBookService,
-  deleteBookService,
-  getAllBooksService
+  deleteBookService
 } from "./book.service.js";
 import {
   notFoundResponse,
@@ -49,7 +48,6 @@ export const getBooksPaginationAndSearch = async (req, res) => {
       .json(internalServerResponse({ message: "Error al obtener los libros" }));
   }
 };
-
 export const getAllBooks = async(req, res) => {
   try {
     const allBooks = await getAllBooksService();
@@ -68,7 +66,6 @@ export const getAllBooks = async(req, res) => {
     );
   }
 };
-
 export const getBookById = async (req, res) => {
   const { id } = req.params;
 
@@ -96,7 +93,6 @@ export const getBookById = async (req, res) => {
     );
   }
 };
-
 export const getBookByIdDetail = async (req, res) => {
   const { id } = req.params;
   try {
@@ -123,7 +119,6 @@ export const getBookByIdDetail = async (req, res) => {
     );
   }
 };
-
 export const createBook = async (req, res) => {
 
   const bookData = req.body;

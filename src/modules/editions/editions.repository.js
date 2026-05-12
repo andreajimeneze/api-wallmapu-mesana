@@ -1,4 +1,4 @@
-import { EditionModel } from "../../config/dbSequelize.js";
+import { EditionModel, BookModel, EditorialModel } from "../../config/dbSequelize.js";
 
 export const findAllEditionsRepository = async () => {
   return await EditionModel.findAll({
@@ -23,10 +23,7 @@ export const findAllEditionsRepository = async () => {
 };
 
 export const findEditionByIdRepository = async (id) => {
-  return await EditionModel.findOne({
-    where: {
-      idEdition: id
-    },
+  return await EditionModel.findByPk(id, {
     include: [
       {
         model: BookModel,
@@ -38,24 +35,17 @@ export const findEditionByIdRepository = async (id) => {
         as: "editorial",
         attribute: ['name']
       }
-    ],
-  }
-  );
+    ]
+  });
 };
+  
 
-// export const getEditionByBookIdService = async (idBook) => {
-//   const edition = await EditionModel.findOne({
-//     where: { bookId: idBook },
-//   });
-
-//   if(!edition) {
-//     const error = new Error("No existe edición para el libro");
-//     error.status = 404;
-//     throw error;
-//   }
-
-//   return editionResponseDTO(edition);
-// };
+export const findEditionByBookIdRepository = async (idBook) => {
+  return await EditionModel.findOne({
+    where: { bookId: idBook },
+    attributes: ['bookId']
+  });
+};
 
 export const createEditionRepository = async (editionData) => {
 

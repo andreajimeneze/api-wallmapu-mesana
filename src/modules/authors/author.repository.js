@@ -19,7 +19,7 @@ export const getAllAuthorsPaginationRepository = async ({ page, limit, search })
         limit,
         offset,
         raw: true,
-        order: [['created_at', 'DESC']]
+        order: [['updated_at', 'DESC']]
     });
 
     return { count: items, rows: result };
@@ -35,15 +35,6 @@ export const findAllAuthorsOrderByNameRepository = async () => {
 export const findAuthorByIdRepository = async (id) => {
     return await AuthorModel.findByPk(id);
 };
-
-// export const findAuthorByNameRepository = async (name) => {
-//     return await AuthorModel.findOne({
-//         where: {
-//             name: name
-//         }
-//     })
-// };
-
 
 export const createAuthorRepository = async (data) => {
     return await AuthorModel.create(data);

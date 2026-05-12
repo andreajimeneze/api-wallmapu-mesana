@@ -5,13 +5,13 @@ import {
 } from "../../core/responses/apiResponse.js";
 import { deleteBookAuthorService, updateBookAuthorService } from "./book_author.service.js";
 
-export const updateBookAuthor = async(req, res) => {
+export const updateBookAuthor = async (req, res) => {
   const { idBook } = req.params;
   const { authors } = req.body;
 
   try {
 
-const bookAuthor = await updateBookAuthorService(idBook, authors);
+    const bookAuthor = await updateBookAuthorService(idBook, authors);
 
     return res
       .status(202)

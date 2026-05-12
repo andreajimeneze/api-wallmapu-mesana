@@ -5,13 +5,14 @@ export const findAllBookSubjectByIdBookRepository = async (id) => {
     return await BookSubjectModel.findAll({
         where: {
             idBook: id
-        }
+        },
+         attributes: ['subjectId']
     })
 };
 
-export const findOneRepository = async (id) => {
+export const findBookSubjectBySubjectIdRepository = async (id) => {
     return await BookSubjectModel.findOne({
-        where: { idBook: id }
+        where: { idSubject: id }
     });
 };
 

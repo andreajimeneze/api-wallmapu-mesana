@@ -19,7 +19,7 @@ import {
 import { createPaginationService } from "../../core/services/basePagination.service.js";
 import { normalizePagination } from "../../core/helpers/nomalizePagination.js";
 import { paginationUrl } from "../../core/helpers/paginationUrl.js";
-import { createEditionRepository, findAllEditionsRepository, findEditionByIdRepository, updateEditionRepository } from "./editions.repository.js";
+import { createEditionRepository, deleteEditionRepository, findAllEditionsRepository, findEditionByIdRepository, updateEditionRepository } from "./editions.repository.js";
 
 export const getAllEditionPaginationService = async (params, id_author, id_genre, id_editorial) => {
   const { page, limit, search, filter } = paginationRequestDTO(params);
@@ -128,7 +128,10 @@ export const getAllEditionsService = async () => {
 };
 
 export const getEditionByIdService = async (id) => {
-  return await findEditionByIdRepository(id);
+  const edition = await findEditionByIdRepository(id);
+  if (!edition) {
+    throw new Error("Edición no encontrada");
+  }
 };
 
 // export const getEditionByBookIdService = async (idBook) => {
@@ -157,23 +160,19 @@ export const deleteEditionWithImageService = async (id) => {
   const transaction = await sequelize.transaction();
 
   try {
-    const edition = await EditionModel.findByPk(id);
+    const edition = await findEditionByIdRepository(id);
     const copyEdition = await CopyModel.count({ where: { editionId: id } });
 
     if (!edition) {
       await transaction.rollback();
-      const error = new Error("Edición no encontrada");
-      error.status = 404;
-      throw error;
+      throw new Error("Edición no encontrada");
     }
 
     if (copyEdition > 0) {
       await transaction.rollback();
-      const error = new Error(
+      throw new Error(
         `Edición ${edition.edition} tiene copias asociadas. Debe eliminar las copias primero`,
       );
-      error.status = 409;
-      throw error;
     }
 
     const coverImage = edition.coverImage;
@@ -183,7 +182,7 @@ export const deleteEditionWithImageService = async (id) => {
 
       await deleteImageCloud(publicId);
     }
-    await edition.destroy();
+    await deleteEditionRepository(id);
     await transaction.commit();
     return true;
   } catch (error) {

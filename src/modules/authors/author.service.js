@@ -46,24 +46,18 @@ export const getAllAuthorsPaginationService = async(params) => {
     };
   };
 
-
 export const getAllAuthorsService = async () => {
   return await findAllAuthorsOrderByNameRepository();
 };
-
 export const getAuthorByIdService = async (id) => {
   return await findAuthorByIdRepository(id);
 };
-
 export const createAuthorService = async ( name ) => {
-
   const dto = createAuthorDTO({
     name,
   });
-
   return createAuthorRepository(dto);
 };
-
 export const updateAuthorService = async (data) => {
   return await updateAuthorRepository(data);
 };
@@ -78,9 +72,7 @@ export const deleteAuthorService = async (id) => {
   const authorBook = await findOneBookAuthorRepository(id);
 
   if (authorBook) {
-    const error = new Error('No puede eliminar un autor asignado a un libro existente');
-    error.status = 409;
-    throw error;
+    throw new Error('No puede eliminar un autor asignado a un libro existente');
   };
 
   await deleteAuthorRepository(id);

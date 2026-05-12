@@ -3,7 +3,7 @@ import { loanBasicResponseDTO } from "./loan.dto.js";
 import { getMaxDaysLoanService } from "../loan_policy/loan_policy.service.js";
 import { paginationResponseDTO } from '../../core/responses/paginationResponse.js';
 import { Copy } from "../copies/copy.model.js";
-import { findActiveLoansByBookIdRepository, findActiveLoansByCopyIdRepository, findActiveLoansByUserIdRepository, findAllLoansRepository, findLoanByIdRepository, findLoansOverDueRepository } from "./loan.repository.js";
+import { countLoansOverDueByUserRepository, findActiveLoansByBookIdRepository, findActiveLoansByCopyIdRepository, findActiveLoansByUserIdRepository, findAllLoansRepository, findLoanByIdRepository, findLoansOverDueRepository } from "./loan.repository.js";
 import { Op } from "sequelize";
 export const getLoansAndSearchService = async ({
     page,
@@ -266,6 +266,10 @@ export const getLoansOverDueByUserIdService = async (userId) => {
 
     return await findLoansOverDueRepository(userId, today);
 };
+
+// export const countLoansOverDueByUserService = async (userId) => {
+//     return await countLoansOverDueByUserRepository(userId);
+// };
 
 export const createLoanService = async (loanData) => {
     const loanPolicy = await getMaxDaysLoanService();

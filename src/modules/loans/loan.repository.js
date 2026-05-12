@@ -68,6 +68,24 @@ export const findActiveLoansByUserIdRepository = async (userId) => {
     })
 };
 
+export const countLoansOverDueByUserRepository = async (userId) => {
+    return await LoanModel.count({
+        where: {
+            userId: userId,
+            loanStatusId: 3
+        }
+    })
+};
+
+export const countLoansActiveByUserRepository = async (userId) => {
+    return await LoanModel.count({
+        where: {
+            userId: userId,
+            loanStatusId: 1
+        }
+    })
+};
+
 export const findActiveLoansByCopyIdRepository = async (copyId) => {
     return await LoanModel.findOne({
         where: {

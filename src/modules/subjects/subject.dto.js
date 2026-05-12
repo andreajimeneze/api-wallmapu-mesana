@@ -21,3 +21,10 @@ export const createSubjectDTO = ({ name }) => {
     name: name.trim(),
   };
 };
+
+export const updateSubjectDTO = (data) => {
+  return {
+    idSubject: data.id_subject,
+    name: data.name
+  }
+}

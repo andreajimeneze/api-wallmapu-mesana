@@ -1,8 +1,9 @@
 import express from 'express';
-import { createSubject, deleteSubject, getAllSubjects, getSubjectById, updateSubject } from './subject.controller.js';
+import { createSubject, deleteSubject, getAllSubjects, getAllSubjectsPagination, getSubjectById, updateSubject } from './subject.controller.js';
 
 const router = express.Router();
 
+router.get('/pagination', getAllSubjectsPagination);
 router.get('/', getAllSubjects);
 router.get('/:id', getSubjectById);
 router.post('/', createSubject);

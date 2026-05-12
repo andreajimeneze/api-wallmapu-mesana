@@ -4,11 +4,11 @@ import { createReservationDTO, reservationResponseDTO, updateReservationDTO } fr
 import { getCopyByIdService } from '../copies/copy.service.js';
 import { Op } from "sequelize";
 import { Copy } from "../copies/copy.model.js";
-//import { createPaginationService } from "../../core/services/basePagination.service.js";
 import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
 import { normalizePagination } from "../../core/helpers/nomalizePagination.js";
 import { calculatePagination } from "../../core/helpers/calculatePagintation.js";
-import { getLoansOverDueByUserIdService } from "../loans/loan.service.js";
+import { countActiveReservationsByUserRepository, findActiveReservationByCopyRepository, findActiveReservationByUserIdAndCopyRepository, findAllReservationsRepository, findReservationByIdRepository, findReservationsByUserIdRepository } from "./reservation.repository.js";
+import { countLoansActiveByUserRepository, countLoansOverDueByUserRepository } from "../loans/loan.repository.js";
 
 
 export const getReservationsAndSearchService = async ({
@@ -230,157 +230,23 @@ if (status && parseInt(status) > 0) {
 };
 
 export const getAllReservationsService = async () => {
-    return await ReservationModel.findAll({
-        include: [
-            {
-                model: UserModel,
-                as: 'user',
-                attributes: ['idUser', 'username', 'userlastname', 'email']
-            },
-            {
-                model: CopyModel,
-                as: 'copy',
-                attributes: ['idCopy', 'barcode', 'signatureTopography', 'copyNumber', 'statusId'],
-                include: [
-                    {
-                        model: EditionModel,
-                        as: 'edition',
-                        attributes: ['idEdition', 'bookId'],
-                        include: [
-                            {
-                                model: BookModel,
-                                as: 'book',
-                                attributes: ['idBook', 'title']
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                model: ReservationStatusModel,
-                as: 'reservationStatus',
-                attributes: ['idStatus', 'name']
-            }
-        ],
-        order: [['reservationDate', 'DESC']]
-    });
+    return await findAllReservationsRepository();
 };
 
 export const getReservationByIdService = async (id) => {
-    return await ReservationModel.findByPk(id, {
-        include: [
-            {
-                model: UserModel,
-                as: 'user',
-                attributes: ['idUser', 'username', 'userlastname', 'email']
-            },
-            {
-                model: CopyModel,
-                as: 'copy',
-                attributes: ['idCopy', 'barcode', 'copyNumber', 'signatureTopography', 'statusId'],
-                required: false,
-                include: [
-                    {
-                        model: EditionModel,
-                        as: 'edition',
-                        required: false,
-                        attributes: ['idEdition', 'bookId'],
-                        include: [
-                            {
-                                model: BookModel,
-                                as: 'book',
-                                attributes: ['idBook', 'title']
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                model: ReservationStatusModel,
-                as: 'reservationStatus',
-                attributes: ['idStatus', 'name']
-            }
-        ]
-    });
+    return await findReservationByIdRepository();
 };
 
 export const getReservationsByUserIdService = async (userId) => {
-    return await ReservationModel.findAll({
-        where: {
-            userId: userId
-        },
-        include: [
-            {
-                model: UserModel,
-                as: 'user',
-                attributes: ['idUser', 'username', 'userlastname', 'email']
-            },
-            {
-                model: CopyModel,
-                as: 'copy',
-                attributes: ['idCopy', 'barcode', 'copyNumber', 'statusId'],
-                include: [
-                    {
-                        model: EditionModel,
-                        as: 'edition',
-                        attributes: ['idEdition', 'bookId']
-                    }
-                ]
-            },
-            {
-                model: ReservationStatusModel,
-                as: 'reservationStatus',
-                attributes: ['idStatus', 'name']
-            }
-        ]
-    })
+    return await findReservationsByUserIdRepository(userId);
 };
 
 export const getActiveReservationByUserIdAndCopyService = async (userId, copyId) => {
-    return await ReservationModel.findOne({
-        where: {
-            userId: userId,
-            copyId: copyId,
-            reservationStatusId: 1
-        },
-        include: [
-            {
-                model: CopyModel,
-                as: 'copy',
-                attributes: ['idCopy', 'barcode', 'copyNumber', 'statusId'],
-                include: [
-                    {
-                        model: EditionModel,
-                        as: 'edition',
-                        attributes: ['idEdition', 'bookId']
-                    }
-                ]
-            }
-        ]
-    });
+    return await findActiveReservationByUserIdAndCopyRepository(userId, copyId);
 };
 
 export const getActiveReservationByCopyService = async (copyId) => {
-    return await ReservationModel.findOne({
-        where: {
-            copyId: copyId,
-            reservationStatusId: 1
-        },
-        include: [
-            {
-                model: CopyModel,
-                as: 'copy',
-                attributes: ['idCopy', 'barcode', 'copyNumber', 'statusId'],
-                include: [
-                    {
-                        model: EditionModel,
-                        as: 'edition',
-                        attributes: ['idEdition', 'bookId']
-                    }
-                ]
-            }
-        ]
-    });
+    return await findActiveReservationByCopyRepository(copyId);
 };
 
 export const createCopyReservationService = async (userId, copyId) => {
@@ -389,8 +255,10 @@ export const createCopyReservationService = async (userId, copyId) => {
         getCopyByIdService(copyId),
         getActiveReservationByUserIdAndCopyService(userId, copyId),
         getDefaultPolicyService(),
-        getLoansOverDueByUserIdService(userId)
+        countLoansOverDueByUserRepository(userId)
     ])
+
+    console.log('overdue by user: ', overdueLoans);
 
     if (!existingCopy) {
         const error = new Error('Copia no encontrada');
@@ -404,7 +272,7 @@ export const createCopyReservationService = async (userId, copyId) => {
         throw error;
     };
 
-    if(overdueLoans.length > 0) {
+    if(overdueLoans > 0) {
         const error = new Error('No puede realizar reserva con préstamos vencidos');
         error.status = 409;
         throw error;
@@ -417,19 +285,12 @@ export const createCopyReservationService = async (userId, copyId) => {
     expirationDate.setHours(23, 59, 59, 999);
 
     const [maxBooksReservated, maxBooksLoaned] = await Promise.all([
-        ReservationModel.count({
-            where: {
-                userId: userId,
-                reservationStatusId: 1
-            }
-        }),
-        LoanModel.count({
-            where: {
-                userId: userId,
-                loanStatusId: 1
-            }
-        })
+        countActiveReservationsByUserRepository(userId),
+        countLoansActiveByUserRepository(userId)
     ])
+
+    console.log('reservas ya realizadas: ', maxBooksReservated);
+    console.log('préstamos ya realizadas: ', maxBooksLoaned);
 
     if (maxBooksReservated + maxBooksLoaned >= policy.maxBooks) {
         const error = new Error('Usuario excede número de reservas y préstamos autorizados');

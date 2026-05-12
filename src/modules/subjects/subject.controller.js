@@ -1,16 +1,52 @@
 import {
+  badRequestResponse,
   internalServerResponse,
   notFoundResponse,
   succesGetResponse,
+  successCreateResponse,
+  successUpdateResponse,
 } from "../../core/responses/apiResponse.js";
-import { subjectResponseDTO } from "./subject.dto.js";
+import { subjectResponseDTO, updateSubjectDTO } from "./subject.dto.js";
 import {
   createSubjectService,
   deleteSubjectService,
+  getAllSubjectsPaginationService,
   getAllSubjectsService,
   getSubjectByIdService,
   updateSubjectService,
 } from "./subject.service.js";
+
+export const getAllSubjectsPagination = async (req, res) => {
+  try {
+    let page = parseInt(req.query.page ?? 1);
+    let limit = parseInt(req.query.limit ?? 10);
+
+    if (isNaN(page) || page < 1 || isNaN(limit) || limit < 1) {
+      return res.status(400).json(
+        badRequestResponse({
+          message: "El número de página o items debe ser mayor a 0",
+        }),
+      );
+    }
+
+    const result = await getAllSubjectsPaginationService
+    ({
+      page,
+      limit,
+      search: req.query.search ?? "",
+    });
+
+    return res.status(200).json(
+      succesGetResponse({
+        message: "Descriptores obtenidos exitosamente",
+        data: result.data,
+      }),
+    );
+  } catch (error) {
+    console.error('ERROR SUBJECT CONTROLLER', error);
+    return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener los descriptores' }));
+  }
+};
 
 export const getAllSubjects = async (req, res) => {
   try {
@@ -72,7 +108,7 @@ export const getSubjectById = async (req, res) => {
 
 export const createSubject = async (req, res) => {
    const { name } = req.body;
-
+console.log('CREAR DESCRIPTOR CONTROLLER')
   try {
     const createdSubject= await createSubjectService(name);
 
@@ -83,52 +119,34 @@ export const createSubject = async (req, res) => {
           }),
         );
       } catch (error) {
-        console.error(error);
-        if (error.code === "CONFLICT") {
-          res.status(409).json(
-            conflictResponse({
-              message: error.message || "Nombre del descriptor ya existe",
-            }),
-          );
-        } else {
-          res.status(error.status || 500).json(error.message ||
-            internalServerResponse({
-              message: error.message || "Error al intentar crear el descriptor",
-            }),
-          );
-        }
+        console.error('CUÁL ES EL ERROR CREAR SUBJECT: ', error);
+        return res.status(error.status || 500).json(error.message || internalServerResponse({message: error.message || 'Error al intentar crear el descriptor'}))
       }
 }
 
 export const updateSubject = async (req, res) => {
-  const { name } = req.body;
+  const { id_subject, name } = req.body;
+
+  const subjectDTO = updateSubjectDTO(req.body);
 
   try {
-    const updatedSubject = await updateSubjectService(name);
+    const updatedSubject = await updateSubjectService(subjectDTO);
 
     res.status(202).json(
           successUpdateResponse({
-            message: "Descriptor creado exitosamente",
+            message: "Descriptor actualizado exitosamente",
             data: subjectResponseDTO(updatedSubject),
           }),
         );
       } catch (error) {
-        console.error(error);
-        if (error.code === "CONFLICT") {
-          res.status(409).json(
-            conflictResponse({
-              message: error.message || "Nombre del descriptor ya existe",
-            }),
-          );
-        } else {
+        console.error('ERROR AL ACTUALIZAR SUBJECT: ', error);
           res.status(error.status || 500).json(error.message ||
             internalServerResponse({
               message: error.message || "Error al intentar actualizar el descriptor",
             }),
           );
         }
-      }
-}
+      };
 
 export const deleteSubject= async (req, res) => {
   const { id } = req.params;

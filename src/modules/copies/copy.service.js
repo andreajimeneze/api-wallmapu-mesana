@@ -1,159 +1,26 @@
 import { ForeignKeyConstraintError, Op } from "sequelize";
-import {
-  BookModel,
-  CopyModel,
-  CopyStatusModel,
-  EditionModel,
-  EditorialModel,
-  GenreModel,
-  LoanModel,
-  LoanStatusModel,
-  ReservationModel,
-  ReservationStatusModel
-} from "../../config/dbSequelize.js";
 import { getEditionByIdService } from "../editions/edition.service.js";
-
-
+import { createCopyRepository, deleteCopyRepository, existingCopyRespository, existingSignatureRepository, findAllCopiesByBookRepository, findCopiesByBookAndStatusRepository, findCopiesByEditionIdRepository, findCopyByIdRepository } from "./copy.repository.js";
 
 export const getAllCopiesService = async () => {
-  return await CopyModel.findAll({
-    order: [["idCopy", "ASC"]],
-    include: [
-      {
-        model: EditionModel,
-        as: "edition",
-        include: [
-          {
-            model: BookModel,
-            as: "book",
-            include: [
-              {
-                model: GenreModel,
-                as: "genre",
-              },
-            ],
-          },
-          { model: EditorialModel, as: "editorial" },
-        ],
-      },
-      { model: CopyStatusModel, as: "status" },
-    ],
-  });
+  return await findAllCopiesByBookRepository();
 };
 
 export const getAllCopiesByBookService = async (bookId) => {
-  return await CopyModel.findAll({
-
-    order: [["idCopy", "ASC"]],
-    include: [
-      {
-        model: EditionModel,
-        as: "edition",
-        where: {
-          bookId: bookId
-        },
-        include: [
-          {
-            model: EditorialModel,
-            as: "editorial"
-          },
-          {
-            model: BookModel,
-            as: "book",
-          }
-        ],
-      },
-      {
-        model: CopyStatusModel,
-        as: "status"
-      }
-    ],
-  });
+  return await findAllCopiesByBookRepository(bookId);
 };
 
 export const getCopiesByEditionIdService = async (editionId) => {
-
-  const copy = await CopyModel.findAll(
-    {
-      where: { editionId: editionId },
-      include: [
-        {
-          model: CopyStatusModel,
-          attributes: ['name'],
-          as: "status"
-        },
-      ],
-    });
-
-  return copy;
+  return await findCopiesByEditionIdRepository(editionId);
 };
 
-export const getAllCopiesAvailableService = async (bookId) => {
-  const activeCopies = await CopyModel.findAll({
-    where: {
-      statusId: 1
-    },
-    include: [
-      {
-        model: EditionModel,
-        as: "edition",
-        required: true,
-        include: [
-          {
-            model: BookModel,
-            as: "book",
-            required: true,
-            where: {
-              idBook: bookId
-            }
-          },
-          {
-            model: EditorialModel,
-            as: "editorial"
-          }
-        ],
-      },
-      {
-        model: CopyStatusModel,
-        as: "status"
-      },
-      {
-        model: LoanModel,
-        as: 'loan',
-        required: false,
-        include: [
-          {
-            model: LoanStatusModel,
-            as: 'loanStatus',
-            required: false,
-            attributes: ['idLoanStatus', 'name']
-          }
-        ]
-      },
-      {
-        model: ReservationModel,
-        as: 'reservations',
-        required: false,
-        include: [
-          {
-            model: ReservationStatusModel,
-            as: 'reservationStatus',
-            required: false,
-            attributes: ['idStatus', 'name']
-          }
-        ]
-      }
-    ],
-  });
+export const getAllCopiesAvailableService = async (bookId, statusId) => {
+  const activeCopies = await findCopiesByBookAndStatusRepository(bookId, 1);
 
   const data = activeCopies.map(copy => {
-    const loans = Array.isArray(copy.loan)
-      ? copy.loan
-      : (copy.loan ? [copy.loan] : []);
+    const loans = copy.loan || [];
 
-    const reservations = Array.isArray(copy.reservations)
-      ? copy.reservations
-      : [];
+    const reservations = copy.reservations || [];
 
     const hasActiveLoan = loans.some(loan =>
       loan.loanStatus &&
@@ -173,92 +40,45 @@ export const getAllCopiesAvailableService = async (bookId) => {
       availability_status = 'reservado';
     }
 
-    return {
-      ...copy.toJSON(),
+    return copyByBookResponseDTO({
+      ...copy.get({ plain: true }),
       availability_status
-    };
+    });
   });
 
   return data;
 };
 
 export const getCopyByIdService = async (id) => {
-  return await CopyModel.findByPk(id);
+  return await findCopyByIdRepository(id);
 };
 
 export const createCopyService = async (copyData) => {
-
-  try {
     const idEdition = copyData.editionId;
 
-    const edition = await getEditionByIdService(idEdition);
+    const [existingCopy, existingSignature] = await Promise.all([
+      existingCopyRespository(copyData.editionId),
+      existingSignatureRepository(copyData.editionId, copyData.signatureTopography)
+    ]);
 
-    if (!edition) {
-      throw new Error("Edición no encontrada");
-    }
-
-    const existingCopy = await CopyModel.findOne({
-      where: {
-        editionId: copyData.editionId,
-        copyNumber: copyData.copyNumber
-      }
-    })
+      await getEditionByIdService(idEdition);
 
     if (existingCopy) {
       throw new Error('Número de copia ya existe');
     };
 
-    const existingSignature = await CopyModel.findOne({
-      where: {
-        editionId: copyData.editionId,
-        signatureTopography: copyData.signatureTopography
-      },
-      include: [
-        {
-          model: EditionModel,
-          as: 'edition',
-          required: true,
-          where: {
-            idEdition: copyData.editionId
-          },
-          include: [
-            {
-              model: BookModel,
-              as: 'book'
-            }
-          ]
-        }
-      ]
-    })
-
     if (existingSignature) {
       throw new Error('Signatura ya existe para ese libro');
     };
 
-    const createdCopy = await CopyModel.create(copyData);
+    const createdCopy = await createCopyRepository(copyData);
 
-    const newCopy = await getCopyByIdService(createdCopy.idCopy);
-
-    return newCopy;
-
-  } catch (error) {
-    console.error('copy service: ', error);
-    throw error;
-  }
-};
-
+    return await getCopyByIdService(createdCopy.idCopy);
+  };
 export const updateCopyService = async (id, copyData) => {
-  const searchedCopy = await CopyModel.findByPk(id, {
-    include: [
-      {
-        model: CopyStatusModel,
-        as: 'status'
-      }
-    ]
-  });
+  const searchedCopy = await findCopyByIdRepository(id);
 
-
-  if (!searchedCopy || searchedCopy === 0) {
+  if (!searchedCopy) {
     throw new Error("Copia no encontrada");
   }
 
@@ -266,28 +86,10 @@ export const updateCopyService = async (id, copyData) => {
 };
 
 export const deleteCopyService = async (id) => {
-  const selectedCopy = await CopyModel.findByPk(id);
+  const selectedCopy = await findCopyByIdRepository(id);
 
   if (!selectedCopy) {
-    const error = new Error("Copia no encontrada");
-    error.status = 404;
-    throw error;
+    throw new Error("Copia no encontrada");
   }
-
-  try {
-    await selectedCopy.destroy();
-    return true;
-  } catch (error) {
-    if (error instanceof ForeignKeyConstraintError) {
-      if (error.index?.includes("loan")) {
-        throw new Error("No se puede eliminar porque existen préstamos asociados");
-      }
-
-      if (error.index?.includes("reservation")) {
-        throw new Error("No se puede eliminar porque existen reservas asociadas");
-      }
-
-      throw new Error("No se puede eliminar porque existen registros relacionados");
-    }
-  }
+    await deleteCopyRepository(id);
 };
