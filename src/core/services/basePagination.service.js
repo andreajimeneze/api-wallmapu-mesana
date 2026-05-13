@@ -1,70 +1,42 @@
-import { paginationResponseDTO } from "../responses/paginationResponse.js";
 import { normalizePagination } from '../helpers/nomalizePagination.js';
-import { buildSearchWhere } from "../helpers/paginationSearch.js";
-import { calculatePagination } from "../helpers/calculatePagintation.js";
 import { paginationUrl } from "../helpers/paginationUrl.js";
-import { emptyPaginationDTO } from "../responses/paginationResponse.js";
+import { emptyPaginationDTO, paginationRequestDTO, paginationResponseDTO } from "../responses/paginationResponse.js";
 
-export const createPaginationService = ({
-  model,
-  searchFields = [],
-  includes = [],
-  dtoMapper,
-  idField,
-  customWhere = {},
-  entityName = "Registros"
-}) => {
+export const getAllPaginationService = async(params, repository, dto) => {
 
-  return async ({ page, limit, search }) => {
+  const { page, limit, search, filter } = paginationRequestDTO(params);
+  
+  const { page: normalizedPage, limit: normalizedLimit } = normalizePagination(page, limit);
 
-    const { page: currentPage, limit: currentLimit } =
-      normalizePagination(page, limit);
+  const { count: items, rows: result } = await repository({page: normalizedPage, limit: normalizedLimit, search, filter: filter || {}});
 
-    const where = {
-      ...customWhere,
-      ...buildSearchWhere(search, searchFields)
-    };
+  const pages = Math.ceil(items / normalizedLimit);
 
-    const items = await model.count({
-      where,
-      distinct: true,
-      col: idField,
-    });
+  const urlResponse = paginationUrl('pagination', normalizedPage, pages, normalizedLimit, search);
 
-    if (items === 0) {
-      return emptyPagination(entityName);
+  if (items === 0) {
+      return emptyPaginationDTO({ page: normalizedPage, pages, items, urlResponse })
     }
+    
+  
+    const haveSearch = search && search.trim() !== "";
 
-    const { page: safePage, pages, offset } =
-      calculatePagination(items, currentPage, currentLimit);
-
-    const result = await model.findAll({
-      where,
-      include: includes,
-      limit: currentLimit,
-      offset,
-      order: [["updated_at", "DESC"]],
-      subQuery: false,
-      distinct: true
-    });
-
-    const links = paginationUrl(
-      basePath,
-      safePage,
-      pages,
-      currentLimit,
-      search
-    );
-
+    let currentPage = normalizedPage;
+  
+    if (currentPage > pages && currentPage > 0) {
+      currentPage = haveSearch ? 1 : pages;
+    } else if (currentPage < 1) {
+      currentPage = 1;
+    }
+  
     return {
-      response: `${entityName} obtenidos exitosamente`,
+      response: "Datos obtenidos exitosamente",
       data: paginationResponseDTO({
-        page: safePage,
+        page: currentPage,
         pages,
         items,
-        ...links,
-        data: result.map(dtoMapper)
-      })
+        urlResponse,
+        data: result.map(dto),
+      }),
     };
   };
-};

@@ -1,8 +1,10 @@
 import express from 'express';
-import { createNotification, deleteNotificationById, deleteNotificationByUserId, getAllNotifications, getNotificationById, getNotificationsUnreadByUserId } from './notification.controller.js';
+import { createNotification, deleteNotificationById, deleteNotificationByUserId, getAllNotifications, getAllNotificationsPagination, getNotificationById, getNotificationsUnreadByUserId } from './notification.controller.js';
 
 
 const router = express.Router();
+
+router.get('/pagination', getAllNotificationsPagination);
 
 router.get('/', getAllNotifications);
 

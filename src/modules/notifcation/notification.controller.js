@@ -1,7 +1,37 @@
 import { internalServerResponse, notFoundResponse, succesGetResponse, successDeleteResponse } from "../../core/responses/apiResponse.js"
 import { createNotificationDTO, notificationDTO } from "./notification.dto.js";
-import { createNotificationService, deleteNotificationByIdService, deleteNotificationByUserIdService, getAllNotificationsService, getNotificationByIdService, getNotificationsByUnreadUserIdService } from "./notification.service.js";
+import { createNotificationService, deleteNotificationByIdService, deleteNotificationByUserIdService, getAllNotificationsPaginationService, getAllNotificationsService, getNotificationByIdService, getNotificationsByUnreadUserIdService } from "./notification.service.js";
 
+export const getAllNotificationsPagination = async (req, res) => {
+  try {
+    let page = parseInt(req.query.page ?? 1);
+    let limit = parseInt(req.query.limit ?? 10);
+
+    if (isNaN(page) || page < 1 || isNaN(limit) || limit < 1) {
+      return res.status(400).json(
+        badRequestResponse({
+          message: "El número de página o items debe ser mayor a 0",
+        }),
+      );
+    }
+
+    const result = await getAllNotificationsPaginationService({
+      page,
+      limit,
+      search: req.query.search ?? "",
+    });
+
+    return res.status(200).json(
+      succesGetResponse({
+        message: "Notificaciones obtenidas exitosamente",
+        data: result.data,
+      }),
+    );
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener las notificaciones' }));
+  }
+};
 export const getAllNotifications = async (req, res) => {
     try {
         const notifications = await getAllNotificationsService();

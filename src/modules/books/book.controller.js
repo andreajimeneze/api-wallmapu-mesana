@@ -32,7 +32,7 @@ export const getBooksPaginationAndSearch = async (req, res) => {
     const result = await getBooksPaginationAndSearchService({
       page,
       limit: items,
-      search: req.query.search ?? "",
+      search: req.query.search ?? ""
     });
 
     return res.status(200).json(

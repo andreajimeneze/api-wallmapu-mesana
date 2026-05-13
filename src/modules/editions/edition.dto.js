@@ -128,10 +128,10 @@ export const basicResponseEditionWithCopies = (res) => ({
       })) : []
 });
 
-export const queryRequestEditionDTO = ({id_author, id_genre, id_editorial} = {}) => {
+export const editionFilterRequestDTO = ({id_author, id_genre, id_editorial} = {}) => {
   return {
-    id_author: Number(id_author) || 0,
-    id_genre: Number(id_genre) || 0,
-    id_editorial: Number(id_editorial) || 0
+    idAuthor: Number(id_author) || 0,
+    idGenre: Number(id_genre) || 0,
+    idEditorial: Number(id_editorial) || 0
   }
-}
+};

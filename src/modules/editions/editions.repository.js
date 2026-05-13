@@ -1,5 +1,78 @@
-import { EditionModel, BookModel, EditorialModel } from "../../config/dbSequelize.js";
+import { EditionModel, BookModel, EditorialModel, GenreModel, AuthorModel, CopyModel, CopyStatusModel } from "../../config/dbSequelize.js";
 
+export const getAllEditionPaginationRepository = async ({page, limit, search, filter}) => {
+  const { idGenre, idAuthor, idEditorial } = filter;
+ 
+  const include = [
+    {
+      model: BookModel,
+      as: "book",
+      attributes: ["idBook", "title", "genreId"],
+      required: true,
+      include: [
+        {
+          model: GenreModel,
+          as: "genre",
+        },
+        {
+          model: AuthorModel,
+          as: "authors",
+          required: idAuthor > 0,
+          where: idAuthor > 0 ? { idAuthor } : undefined,
+        },
+      ],
+    },
+    {
+      model: EditorialModel,
+      as: "editorial",
+      required: false,
+    },
+    {
+      model: CopyModel,
+      as: 'copies',
+      required: false,
+      include: [
+        {
+          model: CopyStatusModel,
+          as: 'status'
+        }
+      ]
+    }
+  ];
+
+  const where = {};
+
+  if (search && search.trim() !== "") {
+    where[Op.or] = [
+      { isbn: { [Op.iLike]: `%${search}%` } },
+      { "$book.title$": { [Op.iLike]: `%${search}%` } },
+      { "$editorial.name$": { [Op.iLike]: `%${search}%` } },
+      { "$book.authors.name$": { [Op.iLike]: `%${search}%` } },
+      { "$book.genre.name$": { [Op.iLike]: `%${search}%` } },
+    ];
+  }
+
+  if (idEditorial > 0) {
+    where.editorialId = idEditorial;
+  }
+
+  if (idGenre > 0) {
+    where["$book.genre_id$"] = idGenre;
+  }
+
+  const offset = (page - 1) * limit;
+
+  const items = await EditionModel.count({where});
+  const result = await EditionModel.findAll({
+    where,
+    include,
+    limit,
+    offset,
+    distinct: true,
+  });
+
+  return { count: items, rows: result };
+};
 export const findAllEditionsRepository = async () => {
   return await EditionModel.findAll({
     include: [

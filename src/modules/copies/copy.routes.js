@@ -10,7 +10,7 @@ router.get('/:id', getCopyById);
 
 router.get('/book/:bookId', getAllCopiesByBook);
 
-router.get('/edition/:editionId', getCopiesByIdEdition);
+router.get('/detail/edition/:editionId', getCopiesByIdEdition);
 
 router.get('/book/:bookId/available', getAllCopiesAbailableByBook);
 

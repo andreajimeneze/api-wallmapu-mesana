@@ -1,6 +1,6 @@
 import { ForeignKeyConstraintError, Op } from "sequelize";
 import { getEditionByIdService } from "../editions/edition.service.js";
-import { createCopyRepository, deleteCopyRepository, existingCopyRespository, existingSignatureRepository, findAllCopiesByBookRepository, findCopiesByBookAndStatusRepository, findCopiesByEditionIdRepository, findCopyByIdRepository } from "./copy.repository.js";
+import { createCopyRepository, deleteCopyRepository, existingCopyRespository, existingSignatureRepository, findAllCopiesByBookRepository, findCopiesByBookAndStatusRepository, findCopiesByEditionIdRepository, findCopyByIdRepository, updateCopyRepository } from "./copy.repository.js";
 
 export const getAllCopiesService = async () => {
   return await findAllCopiesByBookRepository();
@@ -82,7 +82,7 @@ export const updateCopyService = async (id, copyData) => {
     throw new Error("Copia no encontrada");
   }
 
-  return await searchedCopy.update(copyData);
+  return await updateCopyRepository(id, copyData);
 };
 
 export const deleteCopyService = async (id) => {
@@ -91,5 +91,5 @@ export const deleteCopyService = async (id) => {
   if (!selectedCopy) {
     throw new Error("Copia no encontrada");
   }
-    await deleteCopyRepository(id);
+    return await deleteCopyRepository(id);
 };

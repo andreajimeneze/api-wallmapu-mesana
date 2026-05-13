@@ -1,85 +1,97 @@
 import { internalServerResponse, notFoundResponse, succesGetResponse, successCreateResponse, successUpdateResponse } from "../../core/responses/apiResponse.js";
-import { createLoanDTO, loanBasicResponseDTO, loanResponseDTO } from "./loan.dto.js";
-import { createLoanService, getActiveLoanByBarcodeService, getActiveLoansByBookIdService, getActiveLoansByCopyIdService, getActiveLoansByUserIdService, getAllLoansService, getLoanByIdService, getLoansAndSearchForUserService, getLoansAndSearchService, getLoansOverDueService, markLoanAsExpireOverdueService, returnLoanByCopyIdService } from './loan.service.js';
+import { createLoanDTO, loanBasicResponseDTO, loanResponseDTO, loanWhereRequestDTO } from "./loan.dto.js";
+import { createLoanService, getActiveLoanByBarcodeService, getActiveLoansByBookIdService, getActiveLoansByCopyIdService, getActiveLoansByUserIdService, getAllLoansService, getLoanByIdService, getLoansAndSearchService, getLoansOverDueService, markLoanAsExpireOverdueService, returnLoanByCopyIdService } from './loan.service.js';
 
 export const getLoansPaginationAndSearch = async (req, res) => {
-      try {
+    try {
         let page = parseInt(req.query.page ?? 1);
         let items = parseInt(req.query.items ?? 10);
-        const id_status = parseInt(req.query.id_status);
-    
-        if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
-          return res.status(400).json(
-            badRequestResponse({
-              message: "El número de página o items debe ser mayor a 0",
-            }),
-          );
-        }
-    
-        const result = await getLoansAndSearchService({
-          page,
-          limit: items,
-          search: req.query.search ?? "",
-          status: id_status
+
+
+        const { idLoanStatus } = loanWhereRequestDTO({
+            id_status: req.query.id_status
         });
-    
+
+
+        if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
+            return res.status(400).json(
+                badRequestResponse({
+                    message: "El número de página o items debe ser mayor a 0",
+                }),
+            );
+        }
+
+        const result = await getLoansAndSearchService({
+            page,
+            limit: items,
+            search: req.query.search ?? "",
+            filter: { idLoanStatus }
+        });
+
         return res.status(200).json(
-          succesGetResponse({
-            message: "Préstamos obtenidos exitosamente",
-            data: result.data,
-          }),
+            succesGetResponse({
+                message: "Préstamos obtenidos exitosamente",
+                data: result.data,
+            }),
         );
-      } catch (error) {
+    } catch (error) {
         console.error(error);
         return res
-          .status(500)
-          .json(internalServerResponse({ message: "Error al obtener los préstamos" }));
-      }
+            .status(500)
+            .json(internalServerResponse({ message: "Error al obtener los préstamos" }));
+    }
 };
 
 export const getLoansPaginationAndSearchForUser = async (req, res) => {
-      try {
+    try {
         let page = parseInt(req.query.page ?? 1);
         let items = parseInt(req.query.items ?? 10);
         const id_status = parseInt(req.query.id_status);
         const userId = req.user.sub;
-    
-        if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
-          return res.status(400).json(
-            badRequestResponse({
-              message: "El número de página o items debe ser mayor a 0",
-            }),
-          );
-        }
-    
-        const result = await getLoansAndSearchForUserService({
-          page,
-          limit: items,
-          search: req.query.search ?? "",
-          status: id_status,
-          userId: userId
+
+
+        const { idLoanStatus } = loanWhereRequestDTO({
+            id_status: req.query.id_status
         });
 
-        if(!result || result.length === 0) {
-            return res.status(200).json(
-          succesGetResponse({
-            message: "No existen préstamos actualmente"
-          }),
-        );
+        if (isNaN(page) || page < 1 || isNaN(items) || items < 1) {
+            return res.status(400).json(
+                badRequestResponse({
+                    message: "El número de página o items debe ser mayor a 0",
+                }),
+            );
         }
-    
+
+        const result = await getLoansAndSearchService({
+            page,
+            limit: items,
+            search: req.query.search ?? "",
+            filter: {
+                idLoanStatus,
+                userId
+            }
+        });
+
+        if (!result || result.length === 0) {
+            return res.status(200).json(
+                succesGetResponse({
+                    message: "No existen préstamos actualmente"
+                }),
+            );
+        }
+
         return res.status(200).json(
-          succesGetResponse({
-            message: "Préstamos obtenidos exitosamente",
-            data: result.data,
-          }),
+            succesGetResponse({
+                message: "Préstamos obtenidos exitosamente",
+                data: result.data,
+            }),
         );
-      } catch (error) {
+    } catch (error) {
         console.error(error);
         return res
-          .status(500)
-          .json(internalServerResponse({ message: "Error al obtener los préstamos" }));
-      }
+            .status(500)
+            .json(internalServerResponse({ message: "Error al obtener los préstamos" }));
+    }
 };
 
 export const getAllLoans = async (req, res) => {
@@ -122,7 +134,7 @@ export const getActiveLoansByUserId = async (req, res) => {
         const activeLoans = await getActiveLoansByUserIdService(userId);
 
         if (activeLoans.length === 0) {
-            return res.status(200).json(succesGetResponse({ message: 'No existen préstamos activos para el usuario'}));
+            return res.status(200).json(succesGetResponse({ message: 'No existen préstamos activos para el usuario' }));
         };
 
         return res.status(200).json(succesGetResponse({ message: 'Préstamos activos obtenidos correctamente', data: activeLoans.map(loanResponseDTO) }))
@@ -134,10 +146,10 @@ export const getActiveLoansByUserId = async (req, res) => {
 };
 
 export const getActiveLoansByCopyId = async (req, res) => {
-    const {copyId} = req.params;
+    const { copyId } = req.params;
 
     try {
-         const activeLoan = await getActiveLoansByCopyIdService(copyId);
+        const activeLoan = await getActiveLoansByCopyIdService(copyId);
 
         if (!activeLoan) {
             return res.status(404).json(notFoundResponse({ message: 'No existen copias con préstamos activo' }));
@@ -153,10 +165,10 @@ export const getActiveLoansByCopyId = async (req, res) => {
 };
 
 export const getActiveLoansByBookId = async (req, res) => {
-    const {bookId} = req.params;
+    const { bookId } = req.params;
 
     try {
-         const activeLoansByBook = await getActiveLoansByBookIdService(bookId);
+        const activeLoansByBook = await getActiveLoansByBookIdService(bookId);
 
         if (activeLoansByBook.length === 0) {
             return res.status(200).json(succesGetResponse({ message: 'No existen libros con préstamos activos' }));
@@ -175,7 +187,7 @@ export const getLoansOverDue = async (req, res) => {
     try {
         const overDueLoans = await getLoansOverDueService();
 
-        if(overDueLoans.length === 0) {
+        if (overDueLoans.length === 0) {
             return res.status(200).json(succesGetResponse({ message: 'No existen préstamos vencidos' }));
         };
 
@@ -195,10 +207,10 @@ export const createLoan = async (req, res) => {
 
         await createLoanService(loanDto);
 
-        return res.status(201).json(successCreateResponse({resource: 'Loan'}));
+        return res.status(201).json(successCreateResponse({ resource: 'Loan' }));
     } catch (error) {
         console.error(error);
-        return res.status(error.status || 500).json(error.message || 'Error al intentar obtener los préstamos vencidos' );
+        return res.status(error.status || 500).json(error.message || 'Error al intentar obtener los préstamos vencidos');
     };
 };
 
@@ -208,37 +220,37 @@ export const returnLoan = async (req, res) => {
     try {
         const returnedLoan = await returnLoanByCopyIdService(copyId);
 
-        return res.status(202).json(successUpdateResponse({message: 'Ejemplar devuelto con éxito', data: loanResponseDTO(returnedLoan)}));
-    } catch(error) {
+        return res.status(202).json(successUpdateResponse({ message: 'Ejemplar devuelto con éxito', data: loanResponseDTO(returnedLoan) }));
+    } catch (error) {
         console.error(error);
-        return res.status(500).json(internalServerResponse({message: 'Error al intentar actualizar el estado del ejemplar'}));
+        return res.status(500).json(internalServerResponse({ message: 'Error al intentar actualizar el estado del ejemplar' }));
     }
-}; 
+};
 
 export const markLoanAsExpireOverdue = async (req, res) => {
     try {
         const markedAsExpireOverdue = await markLoanAsExpireOverdueService();
 
-        return res.status(202).json(successUpdateResponse({message: 'Préstamo vencido actualizado con éxito', data: markedAsExpireOverdue}));
-    } catch(error) {
+        return res.status(202).json(successUpdateResponse({ message: 'Préstamo vencido actualizado con éxito', data: markedAsExpireOverdue }));
+    } catch (error) {
         console.error(error);
-        return res.status(500).json(internalServerResponse({message: 'Error al intentar actualizar el vencimiento del ejemplar'}));
+        return res.status(500).json(internalServerResponse({ message: 'Error al intentar actualizar el vencimiento del ejemplar' }));
     }
 };
 
 export const getActiveLoanByBarcode = async (req, res) => {
-  
+
     const { barcode } = req.params;
-    
+
     try {
         const loan = await getActiveLoanByBarcodeService(barcode);
-        
-        if(!loan || loan.length === 0) {
-            return res.status(404).json(notFoundResponse({message: 'Préstamo no encontrado'}))
+
+        if (!loan || loan.length === 0) {
+            return res.status(404).json(notFoundResponse({ message: 'Préstamo no encontrado' }))
         }
-        return res.status(200).json(succesGetResponse({message: 'Préstamo obtenido con éxito', data: loanBasicResponseDTO(loan)}));
-    } catch(error) {
+        return res.status(200).json(succesGetResponse({ message: 'Préstamo obtenido con éxito', data: loanBasicResponseDTO(loan) }));
+    } catch (error) {
         console.error(error);
-        return res.status(500).json(internalServerResponse({message: 'Error al intentar obtener el préstamo'}));
+        return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener el préstamo' }));
     }
 }

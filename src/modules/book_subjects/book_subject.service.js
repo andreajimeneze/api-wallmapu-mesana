@@ -1,5 +1,3 @@
-//import { BookSubjectModel } from "../../config/dbSequelize.js";
-
 import { deleteBookSubjectRepository, bulkCreateBookSubjectRepository, updateBookSubjectRepository } from "./book_subject.respository.js";
 
 export const getBookSubjectsByIdService = async (id) => {

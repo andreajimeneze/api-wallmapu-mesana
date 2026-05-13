@@ -17,6 +17,10 @@ export const Notification = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        isPriority: {
+            type: DataTypes.BOOLEAN,
+            field: 'is_priority'
+        },
         isRead:
         {
             type: DataTypes.BOOLEAN,

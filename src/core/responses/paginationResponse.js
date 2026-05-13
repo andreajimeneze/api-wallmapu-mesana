@@ -21,7 +21,7 @@ export const paginationRequestDTO = ({
     page: Number.isInteger(Number(page)) ? Number(page) : 1,
     limit: Number.isInteger(Number(limit)) ? Number(limit) : 10,
     search: search?.trim() || null,
-    filter: filter?.trim() || null
+    filter: filter || null
   };
 };
 

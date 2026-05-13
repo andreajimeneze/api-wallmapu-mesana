@@ -1,6 +1,73 @@
 import { LoanModel, UserModel, CopyModel, EditionModel, BookModel, LoanStatusModel } from "../../config/dbSequelize.js";
 import { Op } from "sequelize";
 
+export const getAllLoansAndSearchRepository = async ({
+    page,
+    limit,
+    search,
+    filter
+}) => {
+    const { userId, idLoanStatus } = filter || {};
+
+    const include = [
+        {
+            model: UserModel,
+            as: 'user',
+            attributes: ['idUser', 'username', 'userlastname', 'email']
+        },
+        {
+            model: CopyModel,
+            as: 'copy',
+            attributes: ['idCopy', 'barcode', 'signatureTopography', 'copyNumber', 'statusId'],
+            include: [
+                {
+                    model: EditionModel,
+                    as: 'edition',
+                    attributes: ['idEdition', 'bookId'],
+                    include: [
+                        {
+                            model: BookModel,
+                            as: 'book',
+                            attributes: ['idBook', 'title']
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            model: LoanStatusModel,
+            as: 'loanStatus',
+            attributes: ['idLoanStatus', 'name'],
+            required: true
+        }
+    ];
+
+    const where = {};
+
+    if (idLoanStatus && parseInt(idLoanStatus) > 0) {
+        include[2].where = {
+            idLoanStatus: parseInt(idLoanStatus)
+        };
+    }
+
+    if (userId) {
+        where.userId = userId
+    }
+
+    const offset = (page - 1) * limit;
+
+    const items = await LoanModel.count({ include, distinct: true });
+
+    const result = await LoanModel.findAll({
+        where,
+        include,
+        limit,
+        offset,
+        distinct: true,
+        order: [['created_at', 'DESC']]
+    });
+    return { count: items, rows: result };
+};
 export const findAllLoansRepository = async () => {
     return await LoanModel.findAll({
         order: [['loanDate', 'DESC']],
@@ -238,12 +305,12 @@ export const getLoansOverDueByIdRepository = async (userId, dueDate) => {
 };
 
 export const createLoanRepository = async (loanData) => {
-        return await LoanModel.create(loanData);
+    return await LoanModel.create(loanData);
 };
 
 export const returnLoanByCopyIdRepository = async (copyId) => {
 
-    
+
     try {
         const updatedLoan = await loan.update({
             loanStatusId: 2

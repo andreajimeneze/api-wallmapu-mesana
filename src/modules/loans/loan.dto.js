@@ -72,4 +72,12 @@ export const loanBasicResponseDTO = (res) => ({
   copy_signature: res.copy.signatureTopography,
   book_id: res.copy.edition.bookId,
   book_title: res.copy.edition.book.title,
-})
+});
+
+export const loanWhereRequestDTO = ({ id_status } = {}) => {
+  const idLoanStatus = Number(id_status);
+
+  return {
+    ...(idLoanStatus > 0 && { idLoanStatus })
+  };
+};

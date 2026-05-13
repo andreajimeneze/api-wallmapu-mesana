@@ -1,5 +1,5 @@
-import { ReservationModel } from "../../config/dbSequelize.js";
+import { ReservationModel, ReservationStatusModel } from "../../config/dbSequelize.js";
 
 export const findAllReservationStatusRepository = async () => {
-    return await ReservationModel.findAll();
+    return await ReservationStatusModel.findAll();
 };

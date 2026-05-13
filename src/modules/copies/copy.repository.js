@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import { CopyModel, CopyStatusModel } from "../../config/dbSequelize.js";
+import { CopyModel, CopyStatusModel, EditionModel, BookModel, EditorialModel } from "../../config/dbSequelize.js";
 
 export const findAllCopiesRepository = async () => {
     return await CopyModel.findAll({
@@ -148,10 +148,12 @@ export const createCopyRepository = async (copyData) => {
 
     return await findCopyByIdRepository(created.idCopy);
 };
-export const updateCopyRepository = async (id, copyData) => {
-    const searched = await CopyModel.findByPk(id);
-
-    return await searched.update(copyData);
+export const updateCopyRepository = async (id, data) => {
+    return await CopyModel.update( data, {
+        where: {
+            idCopy: id
+        }
+    } );
 };
 export const deleteCopyRepository = async (id) => {
     await CopyModel.destroy({

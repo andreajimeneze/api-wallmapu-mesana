@@ -107,4 +107,5 @@ export const bookBasicDTO = (book) => {
       ? book.subjects.map(baseSubjectDTO)
       : [],
   }
-}
+};
+
