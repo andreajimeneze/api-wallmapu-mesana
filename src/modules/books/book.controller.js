@@ -1,4 +1,4 @@
-import { baseBookDTO, bookDetailDTO, bookResponseDTO, createBookDTO } from "./book.dto.js";
+import { baseBookDTO, bookDetailDTO, bookResponseDTO, createBookDTO, updateBookDTO } from "./book.dto.js";
 import {
   getBooksPaginationAndSearchService,
   getBookByIdService,
@@ -67,10 +67,10 @@ export const getAllBooks = async(req, res) => {
   }
 };
 export const getBookById = async (req, res) => {
-  const { id } = req.params;
+  const idBook = req.params.id;
 
   try {
-    const searchedBook = await getBookByIdService(id);
+    const searchedBook = await getBookByIdService(idBook);
 
    
     if (!searchedBook) {
@@ -94,9 +94,9 @@ export const getBookById = async (req, res) => {
   }
 };
 export const getBookByIdDetail = async (req, res) => {
-  const { id } = req.params;
+  const idBook = req.params.id;
   try {
-    const searchedBook = await getBookByIdService(id);
+    const searchedBook = await getBookByIdService(idBook);
 
    
     if (!searchedBook) {
@@ -120,10 +120,7 @@ export const getBookByIdDetail = async (req, res) => {
   }
 };
 export const createBook = async (req, res) => {
-
-  const bookData = req.body;
-  
-  const bookDto = createBookDTO(bookData);
+  const bookDto = createBookDTO(req.body);
 
   try {
     const book = await createBookService(bookDto);
@@ -143,25 +140,11 @@ export const createBook = async (req, res) => {
 };
 
 export const updateBook = async (req, res) => {
-  const id = req.params.id;
-  const { title, summary } = req.body;
-  const genre_id = req.body.genre_id;
-  const authors = req.body.authors;
-  const subjects = req.body.subjects;
-
-  const genreId = parseInt(genre_id);
-  const idBook = parseInt(id);
-
-  const bookData = {
-    title,
-    summary,
-    genreId,
-    authors,
-    subjects,
-  };
+  const idBook = req.params.id;
+  const bookDto = updateBookDTO(req.body);
 
   try {
-    const updatedBook = await updateBookService(idBook, bookData);
+    const updatedBook = await updateBookService(idBook, bookDto);
 
     return res.status(202).json(
       successUpdateResponse({
@@ -187,10 +170,10 @@ export const updateBook = async (req, res) => {
 };
 
 export const deleteBook = async (req, res) => {
-  const { id } = req.params;
+  const idBook = req.params.id;
 
   try {
-    await deleteBookService(id);
+    await deleteBookService(idBook);
     return res
       .status(202)
       .json(successDeleteResponse({ message: "Libro eliminado exitosamente" }));

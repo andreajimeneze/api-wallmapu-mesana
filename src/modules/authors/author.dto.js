@@ -12,15 +12,7 @@ export const authorResponseDTO = (author) => ({
   updated_at: author.updated_at,
 });
 
-export const createAuthorDTO = ( { name } ) => {
-  return {
-    name: name.trim()
-  }
-};
-
-export const updateAuthorDTO = (data) => {
-  return {
+export const updateAuthorDTO = (data) => ({
     idAuthor: data.id_author,
-    name: data.name
-  }
-}
+    name: data.name.trim()
+})

@@ -1,8 +1,9 @@
+import { literal, Op, Sequelize } from "sequelize";
 import { EditionModel, BookModel, EditorialModel, GenreModel, AuthorModel, CopyModel, CopyStatusModel } from "../../config/dbSequelize.js";
 
-export const getAllEditionPaginationRepository = async ({page, limit, search, filter}) => {
+export const getAllEditionPaginationRepository = async ({ page, limit, search, filter }) => {
   const { idGenre, idAuthor, idEditorial } = filter;
- 
+
   const include = [
     {
       model: BookModel,
@@ -27,17 +28,6 @@ export const getAllEditionPaginationRepository = async ({page, limit, search, fi
       as: "editorial",
       required: false,
     },
-    {
-      model: CopyModel,
-      as: 'copies',
-      required: false,
-      include: [
-        {
-          model: CopyStatusModel,
-          as: 'status'
-        }
-      ]
-    }
   ];
 
   const where = {};
@@ -57,18 +47,36 @@ export const getAllEditionPaginationRepository = async ({page, limit, search, fi
   }
 
   if (idGenre > 0) {
-    where["$book.genre_id$"] = idGenre;
+    where["$book.genreId$"] = idGenre;
   }
 
   const offset = (page - 1) * limit;
 
-  const items = await EditionModel.count({where});
-  const result = await EditionModel.findAll({
+  const options = {
     where,
+    attributes: {
+      include: [
+        [
+          literal(`(
+          SELECT COUNT(*)
+          FROM wm_copies c
+          WHERE c."edition_id" = "Edition"."id_edition"
+        )`),
+          "copy_count"
+        ]
+      ]
+    },
     include,
+    subQuery: false,
+    distinct: true,
+  }
+
+  const items = await EditionModel.count(options);
+  const result = await EditionModel.findAll({
+    ...options,
     limit,
     offset,
-    distinct: true,
+    order: [['updated_at', "ASC"]]
   });
 
   return { count: items, rows: result };
@@ -111,18 +119,53 @@ export const findEditionByIdRepository = async (id) => {
     ]
   });
 };
-  
 
-export const findEditionByBookIdRepository = async (idBook) => {
-  return await EditionModel.findOne({
+export const findEditionByBookIdDetailRepository = async (idBook) => {
+  return await EditionModel.findAll({
     where: { bookId: idBook },
-    attributes: ['bookId']
+    include: [
+      {
+        model: EditorialModel,
+        as: "editorial",
+        attributes: ["name"]
+      },
+
+      {
+        model: BookModel,
+        as: "book",
+        attributes: ["title"],
+
+        include: [
+          {
+            model: GenreModel,
+            as: "genre",
+            attributes: ["name"]
+          },
+          {
+            model: AuthorModel,
+            as: 'authors',
+            attributes: ['idAuthor', 'name'],
+            through: {
+              attributes: []
+            },
+          }
+        ]
+      }
+    ]
   });
 };
 
-export const createEditionRepository = async (editionData) => {
+export const findEditionByBooIdRepository = async (idBook) => {
+  return await EditionModel.findOne({
+    where: {
+      bookId: idBook
+    }
+  });
+};
 
-  const editionCreated = await EditionModel.create(editionData);
+export const createEditionRepository = async (editionData, options = {}) => {
+
+  const editionCreated = await EditionModel.create(editionData, options);
 
   return await EditionModel.findByPk(
     editionCreated.idEdition,
@@ -141,20 +184,19 @@ export const createEditionRepository = async (editionData) => {
   );
 };
 
-export const updateEditionRepository = async (id, editionData) => {
-    await EditionModel.update(editionData, {
-        where: {
-            idEdition: id
-        }
-    });
-    return EditionModel.findByPk(id);
+export const updateEditionRepository = async (id, editionData, options = {}) => {
+  return await EditionModel.update(editionData, {
+    where: {
+      idEdition: id
+    }, ...options
+  });
+  //return EditionModel.findByPk(id);
 };
 
-export const deleteEditionRepository = async (id) => {
-  await EditionModel.destroy({
+export const deleteEditionRepository = async (id, options = {}) => {
+  return await EditionModel.destroy({
     where: {
-        idEdition: id
-    }
+      idEdition: id
+    }, ...options
   })
-  return true;
 };

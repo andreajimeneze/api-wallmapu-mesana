@@ -13,6 +13,7 @@ export const jwtMiddleware = (req, res, next) => {
   try {
     const decodedToken = jwt.verify(token, env.jwt.jwt_secret);
     req.user = decodedToken;
+   
     next();
   } catch (error) {
     return res.status(401).json({ message: "Token inválido" });

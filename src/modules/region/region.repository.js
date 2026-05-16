@@ -5,7 +5,3 @@ export const findAllRegionsRepository = async () => {
         order: [['region', 'ASC']]
     });
 };
-
-export const findRegionByIdRepository = async (id) => {
-    return RegionModel.findByPk(id);
-};

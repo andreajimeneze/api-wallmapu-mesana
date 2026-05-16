@@ -2,161 +2,42 @@ import { NewsGalleryModel, NewsModel } from "../../config/dbSequelize.js";
 import { Op } from "sequelize";
 import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
 import { newsResponseDTO } from "./news.dto.js";
+import { createNewsRepository, deleteNewsRepository, findNewsByIdRepository, findNewsByTitleRepository, getAllNewsSearchRepository, updateNewsRepository } from "./news.repository.js";
+import { getAllPaginationService } from "../../core/services/basePagination.service.js";
 
 
 
-export const getNewsPaginationAndSearchService = async ({
-  page,
-  limit,
-  search,
-}) => {
-  limit = Number.isInteger(Number(limit)) ? Number(limit) : 10;
-  page = Number.isInteger(Number(page)) ? Number(page) : 1;
-
-  const DEFAULT_LIMIT = 1;
-  const MAX_LIMIT = 100;
-
-  if (limit < 1) {
-    limit = DEFAULT_LIMIT;
-  } else if (limit > MAX_LIMIT) {
-    limit = MAX_LIMIT;
-  }
-
-  const where = search
-    ? {
-        [Op.or]: [
-          { title: { [Op.iLike]: `%${search}%` } },
-          { subtitle: { [Op.iLike]: `%${search}%` } },
-        ],
-      }
-    : {};
-
-  const items = await NewsModel.count({
-    where,
-  });
-
-  if (items === 0) {
-    return {
-      response: "No se encontraron noticias",
-      data: paginationResponseDTO({
-        page: 0,
-        pages: 0,
-        items: 0,
-        next: "none",
-        prev: "none",
-        data: [],
-      }),
-    };
-  }
-
-  const pages = Math.ceil(items / limit);
-
-  const haveSearch = search && search.trim() !== "";
-
-  if (page > pages && page > 0) {
-    page = haveSearch ? 1 : pages;
-  } else if (page < 1) {
-    page = 1;
-  }
-
-  const offset = (page - 1) * limit;
-
-  const result = await NewsModel.findAll({
-    where,
-    limit,
-    offset,
-    distinct: true,
-    order: [
-      ["created_at", "DESC"],
-      [{ model: NewsGalleryModel, as: "images" }, "idNewsGallery", "ASC"],
-    ],
-    include: [
-      {
-        model: NewsGalleryModel,
-        as: "images",
-        attributes: ["idNewsGallery", "url", "alt", "newsId"],
-      },
-    ],
-  });
-  
-  return {
-    data: paginationResponseDTO({
-      page,
-      pages,
-      items,
-      next:
-        page < pages
-          ? `/news?page=${page + 1}&items=${limit}&search=${search}`
-          : null,
-      prev:
-        page > 1
-          ? `/news?page=${page - 1}&items=${limit}&search=${search}`
-          : null,
-      data: result.map(newsResponseDTO),
-    }),
-  };
+export const getNewsPaginationAndSearchService = async (params) => {
+   return await getAllPaginationService(params, getAllNewsSearchRepository, newsResponseDTO);
 };
 
-export const getNewsByIdService = async (id, options = {}) => {
-  const { transaction } = options;
+export const getNewsByIdService = async (id) => {
+ // const { transaction } = options;
 
-  const newsById = await NewsModel.findByPk(id, {
-    order: [
-      [{ model: NewsGalleryModel, as: "images" }, "idNewsGallery", "ASC"],
-    ],
-    include: [
-      {
-        model: NewsGalleryModel,
-        as: "images",
-        attributes: ["idNewsGallery", "url", "alt", "newsId"],
-      },
-    ],
-    transaction
-  });
+  const newsById = await findNewsByIdRepository(id);
 
   if (!newsById) {
-    throw { code: "NOT_FOUND", message: "Noticia no encontrada" };
+    throw new Error("Noticia no encontrada");
   }
   return newsById;
 };
 
 export const createNewsService = async ({ title, subtitle, body}) => {
-  const existingNews = await NewsModel.findOne({
-    where: { title: { [Op.iLike]: title } }
-  });
+  const existingNews = await findNewsByTitleRepository(title);
 
   if (existingNews) {
     throw  new Error("Ya existe una noticia con ese título");
   }
 
-  const createdNews = await NewsModel.create({
-    title,
-    subtitle,
-    body    
-  });
-  
-  return createdNews
+  return await createNewsRepository(title, subtitle, body);
 };
 
 export const updateNewsService = async (id, newsData) => {
-  const newsSelected = await NewsModel.findByPk(id);
-
-  if (!newsSelected) return null;
-  return await newsSelected.update({
-    ...newsData
-  });
+  return await updateNewsRepository(id, newsData);
 };
 
 export const deleteNewsService = async (id, options = {}) => {
-  const { transaction } = options;
-  
-  const newsSelected = await NewsModel.findByPk(id, {transaction});
-
-  if (!newsSelected) return null;
-
-  await newsSelected.destroy({transaction});
-
-  return true;
+    return await deleteNewsRepository(id);
 };
 
 

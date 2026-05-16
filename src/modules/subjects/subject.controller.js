@@ -1,5 +1,6 @@
 import {
   badRequestResponse,
+  conflictResponse,
   internalServerResponse,
   notFoundResponse,
   succesGetResponse,
@@ -30,11 +31,11 @@ export const getAllSubjectsPagination = async (req, res) => {
     }
 
     const result = await getAllSubjectsPaginationService
-    ({
-      page,
-      limit,
-      search: req.query.search ?? "",
-    });
+      ({
+        page,
+        limit,
+        search: req.query.search ?? "",
+      });
 
     return res.status(200).json(
       succesGetResponse({
@@ -81,12 +82,6 @@ export const getSubjectById = async (req, res) => {
   try {
     const searchedSubject = await getSubjectByIdService(id);
 
-    if (!searchedSubject) {
-      return res
-        .status(400)
-        .json(notFoundResponse({ message: "Descriptor no encontrado" }));
-    }
-
     return res
       .status(200)
       .json(
@@ -96,79 +91,132 @@ export const getSubjectById = async (req, res) => {
         }),
       );
   } catch (error) {
+    console.error(error);
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
     return res
       .status(500)
       .json(
         internalServerResponse({
-          message: "Error al intentar obtener el descriptor",
+          message: "Error al intentar obtener al autor",
         }),
       );
   }
 };
 
 export const createSubject = async (req, res) => {
-   const { name } = req.body;
-console.log('CREAR DESCRIPTOR CONTROLLER')
+  const { name } = req.body;
+
   try {
-    const createdSubject= await createSubjectService(name);
+    const createdSubject = await createSubjectService(name);
 
     res.status(201).json(
-          successCreateResponse({
-            message: "Descriptor creado exitosamente",
-            data: subjectResponseDTO(createSubject),
+      successCreateResponse({
+        message: "Descriptor creado exitosamente",
+        data: subjectResponseDTO(createSubject),
+      }),
+    );
+  } catch (error) {
+    console.error(error);
+    if (error.status === 409) {
+      return res
+        .status(409)
+        .json(
+          conflictResponse({
+            message: error.message,
           }),
         );
-      } catch (error) {
-        console.error('CUÁL ES EL ERROR CREAR SUBJECT: ', error);
-        return res.status(error.status || 500).json(error.message || internalServerResponse({message: error.message || 'Error al intentar crear el descriptor'}))
-      }
+    }
+    res.status(500).json(internalServerResponse({
+      message: "Error al crear al autor",
+    }),
+    );
+  }
 }
-
 export const updateSubject = async (req, res) => {
-  const { id_subject, name } = req.body;
+  const { id } = req.params;
 
   const subjectDTO = updateSubjectDTO(req.body);
 
   try {
-    const updatedSubject = await updateSubjectService(subjectDTO);
+    const updatedSubject = await updateSubjectService(id, subjectDTO);
 
     res.status(202).json(
-          successUpdateResponse({
-            message: "Descriptor actualizado exitosamente",
-            data: subjectResponseDTO(updatedSubject),
+      successUpdateResponse({
+        message: "Descriptor actualizado exitosamente",
+        data: subjectResponseDTO(updatedSubject),
+      }),
+    );
+  } catch (error) {
+    console.error(error);
+    if (error.status === 409) {
+      return res
+        .status(409)
+        .json(
+          conflictResponse({
+            message: error.message,
           }),
         );
-      } catch (error) {
-        console.error('ERROR AL ACTUALIZAR SUBJECT: ', error);
-          res.status(error.status || 500).json(error.message ||
-            internalServerResponse({
-              message: error.message || "Error al intentar actualizar el descriptor",
-            }),
-          );
-        }
-      };
+    }
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
+    res.status(500).json(internalServerResponse({
+      message: "Error al actualizar al autor",
+    }),
+    );
+  }
+};
 
-export const deleteSubject= async (req, res) => {
+export const deleteSubject = async (req, res) => {
   const { id } = req.params;
 
   try {
     const deletedSubject = await deleteSubjectService(id);
 
-     return res
-      .status(202)
+    return res
+      .status(200)
       .json(
         succesGetResponse({
           message: "Descriptor eliminado exitosamente",
-          data: deletedSubject,
         }),
       );
   } catch (error) {
-    return res
-      .status(500)
-      .json(
-        internalServerResponse({
-          message: "Error al intentar eliminar al descriptor",
-        }),
-      );
+    console.error(error);
+    if (error.status === 409) {
+      return res
+        .status(409)
+        .json(
+          conflictResponse({
+            message: error.message,
+          }),
+        );
+    }
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
+    res.status(500).json(internalServerResponse({
+      message: "Error al actualizar al autor",
+    }),
+    );
   }
 };

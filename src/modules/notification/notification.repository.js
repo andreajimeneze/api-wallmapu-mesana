@@ -1,13 +1,21 @@
 import { Op } from "sequelize";
 import { NotificationModel } from "../../config/dbSequelize.js";
 
-export const getAllNotificationPaginationRepository = async ({ page, limit, search, isRead }) => {
+export const getAllNotificationPaginationRepository = async ({ page, limit, search, filter }) => {
+
+    const { isRead, userId } = filter || {};
+
+    const where = {};
 
     if (search) {
         where[Op.or] = [
             [{ title: { [Op.iLike]: `%${search}%` } }],
             [{ message: { [Op.iLike]: `%${search}%` } }],
         ]
+    }
+
+     if (userId) {
+        where.userId = userId
     }
 
     if (isRead != undefined) {
@@ -23,7 +31,7 @@ export const getAllNotificationPaginationRepository = async ({ page, limit, sear
         limit,
         offset,
         raw: true,
-        order: [['updated_at', 'DESC']]
+        //order: [['updated_at', 'DESC']]
     });
 
     return { count: items, rows: result };
@@ -111,3 +119,12 @@ export const deleteNotificationByUserIdService = async (userId) => {
     await notification.destroy();
     return true;
 };
+
+export const countUnreadByUdserIdRepository = async(userId) => {
+    return await NotificationModel.count({
+        where: {
+            userId,
+            isRead: false
+        }
+    })
+}

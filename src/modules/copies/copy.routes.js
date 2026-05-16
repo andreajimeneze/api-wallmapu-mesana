@@ -12,7 +12,7 @@ router.get('/book/:bookId', getAllCopiesByBook);
 
 router.get('/detail/edition/:editionId', getCopiesByIdEdition);
 
-router.get('/book/:bookId/available', getAllCopiesAbailableByBook);
+router.get('/detail/book/:bookId', getAllCopiesAbailableByBook);
 
 router.post('/', jwtMiddleware, checkRole('Admin'), createCopy);
 

@@ -1,4 +1,5 @@
 import {
+  conflictResponse,
   internalServerResponse,
   notFoundResponse,
   succesGetResponse,
@@ -49,14 +50,6 @@ export const getAllAuthors = async (req, res) => {
   try {
     const allAuthors = await getAllAuthorsService();
 
-    if (!allAuthors || allAuthors.length === 0) {
-      return res
-        .status(200)
-        .json(
-          succesGetResponse({ message: "No hay autores cargados actualmente" }),
-        );
-    }
-
     return res.status(200).json(
       succesGetResponse({
         message: "Autores cargados exitosamente",
@@ -73,16 +66,10 @@ export const getAllAuthors = async (req, res) => {
   }
 };
 export const getAuthorById = async (req, res) => {
-  const { id } = req.params;
+  const idAuthor = req.params.id;
 
   try {
-    const author = getAuthorByIdService(id);
-
-    if (!author) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "Autor no existe" }));
-    }
+    const author = await getAuthorByIdService(idAuthor);
 
     return res
       .status(200)
@@ -94,6 +81,15 @@ export const getAuthorById = async (req, res) => {
       );
   } catch (error) {
     console.error(error);
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
     return res
       .status(500)
       .json(
@@ -117,28 +113,27 @@ export const createAuthor = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    if (error.code === "CONFLICT") {
-      res.status(409).json(
-        conflictResponse({
-          message: error.message || "Nombre del autor ya existe",
-        }),
-      );
-    } else {
-      res.status(error.status || 500).json(error.message ||
-        internalServerResponse({
-          message: error.message || "Error al crear al autor",
-        }),
-      );
+    if (error.status === 409) {
+      return res
+        .status(409)
+        .json(
+          conflictResponse({
+            message: error.message,
+          }),
+        );
     }
+    res.status(500).json(internalServerResponse({
+      message: "Error al crear al autor",
+    }),
+    );
   }
 }
 export const updateAuthor = async (req, res) => {
-  const { id_author, name } = req.body;
+  const id = req.params.id;
 
   const authorDto = updateAuthorDTO(req.body);
-
   try {
-    const updatedAuthor = await updateAuthorService(authorDto);
+    const updatedAuthor = await updateAuthorService(id, authorDto);
 
     res.status(202).json(
       successUpdateResponse({
@@ -148,21 +143,31 @@ export const updateAuthor = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    if (error.code === "CONFLICT") {
-      res.status(409).json(
-        conflictResponse({
-          message: error.message || "Nombre del autor ya existe",
-        }),
-      );
-    } else {
-      res.status(error.status || 500).json(error.message ||
-        internalServerResponse({
-          message: error.message || "Error al actualizar al autor",
-        }),
-      );
+    if (error.status === 409) {
+      return res
+        .status(409)
+        .json(
+          conflictResponse({
+            message: error.message,
+          }),
+        );
     }
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
+    res.status(500).json(internalServerResponse({
+      message: "Error al actualizar al autor",
+    }),
+    );
   }
 }
+
 
 export const deleteAuthor = async (req, res) => {
   const { id } = req.params;
@@ -180,13 +185,28 @@ export const deleteAuthor = async (req, res) => {
       );
   } catch (error) {
     console.error(error);
-    return res
-      .status(error.status || 500)
-      .json(internalServerResponse({
-        status: error.status || 500,
-        message: error.message || "Error al intentar eliminar al autor",
-      }),
-      );
+    if (error.status === 409) {
+      return res
+        .status(409)
+        .json(
+          conflictResponse({
+            message: error.message,
+          }),
+        );
+    }
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
+    res.status(500).json(internalServerResponse({
+      message: "Error al actualizar al autor",
+    }),
+    );
   }
 };
 

@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import { CopyModel, CopyStatusModel, EditionModel, BookModel, EditorialModel } from "../../config/dbSequelize.js";
+import { CopyModel, CopyStatusModel, EditionModel, BookModel, EditorialModel, LoanModel, LoanStatusModel, ReservationModel, ReservationStatusModel } from "../../config/dbSequelize.js";
 
 export const findAllCopiesRepository = async () => {
     return await CopyModel.findAll({
@@ -61,11 +61,21 @@ export const findCopiesByEditionIdRepository = async (editionId) => {
         {
             where: { editionId: editionId },
             include: [
-                {
-                    model: CopyStatusModel,
-                    attributes: ['name'],
-                    as: "status"
-                },
+            {
+                model: EditionModel,
+                as: "edition",
+                required: true,
+                include: [
+                    {
+                        model: EditorialModel,
+                        as: "editorial"
+                    }
+                ],
+            },
+            {
+                model: CopyStatusModel,
+                as: "status"
+            },
             ],
         });
 };
@@ -127,14 +137,15 @@ export const findCopiesByBookAndStatusRepository = async (bookId, statusId) => {
         ],
     });
 };
-export const findCopyByIdRepository = async (id, ) => {
+export const findCopyByIdRepository = async (id) => {
     return await CopyModel.findByPk(id, {
         include: [
-          {
-            model: CopyStatusModel,
-            as: 'status'
-          }
-        ]});
+            {
+                model: CopyStatusModel,
+                as: 'status'
+            }
+        ]
+    });
 };
 export const findCopyByEditionIdRepository = async (editionId) => {
     await CopyModel.findOne({
@@ -143,17 +154,78 @@ export const findCopyByEditionIdRepository = async (editionId) => {
         }
     });
 };
+
+export const findCopiesByEditionAndStatusRepository = async (editionId, statusId) => {
+    return await CopyModel.findAll({
+        where: {
+            statusId: statusId
+        },
+        include: [
+            {
+                model: EditionModel,
+                as: "edition",
+                required: true,
+                where: {
+                    idEdition: editionId
+                },
+                include: [
+                    {
+                        model: BookModel,
+                        as: "book",
+                        //required: true,
+                    },
+                    {
+                        model: EditorialModel,
+                        as: "editorial"
+                    }
+                ],
+            },
+            {
+                model: CopyStatusModel,
+                as: "status",
+                attributes: ['name']
+            },
+            {
+                model: LoanModel,
+                as: 'loan',
+                required: false,
+                include: [
+                    {
+                        model: LoanStatusModel,
+                        as: 'loanStatus',
+                        required: false,
+                        attributes: ['idLoanStatus', 'name']
+                    }
+                ]
+            },
+            {
+                model: ReservationModel,
+                as: 'reservations',
+                required: false,
+                include: [
+                    {
+                        model: ReservationStatusModel,
+                        as: 'reservationStatus',
+                        required: false,
+                        attributes: ['idStatus', 'name']
+                    }
+                ]
+            }
+        ],
+    });
+};
 export const createCopyRepository = async (copyData) => {
     const created = await CopyModel.create(copyData);
 
     return await findCopyByIdRepository(created.idCopy);
 };
-export const updateCopyRepository = async (id, data) => {
-    return await CopyModel.update( data, {
+
+export const updateCopyRepository = async (id, data, options = {}) => {
+    return await CopyModel.update(data, {
         where: {
             idCopy: id
-        }
-    } );
+        }, ...options
+    });
 };
 export const deleteCopyRepository = async (id) => {
     await CopyModel.destroy({
@@ -167,17 +239,20 @@ export const deleteCopyRepository = async (id) => {
 
 export const existingCopyRespository = async (editionId, copyNumber) => {
     return await CopyModel.findOne({
-      where: {
-        editionId: editionId,
-        copyNumber: copyNumber
-      }
+        where: {
+            editionId: editionId,
+            copyNumber: copyNumber
+        }
     });
 };
-export const existingSignatureRepository = async (signature, excludeId) => {
-    return await CopyModel.findOne({
-        where: {
-            signatureTopography: signature,
-            idCopy: { [Op.ne]: excludeId }
-        }
-    })
+export const existingSignatureRepository = async (signature, excludeId = null) => {
+  const where = {
+    signatureTopography: signature,
+  };
+
+  if (excludeId != null) {
+    where.idCopy = { [Op.ne]: excludeId };
+  }
+
+  return await CopyModel.findOne({ where });
 };

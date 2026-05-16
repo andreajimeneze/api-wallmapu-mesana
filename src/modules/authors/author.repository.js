@@ -36,20 +36,29 @@ export const findAuthorByIdRepository = async (id) => {
     return await AuthorModel.findByPk(id);
 };
 
-export const createAuthorRepository = async (data) => {
-    return await AuthorModel.create(data);
+export const findAuthorByNameRepository = async (name) => {
+    return await AuthorModel.findOne({
+        where: {
+            name: {[Op.iLike]: name}
+        }
+    })
+}
+
+export const createAuthorRepository = async (data, options = {}) => {
+    return await AuthorModel.create(data, options);
 };
 
-export const updateAuthorRepository = async (data) => {
-    return await AuthorModel.update(
+export const updateAuthorRepository = async (id, data, options = {}) => {
+    const [count, [updatedAuthor]] = await AuthorModel.update(
         { name: data.name },
-        { where: { idAuthor: data.idAuthor } }
+        { where: { idAuthor: id }, ...options, returning: true }, 
     );
+    if(count === 0) return null;
+    return updatedAuthor;
 };
 
-export const deleteAuthorRepository = async (id) => {
-    await AuthorModel.destroy({
-        where: { idAuthor: id }
-    });
-    return true;
+export const deleteAuthorRepository = async (id,  options = {}) => {
+    return await AuthorModel.destroy({
+        where: { idAuthor: id }, ...options
+    })
 };

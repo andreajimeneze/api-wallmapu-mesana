@@ -17,3 +17,9 @@ export const adminResponseDTO = (admin) => ({
     provinces: admin.provinces || 0,
     regions: admin.regions || 0    
 });
+
+export const userStatesDTO = (user) => ({
+    total_borrowed: user.historicLoans,
+    active_loans: user.activeLoans,
+    overdue_loans: user.overdueLoans
+})

@@ -35,8 +35,14 @@ export const copyByBookResponseDTO = (res) => ({
   edition_id: res.editionId,
   created_at: res.created_at,
   updated_at: res.updated_at,
-  status: res.status ? baseStatusCopyDTO(res.status) : null,
-  edition: res.edition ? editionDetailDTO(res.edition) : null,
+  status_id: res.statusId,
+  status_name: res.status.name,
+  edition_name: res.edition.edition,
+  edition_isbn: res.edition.isbn,
+  edition_cover_image: res.edition.coverImage,
+  editorial_id: res.edition.editorial.idEditorial,
+  editorial_name: res.edition.editorial.name,
+  is_availability: res.availability_status === 'disponible',
   availability_status: res.availability_status
 });
 
@@ -49,7 +55,7 @@ export const copyResponseDTO = (res) => ({
   status_id: res.statusId,
   created_at: res.created_at,
   updated_at: res.updated_at,
-  status: res.status ? baseStatusCopyDTO(res.status) : null,
+  status: res.status.name
 });
 
 export const createCopyDTO = ({
@@ -70,6 +76,9 @@ export const updateCopyDTO = (copyData) => {
 
   if (copyData.signature_topography !== undefined) {
     dto.signatureTopography = copyData.signature_topography;
+  };
+  if (copyData.signature_topography !== undefined) {
+    dto.barcode = copyData.signature_topography;
   }
 
   if (copyData.copy_number !== undefined) {

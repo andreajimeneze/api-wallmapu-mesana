@@ -1,6 +1,7 @@
-import { ForeignKeyConstraintError, Op } from "sequelize";
 import { getEditionByIdService } from "../editions/edition.service.js";
-import { createCopyRepository, deleteCopyRepository, existingCopyRespository, existingSignatureRepository, findAllCopiesByBookRepository, findCopiesByBookAndStatusRepository, findCopiesByEditionIdRepository, findCopyByIdRepository, updateCopyRepository } from "./copy.repository.js";
+import { findEditionByIdRepository } from "../editions/editions.repository.js";
+import { copyByBookResponseDTO } from "./copy.dto.js";
+import { createCopyRepository, deleteCopyRepository, existingCopyRespository, existingSignatureRepository, findAllCopiesByBookRepository, findCopiesByBookAndStatusRepository, findCopiesByEditionAndStatusRepository, findCopiesByEditionIdRepository, findCopyByIdRepository, updateCopyRepository } from "./copy.repository.js";
 
 export const getAllCopiesService = async () => {
   return await findAllCopiesByBookRepository();
@@ -40,49 +41,79 @@ export const getAllCopiesAvailableService = async (bookId, statusId) => {
       availability_status = 'reservado';
     }
 
-    return copyByBookResponseDTO({
+    return {
       ...copy.get({ plain: true }),
       availability_status
-    });
+    }
   });
-
+  console.log(data)
   return data;
 };
 
+export const getAllCopiesByEditionAvailableService = async (editionId, statusId) => {
+  const activeCopies = await findCopiesByEditionAndStatusRepository(editionId, 1);
+
+  const data = activeCopies.map(copy => {
+    const loans = copy.loan || [];
+
+    const reservations = copy.reservations || [];
+
+    const hasActiveLoan = loans.some(loan =>
+      loan.loanStatus &&
+      !['Devuelto', 'Vencido'].includes(loan.loanStatus.name)
+    );
+
+    const hasActiveReservation = reservations.some(reserve =>
+      reserve.reservationStatus &&
+      reserve.reservationStatus.name === 'Pendiente de retiro'
+    );
+
+    let availability_status = 'disponible';
+
+    if (hasActiveLoan) {
+      availability_status = 'en préstamo';
+    } else if (hasActiveReservation) {
+      availability_status = 'reservado';
+    }
+
+    return {
+      ...copy.get({ plain: true }),
+      availability_status
+    }
+  });
+  return data;
+};
 export const getCopyByIdService = async (id) => {
   return await findCopyByIdRepository(id);
 };
 
 export const createCopyService = async (copyData) => {
-    const idEdition = copyData.editionId;
+  const { editionId, copyNumber, signatureTopography } = copyData;
 
-    const [existingCopy, existingSignature] = await Promise.all([
-      existingCopyRespository(copyData.editionId),
-      existingSignatureRepository(copyData.editionId, copyData.signatureTopography)
-    ]);
-
-      await getEditionByIdService(idEdition);
-
-    if (existingCopy) {
-      throw new Error('Número de copia ya existe');
-    };
-
-    if (existingSignature) {
-      throw new Error('Signatura ya existe para ese libro');
-    };
-
-    const createdCopy = await createCopyRepository(copyData);
-
-    return await getCopyByIdService(createdCopy.idCopy);
-  };
-export const updateCopyService = async (id, copyData) => {
-  const searchedCopy = await findCopyByIdRepository(id);
-
-  if (!searchedCopy) {
-    throw new Error("Copia no encontrada");
+  // 1. validar input
+  if (!editionId || copyNumber == null || !signatureTopography) {
+    throw new Error("Datos incompletos");
   }
 
-  return await updateCopyRepository(id, copyData);
+  const existingCopy = await existingCopyRespository(editionId, copyNumber);
+  const existingSignature = await existingSignatureRepository(signatureTopography);
+
+  // 3. comparar resultados
+  if (existingCopy) throw new Error("Número de copia ya existe");
+  if (existingSignature) throw new Error("Signatura ya existe");
+
+  return await createCopyRepository(copyData);
+};
+export const updateCopyService = async (id, copyData, options = {}) => {
+  const existing = await findCopyByIdRepository(id);
+  if(!existing) return null;
+
+  if(existing.copyNumber == copyData.copyNumber) throw new Error("Número de copia ya existe");
+  if(existing.signatureTopography == copyData.signatureTopography) throw new Error("Signatura ya existe");
+  
+  
+  await updateCopyRepository(id, copyData);
+  return await findCopyByIdRepository(id);
 };
 
 export const deleteCopyService = async (id) => {

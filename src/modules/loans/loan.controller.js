@@ -220,7 +220,7 @@ export const returnLoan = async (req, res) => {
     try {
         const returnedLoan = await returnLoanByCopyIdService(copyId);
 
-        return res.status(202).json(successUpdateResponse({ message: 'Ejemplar devuelto con éxito', data: loanResponseDTO(returnedLoan) }));
+        return res.status(202).json(successUpdateResponse({ message: 'Ejemplar devuelto con éxito', data: returnedLoan }));
     } catch (error) {
         console.error(error);
         return res.status(500).json(internalServerResponse({ message: 'Error al intentar actualizar el estado del ejemplar' }));

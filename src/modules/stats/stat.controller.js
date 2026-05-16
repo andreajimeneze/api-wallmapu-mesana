@@ -2,8 +2,8 @@ import {
   internalServerResponse,
   succesGetResponse,
 } from "../../core/responses/apiResponse.js";
-import { adminResponseDTO, stateAdminResponseDTO } from "./stat.dto.js";
-import { getAllAdminService, getAllStatesAdminService } from "./stat.service.js";
+import { adminResponseDTO, stateAdminResponseDTO, userStatesDTO } from "./stat.dto.js";
+import { getAllAdminService, getAllStatesAdminService, getUserStatesService } from "./stat.service.js";
 
 export const getAllStatAdmin = async (req, res) => {
   try {
@@ -37,6 +37,29 @@ export const getAllAdmin = async (req, res) => {
         }),
       );
   } catch (error) {
+    return res
+      .status(500)
+      .json(internalServerResponse({ message: "Error al cargar estados" }));
+  }
+};
+
+
+export const getAllUserState = async (req, res) => {
+  try {
+    const userId = req.user.sub;
+
+    const userStates = await getUserStatesService(userId);
+
+    return res
+      .status(200)
+      .json(
+        succesGetResponse({
+          message: "Estados de usuario cargados exitosamente",
+          data: userStatesDTO(userStates),
+        }),
+      );
+  } catch (error) {
+    console.error(error);
     return res
       .status(500)
       .json(internalServerResponse({ message: "Error al cargar estados" }));

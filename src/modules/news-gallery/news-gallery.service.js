@@ -4,7 +4,7 @@ import {
   uploadImageCloud169,
 } from "../../core/lib/cloudinary.service.js";
 import { NewsGalleryModel, NewsModel } from "../../config/dbSequelize.js";
-import { generateFileName } from "../../core/helpers/generateFileName.js";
+import { generateFileName } from "../../core/helpers/files/generateFileName.js";
 
 const path = "news";
 

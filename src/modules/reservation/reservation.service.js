@@ -5,228 +5,16 @@ import { getCopyByIdService } from '../copies/copy.service.js';
 import { Op } from "sequelize";
 import { Copy } from "../copies/copy.model.js";
 import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
-import { normalizePagination } from "../../core/helpers/nomalizePagination.js";
-import { calculatePagination } from "../../core/helpers/calculatePagintation.js";
-import { countActiveReservationsByUserRepository, findActiveReservationByCopyRepository, findActiveReservationByUserIdAndCopyRepository, findAllReservationsRepository, findReservationByIdRepository, findReservationsByUserIdRepository } from "./reservation.repository.js";
-import { countLoansActiveByUserRepository, countLoansOverDueByUserRepository } from "../loans/loan.repository.js";
+import { normalizePagination } from "../../core/helpers/pagination/nomalizePagination.js";
+import { calculatePagination } from "../../core/helpers/pagination/calculatePagintation.js";
+import { countActiveReservationsByUserRepository, findActiveReservationByCopyRepository, findActiveReservationByUserIdAndCopyRepository, findAllReservationsRepository, findReservationByIdRepository, findReservationPendingByIdRepository, findReservationsByUserIdRepository, findReservesExpireOverdueRepository, getAllReservationWithSearchRepository, markAsPickUpRepository, updateExpireOverdueReservationsRepository, updateStatusCancelReservationRepository } from "./reservation.repository.js";
+import { countLoansActiveByUserRepository, countLoansByUserRepository, countLoansOverDueByUserRepository } from "../loans/loan.repository.js";
+import { getAllPaginationService } from "../../core/services/basePagination.service.js";
+import { findCopyByIdRepository } from "../copies/copy.repository.js";
 
 
-export const getReservationsAndSearchService = async ({
-    page,
-    limit,
-    search,
-    status
-}) => {
-    
-      const { page: currentPage, limit: currentLimit } =
-      normalizePagination(page, limit);
-
-    const include = [
-        {
-            model: UserModel,
-            as: 'user',
-            attributes: ['idUser', 'username', 'userlastname', 'email']
-        },
-        {
-            model: CopyModel,
-            as: 'copy',
-            attributes: ['idCopy', 'barcode', 'signatureTopography', 'copyNumber', 'statusId'],
-            include: [
-                {
-                    model: EditionModel,
-                    as: 'edition',
-                    attributes: ['idEdition', 'bookId'],
-                    include: [
-                        {
-                            model: BookModel,
-                            as: 'book',
-                            attributes: ['idBook', 'title']
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            model: ReservationStatusModel,
-            as: 'reservationStatus',
-            attributes: ['idStatus', 'name']
-        }
-    ];
-
-const where = {};
-
-if (status && parseInt(status) > 0) {
-    include[2].where = {
-        idStatus: parseInt(status) 
-    };
-}
-
-    const items = await ReservationModel.count({
-        include,
-        where,
-        distinct: true,
-        col: 'id_reservation'
-    });
-
-    if (items === 0) {
-        return {
-            response: 'No se encontraron reservas',
-            data: paginationResponseDTO({
-                page: 0,
-                pages: 0,
-                items: 0,
-                next: 'none',
-                prev: 'none',
-                data: []
-            })
-        };
-    };
-
-
-    const { page: safePage, pages, offset} = calculatePagination(items, currentPage, currentLimit);
- 
-
-    const result = await ReservationModel.findAll({
-        where,
-        include,
-        limit,
-        offset,
-        distinct: true,
-        order: [['reservationDate', 'DESC']]
-    });
-
-    return {
-        response: 'Reservas obtenidas exitosamente',
-        data: paginationResponseDTO({
-            page,
-            pages,
-            items,
-            next:
-                page < pages
-                    ? `/pagination?page=${page + 1}&items=${limit}&search=${search}` : null,
-            prev:
-                page > 1
-                    ? `/pagination?page=${page - 1}&items=${limit}&search=${search}` : null,
-            data: result.map(reservationResponseDTO)
-        })
-    };
-};
-
-export const getReservationsAndSearchForUserService = async ({
-    page,
-    limit,
-    search,
-    status,
-    userId
-}) => {
-
-    limit = Number.isInteger(Number(limit)) ? Number(limit) : 10;
-    page = Number.isInteger(Number(page)) ? Number(page) : 1;
-
-    const DEFAULT_LIMIT = 10;
-    const MAX_LIMIT = 100;
-
-    limit = Number(limit) || DEFAULT_LIMIT;
-    page = Number(page) || 1;
-
-    if (limit < 1) limit = DEFAULT_LIMIT;
-    if (limit > MAX_LIMIT) limit = MAX_LIMIT;
-
-    const include = [
-        {
-            model: UserModel,
-            as: 'user',
-            attributes: ['idUser', 'username', 'userlastname', 'email']
-        },
-        {
-            model: CopyModel,
-            as: 'copy',
-            attributes: ['idCopy', 'barcode', 'signatureTopography', 'copyNumber', 'statusId'],
-            include: [
-                {
-                    model: EditionModel,
-                    as: 'edition',
-                    attributes: ['idEdition', 'bookId'],
-                    include: [
-                        {
-                            model: BookModel,
-                            as: 'book',
-                            attributes: ['idBook', 'title']
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            model: ReservationStatusModel,
-            as: 'reservationStatus',
-            attributes: ['idStatus', 'name']
-        }
-    ];
-
-const where = {
-    userId: userId
-};
-
-if (status && parseInt(status) > 0) {
-    include[2].where = {
-        idStatus: parseInt(status)
-    };
-}
-
-    const items = await ReservationModel.count({
-        where,
-        col: 'id_reservation'
-    });
-
-    if (items === 0) {
-        return {
-            response: 'No se encontraron reservas',
-            data: paginationResponseDTO({
-                page: 0,
-                pages: 0,
-                items: 0,
-                next: 'none',
-                prev: 'none',
-                data: []
-            })
-        };
-    };
-
-    const pages = Math.ceil(items / limit);
-
-    if (page > pages && page > 0) {
-        page = search ? 1 : pages;
-    } else if (page < 1) {
-        page = 1;
-    };
-
-    const offset = (page - 1) * limit;
-
-    const result = await ReservationModel.findAll({
-        where,
-        include,
-        limit,
-        offset,
-        subQuery: false,
-        order: [['reservationDate', 'DESC']]
-    });
-
-    return {
-        response: 'Reservas obtenidas exitosamente',
-        data: paginationResponseDTO({
-            page,
-            pages,
-            items,
-            next:
-                page < pages
-                    ? `/pagination?page=${page + 1}&items=${limit}&search=${search}` : null,
-            prev:
-                page > 1
-                    ? `/pagination?page=${page - 1}&items=${limit}&search=${search}` : null,
-            data: result.map(reservationResponseDTO)
-        })
-    };
+export const getReservationsWithSearchService = async (params) => {
+    return await getAllPaginationService(params, getAllReservationWithSearchRepository, reservationResponseDTO);
 };
 
 export const getAllReservationsService = async () => {
@@ -234,7 +22,7 @@ export const getAllReservationsService = async () => {
 };
 
 export const getReservationByIdService = async (id) => {
-    return await findReservationByIdRepository();
+    return await findReservationByIdRepository(id);
 };
 
 export const getReservationsByUserIdService = async (userId) => {
@@ -258,24 +46,16 @@ export const createCopyReservationService = async (userId, copyId) => {
         countLoansOverDueByUserRepository(userId)
     ])
 
-    console.log('overdue by user: ', overdueLoans);
-
     if (!existingCopy) {
-        const error = new Error('Copia no encontrada');
-        error.status = 404;
-        throw error;
+        throw new Error('Copia no encontrada');
     };
 
     if (existingReserve) {
-        const error = new Error('Ya tienes una reserva activa de este ejemplar');
-        error.status = 409;
-        throw error;
+        throw new Error('Ya tienes una reserva activa de este ejemplar');
     };
 
     if(overdueLoans > 0) {
-        const error = new Error('No puede realizar reserva con préstamos vencidos');
-        error.status = 409;
-        throw error;
+        throw new Error('No puede realizar reserva con préstamos vencidos');
     }
 
     const reservationDays = policy?.reservationDays ?? 3;
@@ -289,13 +69,8 @@ export const createCopyReservationService = async (userId, copyId) => {
         countLoansActiveByUserRepository(userId)
     ])
 
-    console.log('reservas ya realizadas: ', maxBooksReservated);
-    console.log('préstamos ya realizadas: ', maxBooksLoaned);
-
     if (maxBooksReservated + maxBooksLoaned >= policy.maxBooks) {
-        const error = new Error('Usuario excede número de reservas y préstamos autorizados');
-        error.status = 409;
-        throw error;
+        throw new Error('Usuario excede número de reservas y préstamos autorizados');
     };
 
     const reservation = createReservationDTO({
@@ -307,68 +82,25 @@ export const createCopyReservationService = async (userId, copyId) => {
 
     return await ReservationModel.create(reservation);
 };
-
+ 
 export const getExpireOverdueService = async () => {
-    return ReservationModel.findAll({
-        where: {
-            expirationDate: {
-                [Op.lt]: new Date()
-            }
-        },
-        include: [
-            {
-                model: CopyModel,
-                as: 'copy'
-            },
-            {
-                model: UserModel,
-                as: 'user'
-            },
-            {
-                model: ReservationStatusModel,
-                as: 'reservationStatus'
-            }
-        ]
-    });
-
-
+    return await findReservesExpireOverdueRepository();
 };
 
 export const getReservationPendingById = async (id) => {
-    return ReservationModel.findOne({
-        where: {
-            idReservation: id,
-            reservationStatusId: 1
-        }
-    });
+    return await findReservationPendingByIdRepository(id);
 };
 
 export const updateStatusExpireOverdueReservationsService = async () => {
     const today = new Date();
     today.setHours(23, 59, 59, 999);
 
-
-
-    const [updatedStatusCount] = await ReservationModel.update(
-        { reservationStatusId: 4 },
-        {
-            where: {
-                reservationStatusId: 1,
-                expirationDate: {
-                    [Op.lte]: today
-                }
-            }
-        })
-    return updatedStatusCount;
+    return await updateExpireOverdueReservationsRepository(today);
 };
 
 export const updateStatusCancelReservationService = async (id, user) => {
 
-    const reservation = await ReservationModel.findOne({
-        where: {
-            idReservation: id
-        }
-    });
+    const reservation = await findReservationByIdRepository(id);
 
     if (!reservation) {
         throw new Error('Reserva no encontrada');
@@ -381,116 +113,55 @@ export const updateStatusCancelReservationService = async (id, user) => {
         throw new Error('No tiene autorización para cancelar la reserva');
     };
 
-    const [updatedStatusCount] = await ReservationModel.update(
-        {
-            reservationStatusId: 3
-        },
-        {
-            where: {
-                idReservation: id,
-                reservationStatusId: 1,
-            }
-        });
-
-    return updatedStatusCount;
+    return await updateStatusCancelReservationRepository();
 };
 
 export const markAsPickUpService = async (id, copyId) => {
     const transaction = await sequelize.transaction();
 
     try {
-        const reserve = await ReservationModel.findByPk(id, {
-            include: [
-                {
-                    model: CopyModel,
-                    as: 'copy',
-                    attributes: ['idCopy', 'statusId', 'barcode', 'signatureTopography'],
-                    required: true,
-                    include: [
-                        {
-                            model: EditionModel,
-                            as: 'edition',
-                            include: [
-                                {
-                                    model: BookModel,
-                                    as: 'book'
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    model: UserModel,
-                    as: 'user'
-                }
-            ],
-            transaction: transaction,
-        });
+        const reserve = await findReservationByIdRepository(id);
 
         if (!reserve) {
-            const error = new Error('Reserva no encontrada');
-            error.status = 404;
-            throw error;
+            throw new Error('Reserva no encontrada');
         };
 
         if (reserve.reservationStatusId !== 1) {
-            const error = new Error('No puede marcar como retirada una reserva pendiente');
-            error.status = 409;
-            throw error;
+            throw new Error('Libro ya retirado. No puede realizar préstamo.');
         };
 
         if (reserve.expirationDate < new Date()) {
-            const error = new Error('No puede entregarse una reserva vencida. Debe reservar nuevamente');
-            error.status = 409;
-            throw error;
+            throw new Error('No puede entregarse una reserva vencida. Debe reservar nuevamente');
         };
 
-        const copy = reserve.copy;
+        const copy = await findCopyByIdRepository(copyId);
 
         if (!copy) {
-            const error = new Error('Copia no asociada a la reserva');
-            error.status = 409;
-            throw error;
+            throw new Error('Copia no asociada a la reserva');
         }
 
-        if (copy.idCopy !== copyId) {
-            const error = new Error('Copia no coincide con la reserva');
-            error.status = 409;
-            throw error;
+        if (copy.idCopy !== reserve.copyId) {
+            throw new Error('Copia no coincide con la reserva');
         }
+
         if (copy.statusId !== 1) {
-            const error = new Error('Ejemplar no está disponible');
-            error.status = 409;
-            throw error;
+            throw new Error('Ejemplar no está disponible');
         };
 
         const [loanDate, policy, maxBooks] = await Promise.all([
             getMaxDaysLoanService(),
             getDefaultPolicyService(),
-            LoanModel.count({
-                where: {
-                    userId: reserve.userId,
-                    loanStatusId: {[Op.in]: [1, 3]}
-                }
-            })
+            countLoansByUserRepository(reserve.userId)
         ])
 
         const dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + loanDate);
 
         if (maxBooks > policy.maxBooks) {
-            const error = new Error('Usuario excede el máximo de préstamos permitidos');
-            error.status = 409;
-            throw error;
+            throw new Error('Usuario excede el máximo de préstamos permitidos');
         }
 
-        const loan = await LoanModel.create({
-            userId: reserve.userId,
-            loanDate: new Date(),
-            dueDate: dueDate,
-            loanStatusId: 1,
-            copyId: copy.idCopy
-        }, { transaction: transaction });
+        const loan = await markAsPickUpRepository(id, copy.idCopy, reserve.userId, dueDate);
 
         await copy.update({
             statusId: 2

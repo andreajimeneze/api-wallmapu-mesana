@@ -37,9 +37,8 @@ export const userCompleteResponseDTO = (user) => ({
     user_status_id: user.userStatusId,
     created_at: user.created_at,
     updated_at: user.updated_at,
-    commune: responseCommuneDTO(user.commune),
-    user_role: responseUserRoleDTO(user.userRole),
-    user_status: responseUserStatusDTO(user.userStatus)
+    user_role_name: user.userRole.role,
+    user_status_name: user.userStatus.status
 });
 
 export const updateUserDTO = (data, currentUser) => ({

@@ -1,74 +1,13 @@
-import {
-  AuthorModel,
-  BookModel,
-  CommuneModel,
-  EditorialModel,
-  LoanModel,
-  NewsModel,
-  ProvinceModel,
-  RegionModel,
-  ReservationModel,
-  SubjectModel,
-  UserModel,
-} from "../../config/dbSequelize.js";
+import { findAllAdminRepository, findAllStatesAdminRepository, findAllUseRepository } from "./stat.repository.js";
 
 export const getAllStatesAdminService = async () => {
-  const [
-    users,
-    news,
-    books, 
-    loans,
-    reservations
-  ] = await Promise.all([
-    UserModel.count(),
-    NewsModel.count(),
-    BookModel.count(),
-    LoanModel.count(),
-    ReservationModel.count()
-  ]);
-
-  return {
-    users,
-    news,
-    books,
-    loans,
-    reservations
-  };
+  return await findAllStatesAdminRepository();
 };
 
 export const getAllAdminService = async () => {
-  const [
-    users,
-    news,
-    authors,
-    editorials,
-    books, 
-    communes,
-    provinces,
-    regions,
-    subjects
-  
-  ] = await Promise.all([
-    UserModel.count(),
-    NewsModel.count(),
-    AuthorModel.count(),
-    EditorialModel.count(),
-    BookModel.count(),
-    CommuneModel.count(),
-    ProvinceModel.count(),
-    RegionModel.count(),
-    SubjectModel.count()
-  ]);
+  return await findAllAdminRepository();
+};
 
-  return {
-    users,
-    news,
-    authors,
-    editorials,
-    books,
-    communes,
-    provinces,
-    regions,
-    subjects
-  };
+export const getUserStatesService = async(userId) => {
+  return await findAllUseRepository(userId);
 };

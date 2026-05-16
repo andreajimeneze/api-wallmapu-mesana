@@ -58,7 +58,6 @@ export const createBookDTO = ({ title,
 
 export const updateBookDTO = ({  title, summary, genreId, authors = [], subjects = [] }) => {
   return {
-    //idBook: Number(idBook),
     title: title.trim(),
     summary,
     genre_id: genreId ? Number(genreId) : undefined,
@@ -109,3 +108,24 @@ export const bookBasicDTO = (book) => {
   }
 };
 
+export const mapBookDTO = (book) => {
+  return {
+    id_book: book.id_book,
+    title: book.title,
+
+    genre_id: book.genre_id,
+    genre_name: book.genre?.name ?? null,
+
+    author_id: book.author_id,
+    author_name: book.author?.name ?? null,
+
+    edition_cover_image:
+      book.editions?.[0]?.cover_image ?? null,
+
+    edition_count: Number(book.edition_count),
+    copy_count: Number(book.copy_count),
+
+    created_at: book.created_at,
+    updated_at: book.updated_at,
+  };
+};

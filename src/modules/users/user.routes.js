@@ -4,9 +4,9 @@ import { authorizedRoles, checkRole, jwtMiddleware } from '../auth/auth.middlewa
 
 const router = express.Router();
 
-router.get('/detailed/', jwtMiddleware, checkRole(['Admin']), getUsersPaginationSearch);
+router.get('/pagination', jwtMiddleware, checkRole(['Admin']), getUsersPaginationSearch);
 
-router.get('/detailed/:id', jwtMiddleware, checkRole(['Admin', 'Lector']), getUserByIdUser);
+router.get('/:id', jwtMiddleware, checkRole(['Admin', 'Lector']), getUserByIdUser);
 
 router.get('/admin/:id', jwtMiddleware, checkRole(['Admin']), getUserByIdAdmin);
 

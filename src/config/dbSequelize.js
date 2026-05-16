@@ -24,7 +24,7 @@ import { BookAuthor } from "../modules/book_authors/book_author.model.js";
 import { BookSubject } from '../modules/book_subjects/book_subject.model.js';
 import { Reservation } from "../modules/reservation/reservation.model.js";
 import { ReservationStatus } from "../modules/reservation_status/reservation_status.model.js";
-import { Notification } from "../modules/notifcation/notification.model.js";
+import { Notification } from "../modules/notification/notification.model.js";
 import { LoanPolicy } from "../modules/loan_policy/loan_policy.model.js";
 
 

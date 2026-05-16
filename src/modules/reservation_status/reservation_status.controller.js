@@ -1,15 +1,10 @@
 import { getAllStatusService } from "./reservation_status.service.js";
-import { internalServerResponse, notFoundResponse, succesGetResponse } from '../../core/responses/apiResponse.js';
+import { internalServerResponse, succesGetResponse } from '../../core/responses/apiResponse.js';
 import { reservationStatusDTO } from "./reservation_status.dto.js";
 
 export const getAllStatus = async (req, res) => {
     try {
         const allStatus = await getAllStatusService();
-      
-
-        if (!allStatus) {
-            return res.status(200).json(succesGetResponse({ message: 'No existen status cargados' }))
-        }
 
         return res.status(200).json(succesGetResponse({ message: 'Status obtenidos con éxito', data: allStatus.map(reservationStatusDTO) }));
 

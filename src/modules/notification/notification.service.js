@@ -1,45 +1,46 @@
-import { NotificationModel } from "../../config/dbSequelize.js";
 import { paginationRequestDTO } from "../../core/responses/paginationResponse.js";
+import { getAllPaginationService } from "../../core/services/basePagination.service.js";
 import { notificationDTO } from "./notification.dto.js";
-import { getAllNotificationPaginationRepository } from "./notification.repository.js";
+import { countUnreadByUdserIdRepository, getAllNotificationPaginationRepository } from "./notification.repository.js";
 
 export const getAllNotificationsPaginationService = async(params) => {
+    return await getAllPaginationService(params, getAllNotificationPaginationRepository, notificationDTO);
 
-  const { page, limit, search } = paginationRequestDTO(params);
+//   const { page, limit, search } = paginationRequestDTO(params);
   
-  const { page: normalizedPage, limit: normalizedLimit } = normalizePagination(page, limit);
+//   const { page: normalizedPage, limit: normalizedLimit } = normalizePagination(page, limit);
 
-  const { count: items, rows: result } = await getAllNotificationPaginationRepository({page: normalizedPage, limit: normalizedLimit, search});
+//   const { count: items, rows: result } = await getAllNotificationPaginationRepository({page: normalizedPage, limit: normalizedLimit, search});
 
-  const pages = Math.ceil(items / normalizedLimit);
+//   const pages = Math.ceil(items / normalizedLimit);
 
-  const urlResponse = paginationUrl('pagination', normalizedPage, pages, normalizedLimit, search);
+//   const urlResponse = paginationUrl('pagination', normalizedPage, pages, normalizedLimit, search);
 
-  if (items === 0) {
-      return emptyPaginationDTO({ page: normalizedPage, pages, items, urlResponse })
-    }
+//   if (items === 0) {
+//       return emptyPaginationDTO({ page: normalizedPage, pages, items, urlResponse })
+//     }
     
   
-    const haveSearch = search && search.trim() !== "";
+//     const haveSearch = search && search.trim() !== "";
 
-    let currentPage = normalizedPage;
+//     let currentPage = normalizedPage;
   
-    if (currentPage > pages && currentPage > 0) {
-      currentPage = haveSearch ? 1 : pages;
-    } else if (currentPage < 1) {
-      currentPage = 1;
-    }
+//     if (currentPage > pages && currentPage > 0) {
+//       currentPage = haveSearch ? 1 : pages;
+//     } else if (currentPage < 1) {
+//       currentPage = 1;
+//     }
   
-    return {
-      response: "Notificaciones obtenidas exitosamente",
-      data: paginationResponseDTO({
-        page: currentPage,
-        pages,
-        items,
-        urlResponse,
-        data: result.map(notificationDTO),
-      }),
-    };
+//     return {
+//       response: "Notificaciones obtenidas exitosamente",
+//       data: paginationResponseDTO({
+//         page: currentPage,
+//         pages,
+//         items,
+//         urlResponse,
+//         data: result.map(notificationDTO),
+//       }),
+//     };
   };
 
 export const getAllNotificationsService = async () => {
@@ -97,3 +98,7 @@ export const deleteNotificationByUserIdService = async (userId) => {
     await notification.destroy();
     return true;
 };
+
+export const getUnreadCountService = async(userId) => {
+    return await countUnreadByUdserIdRepository(userId);
+}

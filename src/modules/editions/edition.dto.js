@@ -28,11 +28,11 @@ export const editionDetailDTO = (res) => {
     publication_year: res.publicationYear,
     pages: res.pages,
     cover_image: res.coverImage,
-    //book_id: res.bookId,
+    book_id: res.bookId,
     created_at: res.created_at,
     updated_at: res.updated_at,
-    editorial: res.editorial ? baseEditorialDTO(res.editorial) : null,
-    book: res.book ? bookBasicDTO(res.book) : null,
+    //editorial: res.editorial ? baseEditorialDTO(res.editorial) : null,
+    //book: res.book ? bookBasicDTO(res.book) : null,
   };
 };
 
@@ -43,18 +43,19 @@ export const editionForBookResponseDTO = (res) => ({
     publication_year: res.publicationYear,
     pages: res.pages,
     cover_image: res.coverImage,
-    book_id: res.bookId,
     created_at: res.created_at,
     updated_at: res.updated_at,
+    editorial_id: res.editorialId,
+    editorial_name: res.editorial.name,
+    book_id: res.bookId,
+    book_title: res.book.title,
+    genre_id: res.book.genreId,
+    genre_name: res.book.genre.name,
+    author_id: res.book.authors.idAuthor,
+    author_name: res.book.authors.name,
+    copy_count: Number(res.dataValues.copy_count) || 0
+});
 
-    book: res.book ? bookDetailDTO(res.book) : null,
-    editorial: baseEditorialDTO(res.editorial),
-    copies: res.copies ?
-      res.copies.map((copy) => ({
-        ...baseCopyDTO(copy),
-        status: baseStatusCopyDTO(copy.status)
-      })) : []
-  });
 
 export const createEditionDTO = ({
   edition,

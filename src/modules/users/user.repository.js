@@ -1,5 +1,48 @@
 import { CommuneModel, UserModel, UserRoleModel, UserStatusModel } from "../../config/dbSequelize.js";
 
+export const getAllUsersPaginationWithSearchRepository = async({page, limit, search}) => {
+    const include = [
+      {
+        model: CommuneModel,
+        as: "commune",
+        attributes: ["idCommune", "commune", "provinceId"],
+      },
+      {
+        model: UserStatusModel,
+        as: "userStatus",
+        attributes: ["idUserStatus", "status"],
+      },
+      {
+        model: UserRoleModel,
+        as: "userRole",
+        attributes: ["idUserRole", "role"],
+      },
+    ];
+ 
+  const where = search
+    ? {
+        [Op.or]: [
+          { username: { [Op.iLike]: `%${search}%` } },
+          { lastname: { [Op.iLike]: `%${search}%` } },
+          { email: { [Op.iLike]: `%${search}%` } }
+        ],
+      }
+    : {};
+  
+  const offset = (page - 1) * limit;
+
+  const items = await UserModel.count({where});
+  const result = await UserModel.findAll({
+    where,
+    include,
+    limit,
+    offset,
+    distinct: true,
+  });
+
+  return { count: items, rows: result };
+};
+
 export const findUserByIdRepository = async (id) => {
     return await UserModel.findByPk(id, {
         include: [

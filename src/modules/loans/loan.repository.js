@@ -153,6 +153,15 @@ export const countLoansActiveByUserRepository = async (userId) => {
     })
 };
 
+export const countLoansByUserRepository = async (userId) => {
+    return await LoanModel.count({
+        where: {
+            userId: userId,
+            loanStatusId: { [Op.in]: [1, 3] }
+        }
+    })
+}
+
 export const findActiveLoansByCopyIdRepository = async (copyId) => {
     return await LoanModel.findOne({
         where: {
@@ -304,37 +313,24 @@ export const getLoansOverDueByIdRepository = async (userId, dueDate) => {
     })
 };
 
-export const createLoanRepository = async (loanData) => {
-    return await LoanModel.create(loanData);
+export const createLoanRepository = async (loanData, options = {}) => {
+    return await LoanModel.create(loanData, { transaction: options.transaction });
 };
 
-export const returnLoanByCopyIdRepository = async (copyId) => {
-
-
-    try {
-        const updatedLoan = await loan.update({
+export const returnLoanByCopyIdRepository = async (copyId, options = {}) => {
+    return await LoanModel.update(
+        {
             loanStatusId: 2
-        }, { transaction });
-        const updatedCopy = await copy.update({
-            statusId: 1
-        }, { transaction });
-
-        await transaction.commit();
-
-        // return {
-        //     loan: updatedLoan,
-        //     copy: updatedCopy            
-        // }
-
-        return updatedLoan
-    } catch (error) {
-        await transaction.rollback();
-        throw error;
-    }
-
+        },
+        {
+            where: {
+                copyId: copyId
+            },
+            ...options
+        })
 };
 
-export const markLoanAsExpireOverdueService = async () => {
+export const markLoanAsExpireOverdueRepository = async () => {
     const [affectedRows] = await LoanModel.update(
         { loanStatusId: 3 },
         {
@@ -350,7 +346,7 @@ export const markLoanAsExpireOverdueService = async () => {
     return affectedRows;
 };
 
-export const getActiveLoanByBarcodeService = async (barcode) => {
+export const findActiveLoanByBarcodeRepository = async (barcode) => {
     return await LoanModel.findOne({
         where: {
             loanStatusId: {

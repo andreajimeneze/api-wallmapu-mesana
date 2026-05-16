@@ -1,18 +1,8 @@
 import { BookSubjectModel } from "../../config/dbSequelize.js";
 
-
-export const findAllBookSubjectByIdBookRepository = async (id) => {
-    return await BookSubjectModel.findAll({
-        where: {
-            idBook: id
-        },
-         attributes: ['subjectId']
-    })
-};
-
-export const findBookSubjectBySubjectIdRepository = async (id) => {
+export const findOneBookSubjectBySubjectIdRepository = async (idSubject) => {
     return await BookSubjectModel.findOne({
-        where: { idSubject: id }
+        where: { idSubject: idSubject }
     });
 };
 
@@ -20,39 +10,20 @@ export const bulkCreateBookSubjectRepository = async (data, options = {}) => {
     return await BookSubjectModel.bulkCreate(data, options);
 };
 
-export const updateBookSubjectRepository = async (idBook, subjects = []) => {
-    await BookSubjectModel.destroy({
-        where: {
-            idBook: idBook
-        }
-    });
-
-     const bookSubject = subjects.map((idSubject) => ({
-        idBook,
-        idSubject,
-  }));
-
-    return await BookSubjectModel.bulkCreate( bookSubject );
-};
-
-export const deleteBookSubjectRepository = async (idBook, idSubject) => {
-    await BookSubjectModel.destroy({
+export const deleteBookSubjectRepository = async (idBook, idSubject, options = {}) => {
+    return await BookSubjectModel.destroy({
         where: {
             idBook: idBook,
             idSubject: idSubject
-        }
+        }, ...options
     });
-
-    return true;
 };
 
 export const deleteBookSubjectByIdBookRepository = async (idBook, options = {}) => {
-    await BookSubjectModel.destroy({
+    return await BookSubjectModel.destroy({
         where: {
             idBook: idBook
         },
         ...options
     });
-
-    return true;
 };

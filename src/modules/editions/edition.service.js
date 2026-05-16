@@ -8,7 +8,7 @@ import {
   GenreModel,
   CopyStatusModel,
 } from "../../config/dbSequelize.js";
-import { editionForBookResponseDTO, updateEditionDTO } from "./edition.dto.js";
+import { editionDetailDTO, editionForBookResponseDTO, updateEditionDTO } from "./edition.dto.js";
 import { paginationRequestDTO, paginationResponseDTO } from "../../core/responses/paginationResponse.js";
 import { editionResponseDTO } from "./edition.dto.js";
 import { Op } from "sequelize";
@@ -16,7 +16,7 @@ import {
   deleteImageCloud,
   extractPublicId,
 } from "../../core/lib/cloudinary.service.js";
-import { createEditionRepository, deleteEditionRepository, findAllEditionsRepository, findEditionByIdRepository, getAllEditionPaginationRepository, updateEditionRepository } from "./editions.repository.js";
+import { createEditionRepository, deleteEditionRepository, findAllEditionsRepository, findEditionByBooIdRepository, findEditionByBookIdDetailRepository, findEditionByIdRepository, getAllEditionPaginationRepository, updateEditionRepository } from "./editions.repository.js";
 import { getAllPaginationService } from "../../core/services/basePagination.service.js";
 
 export const getAllEditionPaginationService = async (params) => {
@@ -30,30 +30,41 @@ export const getAllEditionsService = async () => {
 export const getEditionByIdService = async (id) => {
   const edition = await findEditionByIdRepository(id);
   if (!edition) {
-    throw new Error("Edición no encontrada");
+    return null;
   }
+  return edition;
 };
 
-// export const getEditionByBookIdService = async (idBook) => {
-//   const edition = await EditionModel.findOne({
-//     where: { bookId: idBook },
-//   });
+export const getEditionByBookIdDetailService = async (idBook) => {
+  const edition = await findEditionByBookIdDetailRepository(idBook);
 
-//   if(!edition) {
-//     const error = new Error("No existe edición para el libro");
-//     error.status = 404;
-//     throw error;
-//   }
+  if(!edition) {
+    throw new Error("No existe edición para el libro");
+  }
 
-//   return editionResponseDTO(edition);
-// };
+  return edition;
+};
+
+export const getEditionByBookIdService = async (idBook) => {
+  const edition = await findEditionByBooIdRepository(idBook);
+
+  if(!edition) {
+    throw new Error("No existen ediciones para el libro");
+  }
+
+  return edition;
+};
 
 export const createEditionService = async (editionData) => {
   return await createEditionRepository(editionData);
 };
 
 export const updateEditionService = async (id, editionData) => {
-  return updateEditionRepository(id, editionData);
+  await updateEditionRepository(id, editionData);
+  const edited = await findEditionByIdRepository(id);
+  if(!edited) return null
+  
+  return edited;
 };
 
 export const deleteEditionWithImageService = async (id) => {
@@ -82,7 +93,7 @@ export const deleteEditionWithImageService = async (id) => {
 
       await deleteImageCloud(publicId);
     }
-    await deleteEditionRepository(id);
+    await deleteEditionRepository(id, { transaction });
     await transaction.commit();
     return true;
   } catch (error) {

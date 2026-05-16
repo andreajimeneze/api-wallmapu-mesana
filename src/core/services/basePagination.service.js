@@ -1,5 +1,5 @@
-import { normalizePagination } from '../helpers/nomalizePagination.js';
-import { paginationUrl } from "../helpers/paginationUrl.js";
+import { normalizePagination } from '../helpers/pagination/nomalizePagination.js';
+import { paginationUrl } from "../helpers/pagination/paginationUrl.js";
 import { emptyPaginationDTO, paginationRequestDTO, paginationResponseDTO } from "../responses/paginationResponse.js";
 
 export const getAllPaginationService = async(params, repository, dto) => {

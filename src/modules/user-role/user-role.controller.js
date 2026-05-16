@@ -1,7 +1,6 @@
-import { getUserRoleByIdService, getAllUserRolesService } from "./user-role.service.js";
+import { getAllUserRolesService } from "./user-role.service.js";
 import {
   internalServerResponse,
-  notFoundResponse,
   succesGetResponse,
 } from "../../core/responses/apiResponse.js";
 import { responseUserRoleDTO } from "./user-role.dto.js";
@@ -9,12 +8,6 @@ import { responseUserRoleDTO } from "./user-role.dto.js";
 export const getUserRoles = async (req, res) => {
   try {
     const userRoles = await getAllUserRolesService();
-
-    if (!userRoles) {
-      return res
-        .status(200)
-        .json(succesGetResponse({ message: "No existe roles cargados" }));
-    }
 
     return res.status(200).json(
       succesGetResponse({
@@ -31,29 +24,3 @@ export const getUserRoles = async (req, res) => {
   }
 };
 
-export const getUserRoleById = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const userRoleId = await getUserRoleByIdService(id);
-
-    if (!userRoleId) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "No existe rol solicitado" }));
-    }
-    return res.status(200).json(
-      succesGetResponse({
-        message: "Rol obtenido exitosamente",
-        data: responseUserRoleDTO(userRoleId),
-      }),
-    );
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json(
-      internalServerResponse({
-        message: "Error al intentar obtener el user role",
-      }),
-    );
-  }
-};

@@ -1,5 +1,72 @@
-import { BookModel, CopyModel, EditionModel, ReservationModel, ReservationStatusModel, UserModel } from "../../config/dbSequelize.js";
+import { Op } from "sequelize";
+import { BookModel, CopyModel, EditionModel, LoanModel, ReservationModel, ReservationStatusModel, UserModel } from "../../config/dbSequelize.js";
 
+export const getAllReservationWithSearchRepository = async ({
+    page,
+    limit,
+    search,
+    filter
+}) => {
+    const { userId, idStatus } = filter || {};
+
+    const include = [
+        {
+            model: UserModel,
+            as: 'user',
+            attributes: ['idUser', 'username', 'userlastname', 'email']
+        },
+        {
+            model: CopyModel,
+            as: 'copy',
+            attributes: ['idCopy', 'barcode', 'signatureTopography', 'copyNumber', 'statusId'],
+            include: [
+                {
+                    model: EditionModel,
+                    as: 'edition',
+                    attributes: ['idEdition', 'bookId'],
+                    include: [
+                        {
+                            model: BookModel,
+                            as: 'book',
+                            attributes: ['idBook', 'title']
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            model: ReservationStatusModel,
+            as: 'reservationStatus',
+            attributes: ['idStatus', 'name']
+        }
+    ];
+
+    const where = {};
+
+    if (idStatus && parseInt(idStatus) > 0) {
+        include[2].where = {
+            idStatus: parseInt(idStatus)
+        };
+    }
+
+    if (userId) {
+        where.userId = userId
+    }
+
+    const offset = (page - 1) * limit;
+
+    const items = await ReservationModel.count({ include, distinct: true });
+
+    const result = await ReservationModel.findAll({
+        where,
+        include,
+        limit,
+        offset,
+        distinct: true,
+        order: [['expirationDate', 'DESC']]
+    });
+    return { count: items, rows: result };
+};
 export const findAllReservationsRepository = async () => {
     return await ReservationModel.findAll({
         include: [
@@ -36,9 +103,9 @@ export const findAllReservationsRepository = async () => {
         order: [['reservationDate', 'DESC']]
     });
 };
-
 export const findReservationByIdRepository= async (id) => {
-    return await ReservationModel.findByPk(id, {
+
+    const reserve = await ReservationModel.findByPk(id, {
         include: [
             {
                 model: UserModel,
@@ -73,6 +140,8 @@ export const findReservationByIdRepository= async (id) => {
             }
         ]
     });
+
+    return reserve;
 };
 
 export const findReservationsByUserIdRepository= async (userId) => {
@@ -106,7 +175,6 @@ export const findReservationsByUserIdRepository= async (userId) => {
         ]
     })
 };
-
 export const countActiveReservationsByUserRepository = async (userId) => {
      return await ReservationModel.count({
                 where: {
@@ -115,7 +183,6 @@ export const countActiveReservationsByUserRepository = async (userId) => {
                 }
             })
 };
-
 export const findActiveReservationByUserIdAndCopyRepository = async (userId, copyId) => {
     return await ReservationModel.findOne({
         where: {
@@ -139,7 +206,6 @@ export const findActiveReservationByUserIdAndCopyRepository = async (userId, cop
         ]
     });
 };
-
 export const findActiveReservationByCopyRepository = async (copyId) => {
     return await ReservationModel.findOne({
         where: {
@@ -162,13 +228,11 @@ export const findActiveReservationByCopyRepository = async (copyId) => {
         ]
     });
 };
-
 export const createCopyReservationRepository = async (reservationData) => {
     return await ReservationModel.create(reservationData);
 };
-
-export const findExpireOverdueRepository = async () => {
-    return ReservationModel.findAll({
+export const findReservesExpireOverdueRepository = async () => {
+    return await ReservationModel.findAll({
         where: {
             expirationDate: {
                 [Op.lt]: new Date()
@@ -192,9 +256,8 @@ export const findExpireOverdueRepository = async () => {
 
 
 };
-
 export const findReservationPendingByIdRepository = async (id) => {
-    return ReservationModel.findOne({
+    return await ReservationModel.findOne({
         where: {
             idReservation: id,
             reservationStatusId: 1
@@ -202,7 +265,7 @@ export const findReservationPendingByIdRepository = async (id) => {
     });
 };
 
-export const updateStatusExpireOverdueReservationsRepository = async () => {
+export const updateExpireOverdueReservationsRepository = async (today) => {
     const [updatedStatusCount] = await ReservationModel.update(
         { reservationStatusId: 4 },
         {
@@ -216,7 +279,7 @@ export const updateStatusExpireOverdueReservationsRepository = async () => {
     return updatedStatusCount;
 };
 
-export const updateStatusCancelReservationRespository = async (id) => {
+export const updateStatusCancelReservationRepository = async (id) => {
     const [updatedStatusCount] = await ReservationModel.update(
         {
             reservationStatusId: 3
@@ -230,8 +293,7 @@ export const updateStatusCancelReservationRespository = async (id) => {
 
     return updatedStatusCount;
 };
-
-export const markAsPickUpService = async (id, copyId, userId, dueDate) => {
+export const markAsPickUpRepository= async (id, copyId, userId, dueDate) => {
         
         return await LoanModel.create({
             userId: userId,

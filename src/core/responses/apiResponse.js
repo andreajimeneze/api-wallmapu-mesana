@@ -42,7 +42,7 @@ export const successDeleteResponse = ({
 }) => ({
   isSuccess: true,
   statusCode,
-  message: message ?? `${recourse} eliminado/a con éxito`,
+  message: message ?? `${resource} eliminado/a con éxito`,
   data
 });
 

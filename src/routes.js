@@ -21,7 +21,7 @@ import book_author_routes from './modules/book_authors/book_author.routes.js';
 import book_subject_routes from './modules/book_subjects/book_subject.routes.js';
 import edition_image_routes from './modules/edition-image/edition_image.routes.js';
 import reservation_status_routes from './modules/reservation_status/reservation_status.routes.js';
-import notification_routes from './modules/notifcation/notification.routes.js';
+import notification_routes from './modules/notification/notification.routes.js';
 import reservation_routes from './modules/reservation/reservation.routes.js';
 import loanPolicy_routes from './modules/loan_policy/loan.policy.routes.js';
 import loanStatus_routes from './modules/loans-status/loan_status.routes.js';
