@@ -53,7 +53,7 @@ export const updateAuthorRepository = async (id, data, options = {}) => {
         { name: data.name },
         { where: { idAuthor: id }, ...options, returning: true }, 
     );
-    if(count === 0) return null;
+
     return updatedAuthor;
 };
 

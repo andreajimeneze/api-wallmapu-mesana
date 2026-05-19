@@ -37,23 +37,23 @@ export const editionDetailDTO = (res) => {
 };
 
 export const editionForBookResponseDTO = (res) => ({
-    id_edition: res.idEdition,
-    edition: res.edition,
-    isbn: res.isbn,
-    publication_year: res.publicationYear,
-    pages: res.pages,
-    cover_image: res.coverImage,
-    created_at: res.created_at,
-    updated_at: res.updated_at,
-    editorial_id: res.editorialId,
-    editorial_name: res.editorial.name,
-    book_id: res.bookId,
-    book_title: res.book.title,
-    genre_id: res.book.genreId,
-    genre_name: res.book.genre.name,
-    author_id: res.book.authors.idAuthor,
-    author_name: res.book.authors.name,
-    copy_count: Number(res.dataValues.copy_count) || 0
+  id_edition: res.idEdition,
+  edition: res.edition,
+  isbn: res.isbn,
+  publication_year: res.publicationYear,
+  pages: res.pages,
+  cover_image: res.coverImage,
+  created_at: res.created_at,
+  updated_at: res.updated_at,
+  editorial_id: res.editorialId,
+  editorial_name: res.editorial.name,
+  book_id: res.bookId,
+  book_title: res.book.title,
+  genre_id: res.book.genreId,
+  genre_name: res.book.genre.name,
+  author_id: res.book.authors?.[0]?.idAuthor,
+  author_name: res.book.authors?.[0]?.name,
+  copy_count: Number(res.dataValues.copy_count) || 0
 });
 
 
@@ -111,10 +111,10 @@ export const editionResponseDTO = (res) => ({
   publication_year: res.publicationYear,
   pages: res.pages,
   cover_image: res.coverImage,
-   book_id: res.bookId,
-   created_at: res.createdAt,
-   updated_at: res.updatedAt,
-   editorial: baseEditorialDTO(res.editorial),
+  book_id: res.bookId,
+  created_at: res.createdAt,
+  updated_at: res.updatedAt,
+  editorial: baseEditorialDTO(res.editorial),
 });
 
 export const basicResponseEditionWithCopies = (res) => ({
@@ -124,12 +124,12 @@ export const basicResponseEditionWithCopies = (res) => ({
   created_at: res.createdAt,
   cover_image: res.coverImage,
   copies: res.copies ?
-      res.copies.map((copy) => ({
-        ...baseCopyDTO(copy)
-      })) : []
+    res.copies.map((copy) => ({
+      ...baseCopyDTO(copy)
+    })) : []
 });
 
-export const editionFilterRequestDTO = ({id_author, id_genre, id_editorial} = {}) => {
+export const editionFilterRequestDTO = ({ id_author, id_genre, id_editorial } = {}) => {
   return {
     idAuthor: Number(id_author) || 0,
     idGenre: Number(id_genre) || 0,

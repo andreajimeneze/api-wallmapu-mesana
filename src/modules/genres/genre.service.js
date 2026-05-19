@@ -1,4 +1,4 @@
-import { conflictError, notFoundError } from "../../core/helpers/errors/errors.js";
+import { conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
 import { getAllPaginationService } from "../../core/services/basePagination.service.js";
 import { baseGenreDTO } from "./genre.dto.js";
 import { createGenreRepository, deleteGenreRepository, findAllGenresRepository, findGenreByIdRepository, findGenreByNameRepository, getAllGenresPaginationRepository, updateGenreRepository } from "./genre.repository.js";

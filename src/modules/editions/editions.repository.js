@@ -14,11 +14,13 @@ export const getAllEditionPaginationRepository = async ({ page, limit, search, f
         {
           model: GenreModel,
           as: "genre",
+           where: idGenre > 0 ? { idGenre: idGenre } : undefined,
         },
         {
           model: AuthorModel,
           as: "authors",
-          required: idAuthor > 0,
+          attributes: ['idAuthor', 'name'],
+          required: true,
           where: idAuthor > 0 ? { idAuthor } : undefined,
         },
       ],
@@ -26,7 +28,7 @@ export const getAllEditionPaginationRepository = async ({ page, limit, search, f
     {
       model: EditorialModel,
       as: "editorial",
-      required: false,
+      required: idEditorial > 0 ? true : false, 
     },
   ];
 
@@ -46,9 +48,9 @@ export const getAllEditionPaginationRepository = async ({ page, limit, search, f
     where.editorialId = idEditorial;
   }
 
-  if (idGenre > 0) {
-    where["$book.genreId$"] = idGenre;
-  }
+  // if (idGenre > 0) {
+  //   where["$book.genreId$"] = idGenre;
+  // }
 
   const offset = (page - 1) * limit;
 
@@ -81,27 +83,6 @@ export const getAllEditionPaginationRepository = async ({ page, limit, search, f
 
   return { count: items, rows: result };
 };
-export const findAllEditionsRepository = async () => {
-  return await EditionModel.findAll({
-    include: [
-      {
-        model: BookModel,
-        as: "book",
-      },
-      {
-        model: EditorialModel,
-        as: "editorial",
-        attributes: ['idEditorial', 'name']
-      },
-      {
-        model: CopyModel,
-        as: 'copies',
-        required: true,
-        attributes: ['idCopy', 'barcode', 'copyNumber', 'signatureTopography', 'createdAt']
-      }
-    ],
-  });
-};
 
 export const findEditionByIdRepository = async (id) => {
   return await EditionModel.findByPk(id, {
@@ -114,13 +95,21 @@ export const findEditionByIdRepository = async (id) => {
       {
         model: EditorialModel,
         as: "editorial",
-        attribute: ['name']
+        attributes: ['name']
       }
     ]
   });
 };
 
-export const findEditionByBookIdDetailRepository = async (idBook) => {
+export const findEditionByBookIdRepository = async (idBook) => {
+  return EditionModel.findOne({
+    where: {
+      bookId: idBook
+    }
+  })
+};
+
+export const findEditionsByBookIdDetailRepository = async (idBook) => {
   return await EditionModel.findAll({
     where: { bookId: idBook },
     include: [
@@ -155,42 +144,18 @@ export const findEditionByBookIdDetailRepository = async (idBook) => {
   });
 };
 
-export const findEditionByBooIdRepository = async (idBook) => {
-  return await EditionModel.findOne({
-    where: {
-      bookId: idBook
-    }
-  });
-};
-
 export const createEditionRepository = async (editionData, options = {}) => {
-
-  const editionCreated = await EditionModel.create(editionData, options);
-
-  return await EditionModel.findByPk(
-    editionCreated.idEdition,
-    {
-      include: [
-        {
-          model: BookModel,
-          as: "book",
-        },
-        {
-          model: EditorialModel,
-          as: "editorial",
-        },
-      ],
-    }
-  );
+  return await EditionModel.create(editionData, options);
 };
 
 export const updateEditionRepository = async (id, editionData, options = {}) => {
-  return await EditionModel.update(editionData, {
+  const [count, updatedEdition] = await EditionModel.update(editionData, {
     where: {
       idEdition: id
-    }, ...options
+    }, ...options, returning: true
   });
-  //return EditionModel.findByPk(id);
+   if (count === 0) return null; 
+  return updatedEdition[0];  
 };
 
 export const deleteEditionRepository = async (id, options = {}) => {

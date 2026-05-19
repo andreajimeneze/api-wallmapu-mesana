@@ -14,7 +14,6 @@ import {
 } from "../../config/dbSequelize.js";
 
 export const getBookPaginationRepository = async ({ page, limit, search }) => {
-
     const where = {};
 
     if (search) {
@@ -40,7 +39,6 @@ export const getBookPaginationRepository = async ({ page, limit, search }) => {
             "genre_id",
             "created_at",
             "updated_at",
-
             [
                 Sequelize.fn(
                     "COUNT",
@@ -51,7 +49,6 @@ export const getBookPaginationRepository = async ({ page, limit, search }) => {
                 ),
                 "edition_count"
             ],
-
             [
                 Sequelize.fn(
                     "COUNT",
@@ -73,7 +70,6 @@ export const getBookPaginationRepository = async ({ page, limit, search }) => {
                     "name"
                 ],
             },
-
             {
                 model: AuthorModel,
                 as: "authors",
@@ -85,7 +81,6 @@ export const getBookPaginationRepository = async ({ page, limit, search }) => {
                     "name"
                 ],
             },
-
             {
                 model: EditionModel,
                 as: "editions",
@@ -139,153 +134,6 @@ export const getBookPaginationRepository = async ({ page, limit, search }) => {
         rows: plainBooks
     };
 };
-
-// export const getBookPaginationRepository = async ({ page, limit, search }) => {
-
-//     const include = [
-//         {
-//             model: GenreModel,
-//             as: "genre",
-//             required: false,
-//             attributes: ["name"],
-//         },
-//         {
-//             model: AuthorModel,
-//             as: "authors",
-//             through: { attributes: [] },
-//             required: false,
-//             attributes: ["id_author", "name"],
-//         },
-//         {
-//             model: SubjectModel,
-//             as: "subjects",
-//             through: { attributes: [] },
-//             required: false,
-//         },
-//         {
-//             model: EditionModel,
-//             as: "editions",
-//             required: false,
-//             attributes: ["id_edition", "cover_image"],
-
-//             include: [
-//                 {
-//                     model: EditorialModel,
-//                     as: "editorial",
-//                     required: false,
-//                 },
-//                 {
-//                     model: CopyModel,
-//                     as: "copies",
-//                     required: false,
-//                     attributes: ["id_copy"],
-
-//                     include: [
-//                         {
-//                             model: CopyStatusModel,
-//                             as: "status",
-//                             required: false,
-//                             attributes: ["id_status", "name"],
-//                         },
-//                     ],
-//                 },
-//             ],
-//         },
-//     ];
-
-//     const where = {};
-
-//     if (search && search.trim() !== "") {
-//         where[Op.or] = [
-//             { title: { [Op.iLike]: `%${search}%` } }
-//         ];
-//     }
-
-//     const offset = (page - 1) * limit;
-
-//     const { count, rows } = await BookModel.findAndCountAll({
-//         where,
-//         include,
-//         limit,
-//         offset,
-//         distinct: true,
-//         order: [["updated_at", "DESC"]],
-//     });
-
-//     return { count, rows };
-// };
-// export const getBookPaginationRepository = async ({ page, limit, search }) => {
-
-//     const attributes = [
-//         "id_book",
-//         "title",
-
-//         [
-//             Sequelize.fn(
-//                 "COUNT",
-//                 Sequelize.fn("DISTINCT", Sequelize.col("editions.id_edition"))
-//             ),
-//             "edition_count"
-//         ],
-
-//         [
-//             Sequelize.fn(
-//                 "COUNT",
-//                 Sequelize.fn("DISTINCT", Sequelize.col("editions->copies.id_copy"))
-//             ),
-//             "copy_count"
-//         ],
-//     ];
-
-//     const include = [
-//         {
-//             model: EditionModel,
-//             as: "editions",
-//             attributes: [],
-//             required: false,
-
-//             include: [
-//                 {
-//                     model: CopyModel,
-//                     as: "copies",
-//                     attributes: [],
-//                     required: false,
-//                 }
-//             ]
-//         }
-//     ];
-
-//     const where = {};
-//     if (search) {
-//         where[Op.or] = [
-//             { title: { [Op.iLike]: `%${search}%` } }
-//         ]
-//     }
-
-//     const offset = (page - 1) * limit;
-
-//     const items = await BookModel.count({ where });
-//     const result = await BookModel.findAll({
-//         where,
-//         attributes,
-//         include,
-//         limit,
-//         offset,
-//         subQuery: false,
-//         distinct: true,
-//         group: [
-//             "Book.id_book",
-//             "Book.title",
-//         ],
-//         order: [['updated_at', 'DESC']]
-//     });
-
-//     const plainBooks = result.map(book => book.get({ plain: true }));
-
-//     console.log(plainBooks);
-
-//     return { count: items, rows: plainBooks };
-// };
 
 export const findAllBooksRepository = async () => {
     return await BookModel.findAll();
@@ -347,11 +195,12 @@ export const createBookRepository = async (data, options = {}) => {
 };
 
 export const updateBookRepository = async (id, data, options = {}) => {
-    return await BookModel.update(data, {
+    const [count, [updatedBook]] = await BookModel.update(data, {
         where: {
             idBook: id
-        }, ...options
+        }, ...options, returning: true
     });
+    return updatedBook;
 };
 
 export const deleteBookRepository = async (id, options = {}) => {

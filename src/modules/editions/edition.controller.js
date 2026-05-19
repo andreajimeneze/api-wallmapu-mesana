@@ -11,9 +11,7 @@ import {
   createEditionService,
   deleteEditionWithImageService,
   getAllEditionPaginationService,
-  getAllEditionsService,
-  getEditionByBookIdDetailService,
-  getEditionByBookIdService,
+  getEditionsByBookIdDetailService,
   getEditionByIdService,
   updateEditionService,
 } from "./edition.service.js";
@@ -44,7 +42,7 @@ export const getEditionPagination = async (req, res) => {
       filter
     });
 
-     return res.status(200).json(
+    return res.status(200).json(
       succesGetResponse({
         resource: "Ediciones",
         data: result.data,
@@ -59,43 +57,11 @@ export const getEditionPagination = async (req, res) => {
       );
   }
 };
-export const getAllEditions = async (req, res) => {
-  try {
-    const allEditions = await getAllEditionsService();
-
-    if (!allEditions || allEditions.length === 0) {
-      return res
-        .status(200)
-        .json(succesGetResponse({ message: "No existen ediciones cargadas actualmente" }));
-    }
-
-    return res.status(200).json(
-      succesGetResponse({
-        resource: "Lista de ediciones",
-        data: allEditions.map(editionDetailDTO),
-      }),
-    );
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json(
-      internalServerResponse({
-        message: "Error al intentar obtener el listado de ediciones",
-      }),
-    );
-  }
-};
 export const getEditionById = async (req, res) => {
   const { id } = req.params;
 
-
   try {
     const edition = await getEditionByIdService(id);
-
-    if (!edition) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "Edición no encontrada" }));
-    }
 
     return res.status(200).json(
       succesGetResponse({
@@ -105,33 +71,15 @@ export const getEditionById = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    return res.status(500).json(
-      internalServerResponse({
-        message: "Error al intentar obtener la edición",
-      }),
-    );
-  }
-};
-export const getEditionByIdDetail = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const edition = await getEditionByIdService(id);
-
-    if (!edition) {
+    if (error.status === 404) {
       return res
         .status(404)
-        .json(notFoundResponse({ message: "Edición no encontrada" }));
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
     }
-
-    return res.status(200).json(
-      succesGetResponse({
-        resource: "Edición",
-        data: editionDetailDTO(edition),
-      }),
-    );
-  } catch (error) {
-    console.error(error);
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar obtener la edición",
@@ -139,18 +87,11 @@ export const getEditionByIdDetail = async (req, res) => {
     );
   }
 };
-
 export const getEditionByBookId = async (req, res) => {
   const { idBook } = req.params;
 
   try {
-    const editionByBook = await getEditionByBookIdDetailService(idBook);
-
-    if (!editionByBook) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "No existe edición" }));
-    }
+    const editionByBook = await getEditionsByBookIdDetailService(idBook);
 
     return res.status(200).json(
       succesGetResponse({
@@ -167,12 +108,11 @@ export const getEditionByBookId = async (req, res) => {
     );
   }
 };
-
 export const getEditionByBookIdDetail = async (req, res) => {
   const { idBook } = req.params;
 
   try {
-    const editionByBook = await getEditionByBookIdDetailService(idBook);
+    const editionByBook = await getEditionsByBookIdDetailService(idBook);
 
     if (!editionByBook) {
       return res
@@ -205,11 +145,29 @@ export const createEdition = async (req, res) => {
     return res.status(201).json(
       successCreateResponse({
         message: "Edición creada con éxito",
-        data: baseEditionDTO(createdEdition),
+        data: editionDetailDTO(createdEdition),
       }),
     );
   } catch (error) {
     console.error(error);
+    if (error.status === 400) {
+      return res
+        .status(400)
+        .json(
+          badRequestResponse({
+            message: error.message,
+          }),
+        );
+    }
+    if (error.status === 409) {
+      return res
+        .status(409)
+        .json(
+          conflictResponse({
+            message: error.message,
+          }),
+        );
+    }
     return res
       .status(500)
       .json(
@@ -217,7 +175,6 @@ export const createEdition = async (req, res) => {
       );
   }
 };
-
 export const updateEdition = async (req, res) => {
   const { id } = req.params;
   const editionData = req.body;
@@ -233,6 +190,33 @@ export const updateEdition = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
+    if (error.status === 400) {
+      return res
+        .status(400)
+        .json(
+          badRequestResponse({
+            message: error.message,
+          }),
+        );
+    }
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
+    if (error.status === 409) {
+      return res
+        .status(409)
+        .json(
+          conflictResponse({
+            message: error.message,
+          }),
+        );
+    }
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar modificar la edición",
@@ -240,7 +224,6 @@ export const updateEdition = async (req, res) => {
     );
   }
 };
-
 export const deleteWithImageEdition = async (req, res) => {
   const { id } = req.params;
 
@@ -252,8 +235,43 @@ export const deleteWithImageEdition = async (req, res) => {
       .json(successDeleteResponse({ message: "Edición eliminada con éxito", data: deleted }));
   } catch (error) {
     console.error(error);
-    return res.status(error.status || 500).json({
-      message: error.message || "Error al intentar crear el libro",
-    });
+    if (error.status === 400) {
+      return res
+        .status(400)
+        .json(
+          badRequestResponse({
+            message: error.message,
+          }),
+        );
+    }
+
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
+
+    if (error.status === 409) {
+      return res
+        .status(409)
+        .json(
+          conflictResponse({
+            message: error.message,
+          }),
+        );
+    }
+
+    return res
+      .status(500)
+      .json(
+        internalServerResponse({
+          message: "Error al eliminar obtener la edición",
+        }),
+      );
   }
-};
+}
+

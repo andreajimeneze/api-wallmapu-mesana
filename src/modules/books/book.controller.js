@@ -48,36 +48,12 @@ export const getBooksPaginationAndSearch = async (req, res) => {
       .json(internalServerResponse({ message: "Error al obtener los libros" }));
   }
 };
-export const getAllBooks = async(req, res) => {
-  try {
-    const allBooks = await getAllBooksService();
-
-    if(!allBooks || allBooks.length === 0) {
-      return res.status(200).json(succesGetResponse({message: 'No existen libros cargados'}));
-    };
-
-    return res.status(200).json(succesGetResponse({message: 'Libros obtenidos exitosamente', data: allBooks.map(baseBookDTO)}))
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json(
-      internalServerResponse({
-        message: "Error al intentar obtener el libro",
-      }),
-    );
-  }
-};
 export const getBookById = async (req, res) => {
   const idBook = req.params.id;
 
   try {
     const searchedBook = await getBookByIdService(idBook);
 
-   
-    if (!searchedBook) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "Libro no encontrado" }));
-    }
     return res.status(200).json(
       succesGetResponse({
         message: "Libro obtenido exitosamente",
@@ -86,32 +62,24 @@ export const getBookById = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    return res.status(500).json(
-      internalServerResponse({
-        message: "Error al intentar obtener el libro",
-      }),
-    );
-  }
-};
-export const getBookByIdDetail = async (req, res) => {
-  const idBook = req.params.id;
-  try {
-    const searchedBook = await getBookByIdService(idBook);
-
-   
-    if (!searchedBook) {
+    if (error.status === 409) {
+      return res
+        .status(409)
+        .json(
+          conflictResponse({
+            message: error.message,
+          }),
+        );
+    }
+    if (error.status === 404) {
       return res
         .status(404)
-        .json(notFoundResponse({ message: "Libro no encontrado" }));
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
     }
-    return res.status(200).json(
-      succesGetResponse({
-        message: "Libro obtenido exitosamente",
-        data: bookResponseDTO(searchedBook),
-      }),
-    );
-  } catch (error) {
-    console.error(error);
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar obtener el libro",
@@ -133,12 +101,30 @@ export const createBook = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    return res.status(error.status || 500).json({
-      message: error.message || "Error al intentar crear el libro"
-    });
+    if (error.status === 409) {
+      return res
+        .status(409)
+        .json(
+          conflictResponse({
+            message: error.message,
+          }),
+        );
+    }
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
+    res.status(500).json(internalServerResponse({
+      message: "Error al actualizar al autor",
+    }),
+    );
   }
 };
-
 export const updateBook = async (req, res) => {
   const idBook = req.params.id;
   const bookDto = updateBookDTO(req.body);
@@ -154,21 +140,30 @@ export const updateBook = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    if (error.message === "No puede dejar un libro sin autores") {
-      return res.status(409).json(conflictResponse({ message: error.message }));
+    if (error.status === 409) {
+      return res
+        .status(409)
+        .json(
+          conflictResponse({
+            message: error.message,
+          }),
+        );
     }
-
-    if (error.message === "No puede dejar un libro sin descriptores") {
-      return res.status(409).json(conflictResponse({ message: error.message }));
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
     }
-    return res.status(500).json(
-      internalServerResponse({
-        message: "Error al intentar modificar el libro",
-      }),
+    res.status(500).json(internalServerResponse({
+      message: "Error al actualizar al autor",
+    }),
     );
   }
 };
-
 export const deleteBook = async (req, res) => {
   const idBook = req.params.id;
 
@@ -178,15 +173,29 @@ export const deleteBook = async (req, res) => {
       .status(202)
       .json(successDeleteResponse({ message: "Libro eliminado exitosamente" }));
   } catch (error) {
-    if (
-      error.message ===
-      "El libro tiene ediciones asociadas" || error.message ===  "Debe eliminar las ediciones para poder borrar el libro"
-    ) {
-      return res.status(409).json(conflictResponse({ message: error.message }));
-    }
-
     console.error(error);
-
+    if (error.status === 409) {
+      return res
+        .status(409)
+        .json(
+          conflictResponse({
+            message: error.message,
+          }),
+        );
+    }
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
+    res.status(500).json(internalServerResponse({
+      message: "Error al actualizar al autor",
+    }),
+    );
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar eliminar el libro",

@@ -6,7 +6,7 @@ import { normalizePagination } from "../../core/helpers/pagination/nomalizePagin
 import { paginationRequestDTO, paginationResponseDTO, emptyPaginationDTO } from "../../core/responses/paginationResponse.js";
 import { paginationUrl } from "../../core/helpers/pagination/paginationUrl.js";
 import { getAllPaginationService } from "../../core/services/basePagination.service.js";
-import { conflictError, notFoundError } from "../../core/helpers/errors/errors.js";
+import { conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
 
 export const getAllAuthorsPaginationService = async (params) => {
   return await getAllPaginationService(params, getAllAuthorsPaginationRepository, authorResponseDTO);

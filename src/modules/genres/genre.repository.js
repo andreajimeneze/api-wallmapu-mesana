@@ -1,7 +1,6 @@
 import { Op } from "sequelize";
 import { GenreModel } from "../../config/dbSequelize.js";
 
-
 export const getAllGenresPaginationRepository = async ({ page, limit, search }) => {
     const where = search
         ? {
@@ -27,11 +26,9 @@ export const findAllGenresRepository = async () => {
         order: [['name', 'ASC']]
     });
 };
-
 export const findGenreByIdRepository = async (id) => {
     return await GenreModel.findByPk(id);
 };
-
 export const findGenreByNameRepository = async (name) => {
     return await GenreModel.findOne({
         where: {
@@ -58,7 +55,6 @@ export const updateGenreRepository = async (id, data, options = {}) => {
     if(count === 0) return null;
     return updatedGenre;
 };
-
 export const deleteGenreRepository = async (id, options = {}) => {
     return await GenreModel.destroy({
         where: {

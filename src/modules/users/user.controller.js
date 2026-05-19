@@ -103,11 +103,18 @@ export const getUserByIdAdmin = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-  const { id } = req.params;
-  const data = req.body;
+const { id } = req.params;
+console.log('req.params:', req.params);
+console.log('id:', id);
+
+const data = req.body;
+console.log('req.body:', req.body);
+console.log('data (alias req.body):', data);
+
+const userDTO = updateUserDTO(data);
 
   try {
-    const userSelected = await getUserByIdService(id);
+    const userSelected = await updateUserService(id, userDTO);
 
     if (!userSelected) {
       return res

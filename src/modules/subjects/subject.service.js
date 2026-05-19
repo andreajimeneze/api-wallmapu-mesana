@@ -7,7 +7,7 @@ import { normalizePagination } from "../../core/helpers/pagination/nomalizePagin
 import { paginationUrl } from "../../core/helpers/pagination/paginationUrl.js";
 import { findOneBookSubjectBySubjectIdRepository } from "../book_subjects/book_subject.respository.js";
 import { getAllPaginationService } from "../../core/services/basePagination.service.js";
-import { conflictError, notFoundError } from "../../core/helpers/errors/errors.js";
+import { conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
 
 export const getAllSubjectsPaginationService = async (params) => {
   return await getAllPaginationService(params, getAllSubjectsPaginationRepository, subjectResponseDTO);

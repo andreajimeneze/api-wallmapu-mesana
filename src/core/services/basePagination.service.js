@@ -8,6 +8,7 @@ export const getAllPaginationService = async(params, repository, dto) => {
   
   const { page: normalizedPage, limit: normalizedLimit } = normalizePagination(page, limit);
 
+
   const { count: items, rows: result } = await repository({page: normalizedPage, limit: normalizedLimit, search, filter: filter || {}});
 
   const pages = Math.ceil(items / normalizedLimit);

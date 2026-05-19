@@ -41,15 +41,17 @@ export const userCompleteResponseDTO = (user) => ({
     user_status_name: user.userStatus.status
 });
 
-export const updateUserDTO = (data, currentUser) => ({
-      username: data.name ?? currentUser.username,
-      userlastname: data.lastname ?? currentUser.userlastname,
-      rut: data.rut ?? currentUser.rut,
-      address: data.address ?? currentUser.address,
-      phoneNumber: data.phone ?? currentUser.phoneNumber,
-      communeId: data.commune_id ?? currentUser.communeId,
-      userStatusId: data.user_status_id ?? currentUser.userStatusId,
-      userRoleId: data.user_role_id ?? currentUser.userRoleId,
+export const updateUserDTO = (data) => ({
+  idUser: data.id_user,
+  name: data.name,
+  lastname: data.lastname,
+  rut: data.rut,
+  address: data.address,
+  phone: data.phone,
+  emaill: data.email,
+  communeId: data.commune_id,
+  userRoleId: data.user_role_id,
+  userStatusId: data.user_status_id
 });
 
 

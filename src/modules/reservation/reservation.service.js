@@ -126,8 +126,16 @@ export const markAsPickUpService = async (id, copyId) => {
             throw new Error('Reserva no encontrada');
         };
 
-        if (reserve.reservationStatusId !== 1) {
+        if (reserve.reservationStatusId === 2) {
             throw new Error('Libro ya retirado. No puede realizar préstamo.');
+        };
+
+        if (reserve.reservationStatusId === 3) {
+            throw new Error('Reserva fue cancelada. No puede realizar préstamo.');
+        };
+
+                if (reserve.reservationStatusId === 4) {
+            throw new Error('Reserva vencida. Tiene que volver a reservar el libro.');
         };
 
         if (reserve.expirationDate < new Date()) {

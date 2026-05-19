@@ -5,22 +5,11 @@ export const findDefaultLoanPolicyRepository = async () => {
     });
 };
 
-export const getMaxLoanService = async () => {
-    const policy = await LoanPolicyModel.findOne();
-    return policy ? policy.maxDays : 14;
+export const getMaxDaysLoanRepository = async () => {
+    return await LoanPolicyModel.findOne();
+  
 };
 
-export const getReservationDaysService = async () => {
-    const policy = await LoanPolicyModel.findOne();
-    return policy ? policy.reservationDays : 3;
+export const getReservationDaysRepository = async () => {
+    return await LoanPolicyModel.findOne();
 }; 
-
-export const updateLoanPolicyRepository = async (id, policyData) => {
-    const selectedPolicy = await LoanPolicyModel.findByPk(id);
-
-    if (!selectedPolicy) {
-        throw new Error('No existe política de préstamo solicitada');
-    };
-
-    return await selectedPolicy.update(policyData);
-};

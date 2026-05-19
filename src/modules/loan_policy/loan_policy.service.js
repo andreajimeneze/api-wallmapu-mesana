@@ -1,21 +1,21 @@
-import { LoanPolicyModel } from "../../config/dbSequelize.js";
-import { findDefaultLoanPolicyRepository, updateLoanPolicyRepository } from "./loan_policy.repository.js";
+import { notFoundError } from "../../core/helpers/errors/httpErrors.js";
+import { findDefaultLoanPolicyRepository, getMaxDaysLoanRepository, getReservationDaysRepository } from "./loan_policy.repository.js";
 
 
 export const getDefaultPolicyService = async () => {
-    return await findDefaultLoanPolicyRepository();
+    const defaultPolicy = await findDefaultLoanPolicyRepository();
+    if(!defaultPolicy) throw notFoundError();
+    return defaultPolicy;
 };
 
 export const getMaxDaysLoanService = async () => {
-    const policy = await LoanPolicyModel.findOne();
+    const policy = await getMaxDaysLoanRepository();
+    if(!policy) throw notFoundError();
     return policy ? policy.maxDays : 14;
 };
 
 export const getReservationDaysService = async () => {
-    const policy = await LoanPolicyModel.findOne();
-    return policy ? policy.reservationDays : 3;
+    const policy = await getReservationDaysRepository();
+    if(!policy) throw notFoundError();
+     return policy ? policy.reservationDays : 3;
 }; 
-
-export const updateLoanPolicyService = async (id, policyData) => {
-    return updateLoanPolicyRepository(id, policyData);
-};

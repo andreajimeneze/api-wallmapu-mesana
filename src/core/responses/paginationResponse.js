@@ -1,12 +1,12 @@
 export const paginationResponseDTO =
-  ({ page, pages, items, next = 'none', prev = 'none', data = [] }) => {
+  ({ page, pages, items, urlResponse, data = [] }) => {
 
     return {
       page,
       pages,
       items,
-      next,
-      prev,
+      next: urlResponse?.next ?? null,
+      prev: urlResponse?.prev ?? null,
       data
     };
   };
@@ -36,13 +36,3 @@ export const emptyPaginationDTO =  ({ page, pages, items, next, prev, data }) =>
       data: []
     };
   };
-
-// export const reservationPaginationRequestDTO = ({ page, pages, items, search, id_author, id_editorial, id_genre}) => {
-//   return {
-//     page, 
-//     pages, 
-//     items, 
-//     search, 
-//     id_status
-//   };
-// };
