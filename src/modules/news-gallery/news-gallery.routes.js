@@ -17,12 +17,12 @@ router.get("/news/:newsId", getGalleryByNewsId);
 
 router.post(
   "/news/:id",
-  upload.array("files", 3), jwtMiddleware, checkRole(['Admin']),
+  upload.array("files", 3), jwtMiddleware, checkRole('Admin'),
   createGalleryByNewsId,
 );
 
-router.delete('/:id', jwtMiddleware, checkRole(['Admin']), deleteImageByIdGallery);
+router.delete('/:id', jwtMiddleware, checkRole('Admin'), deleteImageByIdGallery);
 
-router.delete('/news/:id', jwtMiddleware, checkRole(['Admin']), deleteGalleryByNewsId);
+router.delete('/news/:id', jwtMiddleware, checkRole('Admin'), deleteGalleryByNewsId);
 
 export default router;

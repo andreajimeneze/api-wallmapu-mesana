@@ -68,214 +68,7 @@ export const getAllLoansAndSearchRepository = async ({
     });
     return { count: items, rows: result };
 };
-export const findAllLoansRepository = async () => {
-    return await LoanModel.findAll({
-        order: [['loanDate', 'DESC']],
-        include: [
-            {
-                model: UserModel,
-                as: 'user'
-            },
-            {
-                model: CopyModel,
-                as: 'copy'
-            },
-            {
-                model: LoanStatusModel,
-                as: 'loanStatus',
-                attributes: ['idLoanStatus', 'name']
-            }
-        ]
-    });
-};
-
-export const findLoanByIdRepository = async (id) => {
-    return await LoanModel.findByPk(id, {
-        include: [
-            {
-                model: UserModel,
-                as: 'user'
-            },
-            {
-                model: CopyModel,
-                as: 'copy'
-            },
-            {
-                model: LoanStatusModel,
-                as: 'loanStatus',
-                attributes: ['idLoanStatus', 'name']
-            }
-        ]
-    })
-};
-
-export const findActiveLoansByUserIdRepository = async (userId) => {
-    return await LoanModel.findAll({
-        where: {
-            userId: userId,
-            loanStatusId: {
-                [Op.in]: [1, 3]
-            }
-        },
-        include: [
-            {
-                model: UserModel,
-                as: 'user'
-            },
-            {
-                model: CopyModel,
-                as: 'copy'
-            },
-            {
-                model: LoanStatusModel,
-                as: 'loanStatus',
-                attributes: ['idLoanStatus', 'name']
-            }
-        ]
-    })
-};
-
-export const countLoansOverDueByUserRepository = async (userId) => {
-    return await LoanModel.count({
-        where: {
-            userId: userId,
-            loanStatusId: 3
-        }
-    })
-};
-
-export const countLoansActiveByUserRepository = async (userId) => {
-    return await LoanModel.count({
-        where: {
-            userId: userId,
-            loanStatusId: 1
-        }
-    })
-};
-
-export const countLoansByUserRepository = async (userId) => {
-    return await LoanModel.count({
-        where: {
-            userId: userId,
-            loanStatusId: { [Op.in]: [1, 3] }
-        }
-    })
-}
-
-export const findActiveLoansByCopyIdRepository = async (copyId) => {
-    return await LoanModel.findOne({
-        where: {
-            copyId: copyId,
-            loanStatusId: {
-                [Op.in]: [1, 3]
-            }
-        },
-        include: [
-            {
-                model: UserModel,
-                as: 'user'
-            },
-            {
-                model: CopyModel,
-                as: 'copy'
-            },
-            {
-                model: LoanStatusModel,
-                as: 'loanStatus',
-                attributes: ['idLoanStatus', 'name']
-            }
-        ]
-    })
-};
-
-export const findActiveLoansByBookIdRepository = async (bookId) => {
-    return await LoanModel.findAll({
-        where: {
-            loanStatusId: {
-                [Op.in]: [1, 3]
-            }
-        },
-        include: [
-            {
-                model: CopyModel,
-                as: 'copy',
-                required: true,
-                attributes: ['idCopy', 'barcode'],
-                include: [
-                    {
-                        model: EditionModel,
-                        as: 'edition',
-                        required: true,
-                        include: [
-                            {
-                                model: BookModel,
-                                as: 'book',
-                                attributes: ['idBook', 'title'],
-                                required: true,
-                                where: {
-                                    idBook: bookId
-                                }
-                            }
-                        ]
-                    },
-                ]
-            },
-            {
-                model: UserModel,
-                as: 'user',
-                attributes: ['idUser', 'username', 'userlastname'],
-                required: false
-            },
-            {
-                model: LoanStatusModel,
-                as: 'loanStatus',
-                attributes: ['idLoanStatus', 'name'],
-                required: false
-            }
-        ]
-    })
-};
-
-export const findLoansOverDueRepository = async () => {
-    return await LoanModel.findAll({
-        where: {
-            dueDate: {
-                [Op.lt]: new Date()
-            },
-            loanStatusId: 3
-        },
-        include: [
-            {
-                model: UserModel,
-                as: 'user'
-            },
-            {
-                model: CopyModel,
-                as: 'copy',
-                include: [
-                    {
-                        model: EditionModel,
-                        as: 'edition',
-                        include: [
-                            {
-                                model: BookModel,
-                                as: 'book'
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                model: LoanStatusModel,
-                as: 'loanStatus',
-                attributes: ['idLoanStatus', 'name']
-            }
-        ]
-    })
-};
-
 export const getLoansOverDueByIdRepository = async (userId, dueDate) => {
-
     return await LoanModel.findOne({
         where: {
             dueDate: {
@@ -312,26 +105,26 @@ export const getLoansOverDueByIdRepository = async (userId, dueDate) => {
         ]
     })
 };
-
 export const createLoanRepository = async (loanData, options = {}) => {
-    return await LoanModel.create(loanData, { transaction: options.transaction });
+    return await LoanModel.create(loanData, options);
 };
-
-export const returnLoanByCopyIdRepository = async (copyId, options = {}) => {
-    return await LoanModel.update(
+export const returnLoanByIdRepository = async (idLoan, options = {}) => {
+    const[count, returnedLoad] =  await LoanModel.update(
         {
-            loanStatusId: 2
+            loanStatusId: 2,
+            returnDate: new Date()
         },
         {
             where: {
-                copyId: copyId
+                idLoan: idLoan
             },
-            ...options
+            ...options, returning: true
         })
+        console.log('count returnLoad: ', count)
+    return returnedLoad;
 };
-
-export const markLoanAsExpireOverdueRepository = async () => {
-    const [affectedRows] = await LoanModel.update(
+export const markLoanAsExpireOverdueRepository = async (options = {}) => {
+    const [count, affectedRows] = await LoanModel.update(
         { loanStatusId: 3 },
         {
             where: {
@@ -339,18 +132,16 @@ export const markLoanAsExpireOverdueRepository = async () => {
                     [Op.lt]: new Date()
                 },
                 loanStatusId: 1
-            }
+            }, ...options, returning: true
         }
     );
-
     return affectedRows;
 };
-
 export const findActiveLoanByBarcodeRepository = async (barcode) => {
     return await LoanModel.findOne({
         where: {
             loanStatusId: {
-                [Op.in]: [1]
+                [Op.in]: [1, 3]
             }
         },
         include: [
@@ -382,9 +173,57 @@ export const findActiveLoanByBarcodeRepository = async (barcode) => {
             {
                 model: LoanStatusModel,
                 as: 'loanStatus',
-                //attributes: [['idLoanStatus', 'id_status'],
-                //    'name']
             }
         ]
     })
+};
+
+export const countLoansOverDueByUserRepository = async (userId) => {
+    return await LoanModel.count({
+        where: {
+            userId: userId,
+            loanStatusId: 3
+        }
+    })
+};
+export const countLoansActiveByUserRepository = async (userId) => {
+    return await LoanModel.count({
+        where: {
+            userId: userId,
+            loanStatusId: 1
+        }
+    })
+};
+export const countLoansByUserRepository = async (userId) => {
+    return await LoanModel.count({
+        where: {
+            userId: userId,
+            loanStatusId: { [Op.in]: [1, 3] }
+        }
+    })
 }
+export const findActiveLoanByCopyIdRepository = async (copyId) => {
+    return await LoanModel.findOne({
+        where: {
+            copyId: copyId,
+            loanStatusId: {
+                [Op.in]: [1, 3]
+            }
+        },
+        include: [
+            {
+                model: UserModel,
+                as: 'user'
+            },
+            {
+                model: CopyModel,
+                as: 'copy'
+            },
+            {
+                model: LoanStatusModel,
+                as: 'loanStatus',
+                attributes: ['idLoanStatus', 'name']
+            }
+        ]
+    })
+};

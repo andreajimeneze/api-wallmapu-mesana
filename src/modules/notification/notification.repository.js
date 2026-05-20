@@ -18,7 +18,7 @@ export const getAllNotificationPaginationRepository = async ({ page, limit, sear
         where.userId = userId
     }
 
-    if (isRead != undefined) {
+    if (isRead !== undefined) {
         where.isRead = isRead;
     }
 

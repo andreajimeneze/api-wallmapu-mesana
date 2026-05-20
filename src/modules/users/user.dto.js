@@ -11,44 +11,54 @@ export const baseUserDTO = (user) => ({
 
 export const userResponseDTO = (user) => ({
     id_user: user.idUser,
-    name: user.username,
-    lastname: user.userlastname,
-    email: user.email,
-    rut: user.rut,
-    address: user.address,
-    commune_id: user.communeId,
-    phone: user.phoneNumber,
+    name: user.username ?? '',
+    lastname: user.userlastname ?? '',
+    email: user.email ?? '',
+    rut: user.rut ?? '',
+    address: user.address ?? '',
+    commune_id: user.communeId ?? 0,
+    phone: user.phoneNumber ?? '',
     user_role_id: user.userRoleId,
     user_status_id: user.userStatusId,
-    created_at: user.created_at,
-    updated_at: user.updated_at
+    created_at: user.createdAt,
+    updated_at: user.updatedAt
 });
 
 export const userCompleteResponseDTO = (user) => ({
     id_user: user.idUser,
-    name: user.username,
-    lastname: user.userlastname,
-    email: user.email,
-    rut: user.rut,
-    address: user.address,
-    commune_id: user.communeId,
-    phone: user.phoneNumber,
+    name: user.username ?? '',
+    lastname: user.userlastname ?? '',
+    email: user.email ?? '',
+    rut: user.rut ?? '',
+    address: user.address ?? '',
+    commune_id: user.communeId ?? 0,
+    phone: user.phoneNumber ?? '',
     user_role_id: user.userRoleId,
     user_status_id: user.userStatusId,
-    created_at: user.created_at,
-    updated_at: user.updated_at,
-    user_role_name: user.userRole.role,
-    user_status_name: user.userStatus.status
+    created_at: user.createdAt,
+    updated_at: user.updatedAt,
+    user_role_name: user.userRole?.role ?? '',
+    user_status_name: user.userStatus?.status ?? ''
 });
 
+
 export const updateUserDTO = (data) => ({
-  idUser: data.id_user,
-  name: data.name,
-  lastname: data.lastname,
+  username: data.name,
+  userlastname: data.lastname,
   rut: data.rut,
   address: data.address,
-  phone: data.phone,
-  emaill: data.email,
+  phoneNumber: data.phone,
+  email: data.email,
+  communeId: data.commune_id,
+});
+
+export const updateUserByAdminDTO = (data) => ({
+  username: data.name,
+  userlastname: data.lastname,
+  rut: data.rut,
+  address: data.address,
+  phoneNumber: data.phone,
+  email: data.email,
   communeId: data.commune_id,
   userRoleId: data.user_role_id,
   userStatusId: data.user_status_id

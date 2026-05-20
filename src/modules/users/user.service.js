@@ -9,77 +9,31 @@ import { paginationResponseDTO } from "../../core/responses/paginationResponse.j
 import { userCompleteResponseDTO, userResponseDTO } from "./user.dto.js";
 import { isProfileComplete } from '../auth/utils/profileComplete.js';
 import { getAllPaginationService } from "../../core/services/basePagination.service.js";
-import { getAllUsersPaginationWithSearchRepository } from "./user.repository.js";
+import { createUserRepository, findUserByEmailRepository, findUserByIdRepository, getAllUsersPaginationWithSearchRepository, updateUserRepository } from "./user.repository.js";
+import { notFoundError, unauthorizedError } from "../../core/helpers/errors/httpErrors.js";
 
 export const getUsersPaginationSearchService = async (params) => {
   return await getAllPaginationService(params, getAllUsersPaginationWithSearchRepository, userCompleteResponseDTO);
 };
 
 export const getUserByIdService = async (id) => {
-  return await UserModel.findByPk(id, {
-    include: [
-      {
-        model: CommuneModel,
-        as: "commune",
-        attributes: ["idCommune", "commune"],
-      },
-      {
-        model: UserStatusModel,
-        as: "userStatus",
-        attributes: ["idUserStatus", "status"],
-      },
-      {
-        model: UserRoleModel,
-        as: "userRole",
-        attributes: ["idUserRole", "role"],
-      },
-    ],
-  });
+ const user = await findUserByIdRepository(id);
+ if(!user) throw notFoundError();
+ return user;
 };
 
 export const getUserByEmailService = async (email) => {
-  return await UserModel.findOne({
-    where: { email },
-    include: [
-      {
-        model: CommuneModel,
-        as: "commune",
-        attributes: ["idCommune", "commune", "provinceId"],
-      },
-      {
-        model: UserStatusModel,
-        as: "userStatus",
-        attributes: ["idUserStatus", "status"],
-      },
-      {
-        model: UserRoleModel,
-        as: "userRole",
-        attributes: ["idUserRole", "role"],
-      },
-    ],
-  });
+  const userByEmail = await findUserByEmailRepository(email);
+  if(!userByEmail) throw notFoundError();
+  return userByEmail;
 };
 
-export const createUserService = async (user) => {
-  const userCreated = await UserModel.create({
-    email: user.email,
-    userRoleId: 3,
-    userStatusId: 1,
-    createdAt: now(),
-    updatedAt: now(),
-  });
-
-  return userCreated;
+export const createUserService = async (user, options = {}) => {
+  return await createUserRepository(user, options);
 };
 
-export const updateUserService = async (id, userData) => {
-  const userSelected = await UserModel.findByPk(id);
-
-  if (!userSelected) return null;
-
- return await userSelected.update({
-    ...userData
-  });
-
-   
+export const updateUserService = async (id, userData, options = {}) => {
+ const user = await findUserByIdRepository(id);
+ if(!user) throw notFoundError();
+ return await updateUserRepository(id, userData, options);   
 };

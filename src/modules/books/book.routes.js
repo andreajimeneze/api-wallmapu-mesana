@@ -8,10 +8,10 @@ router.get('/pagination', getBooksPaginationAndSearch);
 
 router.get('/:id', getBookById);
 
-router.post('/', jwtMiddleware, checkRole(['Admin']), createBook);
+router.post('/', jwtMiddleware, checkRole('Admin'), createBook);
 
-router.put('/:id', jwtMiddleware, checkRole(['Admin']), updateBook);
+router.put('/:id', jwtMiddleware, checkRole('Admin'), updateBook);
 
-router.delete('/:id', jwtMiddleware, checkRole(['Admin']), deleteBook);
+router.delete('/:id', jwtMiddleware, checkRole('Admin'), deleteBook);
 
 export default router;

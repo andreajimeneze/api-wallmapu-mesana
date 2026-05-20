@@ -41,9 +41,8 @@ export const createEditionService = async (editionData) => {
 export const updateEditionService = async (id, editionData) => {
   try {
     const updated  = await updateEditionRepository(id, editionData);
-    if (!updated) {
-      throw notFoundError();
-    }
+    if (!updated) throw notFoundError();
+
     return updated;
 
   } catch (error) {

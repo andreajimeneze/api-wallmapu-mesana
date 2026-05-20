@@ -38,7 +38,6 @@ export const getAllCopiesAvailableByBookService = async (bookId, statusId) => {
       availability_status
     }
   });
-  console.log(data)
   return data;
 };
 export const getCopyByIdService = async (id) => {
@@ -63,15 +62,12 @@ export const createCopyService = async (copyData) => {
 };
 export const updateCopyService = async (id, copyData, options = {}) => {
    const { editionId, copyNumber, signatureTopography } = copyData;
-
+console.log('copyNumber: ', copyNumber)
   const copy = await findCopyByIdRepository(id);
   if(!copy) throw notFoundError();
-  const edition = await findEditionByIdRepository(editionId);
-  if(!edition) throw notFoundError();
 
-  const existingCopy = await existingCopyRespository(copyNumber, editionId, edition.bookId, id);
+  const existingCopy = await existingCopyRespository(copyNumber, editionId,  id);
   const existingSignature = await existingSignatureRepository(signatureTopography, id);
-
 
   if (existingCopy) throw conflictError('Número de copia ya existe');
   if (existingSignature) throw conflictError("Signatura ya existe");

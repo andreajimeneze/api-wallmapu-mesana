@@ -134,11 +134,6 @@ export const getBookPaginationRepository = async ({ page, limit, search }) => {
         rows: plainBooks
     };
 };
-
-export const findAllBooksRepository = async () => {
-    return await BookModel.findAll();
-};
-
 export const findBookByIdRepository = async (id) => {
     return await BookModel.findByPk(id, {
         include: [
@@ -183,17 +178,14 @@ export const findBookByIdRepository = async (id) => {
         ],
     });
 };
-
 export const findBookByTitleRepository = async (title) => {
     return await BookModel.findOne({
         where: { title: { [Op.iLike]: title.trim() } }
     });
 };
-
 export const createBookRepository = async (data, options = {}) => {
     return await BookModel.create(data, options);
 };
-
 export const updateBookRepository = async (id, data, options = {}) => {
     const [count, [updatedBook]] = await BookModel.update(data, {
         where: {
@@ -202,7 +194,6 @@ export const updateBookRepository = async (id, data, options = {}) => {
     });
     return updatedBook;
 };
-
 export const deleteBookRepository = async (id, options = {}) => {
     return await BookModel.destroy({
         where: {

@@ -8,8 +8,8 @@ router.get('/', getAllEditorials);
 
 router.get('/:id', getEditorialById);
 
-router.post('/', jwtMiddleware, checkRole(['Admin']),createEditorial);
+router.post('/', jwtMiddleware, checkRole('Admin'),createEditorial);
 
-router.put('/:id', jwtMiddleware, checkRole(['Admin']), updateEditorial);
+router.put('/:id', jwtMiddleware, checkRole('Admin'), updateEditorial);
 
 export default router;

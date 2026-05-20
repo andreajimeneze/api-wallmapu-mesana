@@ -15,3 +15,9 @@ export const badRequesError = (message) => {
     error.status = 400;
     return error;
 }
+
+export const unauthorizedError = (message = 'Usuario no authorizado') => {
+    const error = new Error(message);
+    error.status = 401;
+    return error;
+}

@@ -1,48 +1,47 @@
 import { CommuneModel, UserModel, UserRoleModel, UserStatusModel } from "../../config/dbSequelize.js";
 
-export const getAllUsersPaginationWithSearchRepository = async({page, limit, search}) => {
+export const getAllUsersPaginationWithSearchRepository = async ({ page, limit, search }) => {
     const include = [
-      {
-        model: CommuneModel,
-        as: "commune",
-        attributes: ["idCommune", "commune", "provinceId"],
-      },
-      {
-        model: UserStatusModel,
-        as: "userStatus",
-        attributes: ["idUserStatus", "status"],
-      },
-      {
-        model: UserRoleModel,
-        as: "userRole",
-        attributes: ["idUserRole", "role"],
-      },
+        {
+            model: CommuneModel,
+            as: "commune",
+            attributes: ["idCommune", "commune", "provinceId"],
+        },
+        {
+            model: UserStatusModel,
+            as: "userStatus",
+            attributes: ["idUserStatus", "status"],
+        },
+        {
+            model: UserRoleModel,
+            as: "userRole",
+            attributes: ["idUserRole", "role"],
+        },
     ];
- 
-  const where = search
-    ? {
-        [Op.or]: [
-          { username: { [Op.iLike]: `%${search}%` } },
-          { lastname: { [Op.iLike]: `%${search}%` } },
-          { email: { [Op.iLike]: `%${search}%` } }
-        ],
-      }
-    : {};
-  
-  const offset = (page - 1) * limit;
 
-  const items = await UserModel.count({where});
-  const result = await UserModel.findAll({
-    where,
-    include,
-    limit,
-    offset,
-    distinct: true,
-  });
+    const where = search
+        ? {
+            [Op.or]: [
+                { username: { [Op.iLike]: `%${search}%` } },
+                { lastname: { [Op.iLike]: `%${search}%` } },
+                { email: { [Op.iLike]: `%${search}%` } }
+            ],
+        }
+        : {};
 
-  return { count: items, rows: result };
+    const offset = (page - 1) * limit;
+
+    const items = await UserModel.count({ where });
+    const result = await UserModel.findAll({
+        where,
+        include,
+        limit,
+        offset,
+        distinct: true,
+    });
+
+    return { count: items, rows: result };
 };
-
 export const findUserByIdRepository = async (id) => {
     return await UserModel.findByPk(id, {
         include: [
@@ -64,7 +63,6 @@ export const findUserByIdRepository = async (id) => {
         ],
     });
 };
-
 export const findUserByEmailRepository = async (email) => {
     return await UserModel.findOne({
         where: { email },
@@ -87,23 +85,26 @@ export const findUserByEmailRepository = async (email) => {
         ],
     });
 };
-
-export const createUserRepository = async (user) => {
+export const createUserRepository = async (user, options = {}) => {
     return await UserModel.create({
         email: user.email,
         userRoleId: 3,
-        userStatusId: 1,
-        createdAt: now(),
-        updatedAt: now(),
-    });
+        userStatusId: 1
+    }, options);
 };
+export const updateUserRepository = async (id, userData, options = {}) => {
+    const [count, updatedUsers] = await UserModel.update(
+        userData ,
+        {
+            where: {
+                idUser: id
+            }, ...options, returning: true
+        }
+    );
+    if (count === 0) return null;
 
-export const updateUserRepository = async (id, userData) => {
-    const userSelected = await UserModel.findByPk(id);
+    console.log('updatedUsers: ', updatedUsers)
+    return updatedUsers[0];
 
-    if (!userSelected) return null;
-
-    return await userSelected.update({
-        ...userData
-    });
+    //return updatedUser;
 };

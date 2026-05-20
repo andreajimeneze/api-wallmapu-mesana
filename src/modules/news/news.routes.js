@@ -17,17 +17,17 @@ router.get('/', getNewsPaginationAndSearch);
 
 router.get('/:idNews', getNewsById);
 
-router.post('/', jwtMiddleware, checkRole(['Admin']), createNews);
+router.post('/', jwtMiddleware, checkRole('Admin'), createNews);
 
 router.post(
   '/images',
-  upload.array('files', 3), jwtMiddleware, checkRole(['Admin']),
+  upload.array('files', 3), jwtMiddleware, checkRole('Admin'),
   createNewsWithImages
 );
 
-router.put('/:id', jwtMiddleware, checkRole(['Admin']), updateNews);
+router.put('/:id', jwtMiddleware, checkRole('Admin'), updateNews);
 
-router.delete('/:id', jwtMiddleware, checkRole(['Admin']), deleteNews);
+router.delete('/:id', jwtMiddleware, checkRole('Admin'), deleteNews);
 
 
 export default router;

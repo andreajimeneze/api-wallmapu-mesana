@@ -1,19 +1,21 @@
 import express from 'express';
-import { createUser, getUserByIdUser, getUserByIdAdmin, getUsersPaginationSearch, updateUser } from '../users/user.controller.js';
+import { getUserByIdUser, getUsersPaginationSearch, updateUser, updateUserByAdmin } from '../users/user.controller.js';
 import { authorizedRoles, checkRole, jwtMiddleware } from '../auth/auth.middleware.js';
 
 const router = express.Router();
 
-router.get('/pagination', jwtMiddleware, checkRole(['Admin']), getUsersPaginationSearch);
+router.get('/pagination', jwtMiddleware, checkRole('Admin'), getUsersPaginationSearch);
 
-router.get('/:id', jwtMiddleware, checkRole(['Admin', 'Lector']), getUserByIdUser);
+router.get('/:id', jwtMiddleware, checkRole('Admin', 'Lector'), 
+    getUserByIdUser);
 
-router.get('/admin/:id', jwtMiddleware, checkRole(['Admin']), getUserByIdAdmin);
+// router.get('/admin/:id', jwtMiddleware, checkRole('Admin'), getUserByIdAdmin);
 
-router.put('/:id', updateUser);
+router.put('/:id', 
+    //jwtMiddleware, authorizedRoles('Lector'), 
+    updateUser);
 
-router.put('/admin/:id', jwtMiddleware, authorizedRoles(['Admin']), updateUser);
+router.put('/admin/:id', jwtMiddleware, authorizedRoles('Admin'), updateUserByAdmin);
 
-router.post('/', createUser);
 
 export default router;

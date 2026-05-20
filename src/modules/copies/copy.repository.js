@@ -96,14 +96,28 @@ export const createCopyRepository = async (copyData) => {
     return await CopyModel.create(copyData);
 };
 export const updateCopyRepository = async (id, data, options = {}) => {
-    const [count, [updatedCopy]] = await CopyModel.update(data, {
+    const [count, updatedCopy] = await CopyModel.update(data, {
         where: {
             idCopy: id
         }, ...options, returning: true
     });
-    if (count === 0) return null;
+
     return updatedCopy;
 };
+
+export const updateStatusCopyRepository = async (idCopy, currentStatusId, statusId, options = {}) => {
+    return await CopyModel.update(
+        { 
+            statusId:  statusId
+        },
+        {
+            where: {
+                idCopy: idCopy,
+                statusId: currentStatusId
+            }
+        }
+    )
+}
 export const deleteCopyRepository = async (id, options = {}) => {
     return await CopyModel.destroy({
         where: {
@@ -111,37 +125,26 @@ export const deleteCopyRepository = async (id, options = {}) => {
         }, ...options
     });
 };
-export const existingCopyRespository = async (copyNumber, editionId, bookId, excludeId) => {
-    const where = {
-        copyNumber: copyNumber,
-    };
-
-    if (excludeId != null) {
-        where.idCopy = { [Op.ne]: excludeId };
-    }
-
-    return await CopyModel.findOne({
-        where,
-        include: [{
-            model: EditionModel,
-            as: 'edition',
-            where: {
-                bookId
-            },
-            attributes: []
-        }]
-    });
+export const existingCopyRespository = async (copyNumber, editionId, excludeId) => {
+    return CopyModel.findOne({
+        where: {
+            copyNumber: copyNumber,
+            editionId: editionId,
+            idCopy: {
+                [Op.ne]: excludeId
+            }
+        }
+    })
 };
 export const existingSignatureRepository = async (signature, excludeId = null) => {
-    const where = {
-        signatureTopography: signature,
-    };
-
-    if (excludeId != null) {
-        where.idCopy = { [Op.ne]: excludeId };
-    }
-
-    return await CopyModel.findOne({ where });
+    return await CopyModel.findOne({
+        where: {
+            signatureTopography: signature,
+            idCopy: {
+                [Op.ne]: excludeId
+            }
+        }
+    });
 };
 export const existingCopiesByEditionRepository = async (editionId) => {
     return await CopyModel.count({ where: { editionId } });

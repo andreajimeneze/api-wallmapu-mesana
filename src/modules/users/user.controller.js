@@ -1,5 +1,4 @@
 import {
-  createUserService,
   getUserByIdService,
   getUsersPaginationSearchService,
   updateUserService,
@@ -11,6 +10,7 @@ import {
   notFoundResponse,
 } from "../../core/responses/apiResponse.js";
 import { updateUserDTO, userResponseDTO } from "./user.dto.js";
+import { unauthorizedError } from "../../core/helpers/errors/httpErrors.js";
 
 export const getUsersPaginationSearch = async (req, res) => {
   try {
@@ -45,19 +45,11 @@ export const getUsersPaginationSearch = async (req, res) => {
     );
   }
 };
-
 export const getUserByIdUser = async (req, res) => {
   const { id } = req.params;
-
+  console.log('Ruta getUserByIdUser')
   try {
     const userSelected = await getUserByIdService(id);
-
-    if (!userSelected) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "No existe usuario" }));
-    }
-
     return res.status(200).json(
       succesGetResponse({
         message: "Usuario encontrado con éxito",
@@ -66,6 +58,15 @@ export const getUserByIdUser = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar obtener al usuario",
@@ -73,54 +74,84 @@ export const getUserByIdUser = async (req, res) => {
     );
   }
 };
+// export const getUserByIdAdmin = async (req, res) => {
+//   const { id } = req.params;
+//  console.log('Ruta getUserByIdAdmin')
+//   try {
+//     const userSelected = await getUserByIdService(id);
 
-export const getUserByIdAdmin = async (req, res) => {
+//     return res.status(200).json(
+//       succesGetResponse({
+//         message: "Usuario Admin encontrado con éxito",
+//         data: userResponseDTO(userSelected),
+//       }),
+//     );
+//   } catch (error) {
+//     console.error(error);
+//     if (error.status === 404) {
+//       return res
+//         .status(404)
+//         .json(
+//           notFoundResponse({
+//             message: error.message,
+//           }),
+//         );
+//     }
+//     return res.status(500).json(
+//       internalServerResponse({
+//         message: "Error al intentar obtener al usuario",
+//       }),
+//     );
+//   }
+// };
+export const updateUser = async (req, res) => {
   const { id } = req.params;
+  const id_user = req.user.sub;
+  console.log(req.user.sub);
+  const data = req.body;
+  const userDTO = updateUserDTO(data);
+  if(id !== id_user) throw unauthorizedError();
+  console.log('userDto: ', userDTO)
+   console.log('req.body update user: ', req.body);
+ console.log('Ruta updateUser')
 
   try {
-    const userSelected = await getUserByIdService(id);
-
-    if (!userSelected) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "No existe usuario" }));
-    }
+    const updatedUser = await updateUserService(id, userDTO);
 
     return res.status(200).json(
       succesGetResponse({
-        message: "Usuario Admin encontrado con éxito",
-        data: userResponseDTO(userSelected),
+        message: "Usuario editado exitosamente",
+        data: userResponseDTO(updatedUser),
       }),
     );
   } catch (error) {
     console.error(error);
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
     return res.status(500).json(
       internalServerResponse({
-        message: "Error al intentar obtener al usuario",
+        message: "Error al intentar editar al usuario",
       }),
     );
   }
 };
 
-export const updateUser = async (req, res) => {
-const { id } = req.params;
-console.log('req.params:', req.params);
-console.log('id:', id);
+export const updateUserByAdmin = async (req, res) => {
+  const { id } = req.params;
 
-const data = req.body;
-console.log('req.body:', req.body);
-console.log('data (alias req.body):', data);
-
-const userDTO = updateUserDTO(data);
-
+  const data = req.body;
+  const userDTO = updateUserByAdmin(data);
+   console.log('req.body update user: ', req.body);
+ console.log('Ruta updateUser')
   try {
     const userSelected = await updateUserService(id, userDTO);
-
-    if (!userSelected) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "No existe usuario" }));
-    }
 
     const dtoData = updateUserDTO(data, userSelected);
 
@@ -133,32 +164,19 @@ const userDTO = updateUserDTO(data);
       }),
     );
   } catch (error) {
+    console.error(error);
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(
+          notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar editar al usuario",
-      }),
-    );
-  }
-};
-
-export const createUser = async (req, res) => {
-  const { name, email } = req.body;
-  const data = { name, email };
-  try {
-    const createdUser = await createUserService(data);
-
-    return res
-      .status(201)
-      .json(
-        succesGetResponse({
-          message: "Usuario creado exitosamente",
-          data: createdUser,
-        }),
-      );
-  } catch (error) {
-    return res.status(500).json(
-      internalServerResponse({
-        message: "Error al intentar crear al usuario",
       }),
     );
   }

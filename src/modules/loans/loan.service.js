@@ -3,49 +3,19 @@ import { loanBasicResponseDTO } from "./loan.dto.js";
 import { getMaxDaysLoanService } from "../loan_policy/loan_policy.service.js";
 import { paginationResponseDTO } from '../../core/responses/paginationResponse.js';
 import { Copy } from "../copies/copy.model.js";
-import { countLoansByUserRepository, createLoanRepository, findActiveLoanByBarcodeRepository, findActiveLoansByBookIdRepository, findActiveLoansByCopyIdRepository, findActiveLoansByUserIdRepository, findAllLoansRepository, findLoanByIdRepository, findLoansOverDueRepository, getAllLoansAndSearchRepository, getLoansOverDueByIdRepository, markLoanAsExpireOverdueRepository, returnLoanByCopyIdRepository } from "./loan.repository.js";
+import { countLoansByUserRepository, createLoanRepository, findActiveLoanByBarcodeRepository, findActiveLoanByCopyIdRepository, getAllLoansAndSearchRepository, getLoansOverDueByIdRepository, markLoanAsExpireOverdueRepository, returnLoanByIdRepository } from "./loan.repository.js";
 import { Op } from "sequelize";
 import { getAllPaginationService } from "../../core/services/basePagination.service.js";
 import { getCopyByIdService, updateCopyService } from "../copies/copy.service.js";
+import { conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
+import { findCopyByIdRepository, updateStatusCopyRepository } from "../copies/copy.repository.js";
+
 export const getLoansAndSearchService = async (params) => {
     return await getAllPaginationService(params, getAllLoansAndSearchRepository, loanBasicResponseDTO);
 };
-
-export const getAllLoansService = async () => {
-    return await findAllLoansRepository();
-};
-
-export const getLoanByIdService = async (id) => {
-    return await findLoanByIdRepository(id);
-};
-
-export const getActiveLoansByUserIdService = async (userId) => {
-    return await findActiveLoansByUserIdRepository(userId);
-};
-
-export const getActiveLoansByCopyIdService = async (copyId) => {
-    return await findActiveLoansByCopyIdRepository(copyId);
-};
-
-export const getActiveLoansByBookIdService = async (bookId) => {
-    return await findActiveLoansByBookIdRepository(bookId);
-};
-
 export const getLoansOverDueService = async () => {
     return await findLoansOverDueRepository();
 };
-
-export const getLoansOverDueByUserIdService = async (userId) => {
-    const today = new Date();
-    today.setHours(23, 59, 59, 999);
-
-    return await findLoansOverDueRepository(userId, today);
-};
-
-// export const countLoansOverDueByUserService = async (userId) => {
-//     return await countLoansOverDueByUserRepository(userId);
-// };
-
 export const createLoanService = async (loanData) => {
     const loanPolicy = await getMaxDaysLoanService();
     const loanDate = new Date();
@@ -62,7 +32,7 @@ export const createLoanService = async (loanData) => {
 
     const overdueLoans = await getLoansOverDueByIdRepository(loanData.userId);
 
-    if (overdueLoans != null) {
+    if (overdueLoans !== null) {
         throw new Error('Usuario tiene un préstamo vencido');
     };
 
@@ -74,46 +44,36 @@ export const createLoanService = async (loanData) => {
         loanStatusId: 1
     });
 };
+export const returnLoanByCopyIdService = async (copyId, options = {}) => {
+    const loan = await findActiveLoanByCopyIdRepository(copyId);
+    if(!loan) throw notFoundError();
 
-export const returnLoanByCopyIdService = async (copyId) => {
+    if (loan.loanStatusId === 2) throw conflictError('Ejemplar ya fue devuelto');
 
-    const loan = await findActiveLoansByBookIdRepository(copyId);
-
-    if (!loan) {
-        throw new Error('No existe préstamo activo para este ejemplar');
-    };
-
-    const copy = await getCopyByIdService(copyId);
+    const copy = await findCopyByIdRepository(copyId);
+    if(!copy) throw notFoundError();
+    if(copy.statusId !== 2) throw conflictError('Copia no se encuentra prestada');
     
-
-    if (!copy) {
-        throw new Error('No existe copia asociada al préstamo');
-    };
-
-    if (loan.loanStatusId == 2) {
-        throw new Error('Ejemplar ya fue devuelto');
-    };
-
     const transaction = await sequelize.transaction();
 
+    const statusId = 1
+
     try {
-        const updatedLoan = await returnLoanByCopyIdRepository(copyId, { transaction });
-        const updatedCopy = await updateCopyService(copy.idCopy, {statusId: 1}, { transaction })
+        const updatedLoan = await returnLoanByIdRepository(copyId, { transaction });
+        const updatedCopy = await updateStatusCopyRepository(copyId, copy.statusId, statusId, { transaction })
 
         await transaction.commit();
-
         return updatedLoan
     } catch (error) {
         await transaction.rollback();
         throw error;
     }
-
 };
-
 export const markLoanAsExpireOverdueService = async () => {
     return await markLoanAsExpireOverdueRepository();
 };
-
 export const getActiveLoanByBarcodeService = async (barcode) => {
-    return await findActiveLoanByBarcodeRepository(barcode);
+    const activeLoan = await findActiveLoanByBarcodeRepository(barcode);
+    if(!activeLoan) throw notFoundError();
+    return activeLoan;
 };

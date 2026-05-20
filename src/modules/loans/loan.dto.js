@@ -6,8 +6,8 @@ export const loanResponseDTO = (res) => ({
     due_date: res.dueDate,
     return_date: res.returnDate,
     loan_status_id: res.loan,
-    created_at: res.createdAt,
-    updated_at: res.updatedAt
+    created_at: res.created_at,
+    updated_at: res.updated_at
 });
 
 export const createLoanDTO = ({
@@ -31,27 +31,27 @@ export const createLoanDTO = ({
 export const updateLoanDTO = (loanData) => {
     const dto = {};
 
-    if(loanData.loan_date != undefined) {
+    if(loanData.loan_date !== undefined) {
         dto.loanDate = loanData.loan_date
     };
 
-    if(loanData.due_date != undefined) {
+    if(loanData.due_date !== undefined) {
         dto.dueDate = loanData.due_date
     };
 
-    if(loanData.return_date != undefined) {
+    if(loanData.return_date !== undefined) {
         dto.returnDate = loanData.return_date
     };
 
-    if(loanData.user_id != undefined) {
+    if(loanData.user_id !== undefined) {
         dto.userId = loanData.user_id
     };
 
-    if(loanData.copy_id != undefined) {
+    if(loanData.copy_id !==undefined) {
         dto.copyId = loanData.copy_id
     };
 
-    if(loanData.status != undefined) {
+    if(loanData.status !== undefined) {
         dto.status = loanData.status
     };
 

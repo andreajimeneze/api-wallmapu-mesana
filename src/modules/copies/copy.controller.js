@@ -86,7 +86,9 @@ export const updateCopy = async (req, res) => {
 
   const copyData = req.body;
   const copyDto = updateCopyDTO(copyData);
-
+  console.log('req.body copy: ', req.body)
+ console.log('copyData: ', copyData)
+  console.log('copyDTO: ', copyDto)
   try {
     const updatedCopy = await updateCopyService(id, copyDto);
 

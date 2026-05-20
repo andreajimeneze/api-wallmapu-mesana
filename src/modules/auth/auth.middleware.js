@@ -20,25 +20,34 @@ export const jwtMiddleware = (req, res, next) => {
   }
 };
 
-export const checkRole =
-  (allowedRoles = []) =>
-  (req, res, next) => {
-    if (!allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({ message: "Usuario no autorizado" });
+export const authorizedRoles = (...allowedRoles) => {
+  return (req, res, next) => {
+
+    if (!req.user) {
+      return res.status(401).json({
+        message: 'Token requerido'
+      });
     }
+
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        message: 'Acceso denegado'
+      });
+    }
+
     next();
   };
+};
 
-  export const authorizedRoles = ( ... allowedRoles ) => {
-    return (req, res, next) => {
-        if(!req.user) {
-            return res.status(401).json({message: 'Token requerido'});
-        };
+export const checkRole = (...allowedRoles) => {
+  return (req, res, next) => {
 
-        if(!allowedRoles.includes(req.user.role)) {
-            return res.status(403).json({message: 'Acceso denegado'});
-        }
-
-        next();
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        message: 'Usuario no autorizado'
+      });
     }
-  }
+
+    next();
+  };
+};

@@ -34,9 +34,6 @@ export const User = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      // password: {
-      //   type: DataTypes.STRING
-      // },
       userRoleId: {
         type: DataTypes.INTEGER,
         allowNull: false,
