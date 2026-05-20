@@ -82,7 +82,7 @@ export const findCopiesByBookAndStatusRepository = async (bookId, statusIds) => 
         ],
     });
 };
-export const findCopyByIdRepository = async (id) => {
+export const findCopyByIdRepository = async (id, options = {}) => {
     return await CopyModel.findByPk(id, {
         include: [
             {
@@ -90,7 +90,7 @@ export const findCopyByIdRepository = async (id) => {
                 as: 'status'
             }
         ]
-    });
+    }, options);
 };
 export const createCopyRepository = async (copyData) => {
     return await CopyModel.create(copyData);
@@ -114,9 +114,10 @@ export const updateStatusCopyRepository = async (idCopy, currentStatusId, status
             where: {
                 idCopy: idCopy,
                 statusId: currentStatusId
-            }
+            }, ...options
         }
     )
+    
 }
 export const deleteCopyRepository = async (id, options = {}) => {
     return await CopyModel.destroy({

@@ -3,6 +3,7 @@ import {
     AuthorModel,
     BookModel,
     CommuneModel,
+    CopyModel,
     EditorialModel,
     LoanModel,
     NewsModel,
@@ -50,7 +51,7 @@ export const findAllAdminRepository = async () => {
         subjects
 
     ] = await Promise.all([
-        UserModel.count(),
+        UserModel.count(), 
         NewsModel.count(),
         AuthorModel.count(),
         EditorialModel.count(),

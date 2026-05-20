@@ -3,11 +3,11 @@ import { loanBasicResponseDTO } from "./loan.dto.js";
 import { getMaxDaysLoanService } from "../loan_policy/loan_policy.service.js";
 import { paginationResponseDTO } from '../../core/responses/paginationResponse.js';
 import { Copy } from "../copies/copy.model.js";
-import { countLoansByUserRepository, createLoanRepository, findActiveLoanByBarcodeRepository, findActiveLoanByCopyIdRepository, getAllLoansAndSearchRepository, getLoansOverDueByIdRepository, markLoanAsExpireOverdueRepository, returnLoanByIdRepository } from "./loan.repository.js";
+import { countLoansByUserRepository, createLoanRepository, findActiveLoanByBarcodeRepository, findActiveLoanByCopyIdRepository, findLoansOverDueRepository, getAllLoansAndSearchRepository, getLoansOverDueByIdRepository, markLoanAsExpireOverdueRepository, returnLoanByIdRepository } from "./loan.repository.js";
 import { Op } from "sequelize";
 import { getAllPaginationService } from "../../core/services/basePagination.service.js";
 import { getCopyByIdService, updateCopyService } from "../copies/copy.service.js";
-import { conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
+import { badRequesError, conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
 import { findCopyByIdRepository, updateStatusCopyRepository } from "../copies/copy.repository.js";
 
 export const getLoansAndSearchService = async (params) => {
@@ -27,7 +27,7 @@ export const createLoanService = async (loanData) => {
     const maxBooks = await countLoansByUserRepository(userId);
 
     if (maxBooks >= loanPolicy.maxBooks) {
-       throw new Error('Usuario excede el número de préstamos autorizados');
+        throw new Error('Usuario excede el número de préstamos autorizados');
     };
 
     const overdueLoans = await getLoansOverDueByIdRepository(loanData.userId);
@@ -45,23 +45,22 @@ export const createLoanService = async (loanData) => {
     });
 };
 export const returnLoanByCopyIdService = async (copyId, options = {}) => {
-    const loan = await findActiveLoanByCopyIdRepository(copyId);
-    if(!loan) throw notFoundError();
-
-    if (loan.loanStatusId === 2) throw conflictError('Ejemplar ya fue devuelto');
-
-    const copy = await findCopyByIdRepository(copyId);
-    if(!copy) throw notFoundError();
-    if(copy.statusId !== 2) throw conflictError('Copia no se encuentra prestada');
-    
     const transaction = await sequelize.transaction();
-
-    const statusId = 1
-
     try {
-        const updatedLoan = await returnLoanByIdRepository(copyId, { transaction });
-        const updatedCopy = await updateStatusCopyRepository(copyId, copy.statusId, statusId, { transaction })
+        const loan = await findActiveLoanByCopyIdRepository(copyId, { transaction });
+        if (!loan) throw notFoundError();
 
+        if (loan.loanStatusId === 2) throw conflictError('Ejemplar ya fue devuelto');
+
+        const copy = await findCopyByIdRepository(copyId, { transaction });
+        if (!copy) throw notFoundError();
+        if (copy.statusId !== 2) throw conflictError('Copia no se encuentra prestada');
+
+        const statusId = 1;
+        const {count, updatedLoan} = await returnLoanByIdRepository(loan.idLoan, { transaction });
+        if(count === 0) throw conflictError('No se actualizó el registro');
+        const updatedCopy = await updateStatusCopyRepository(copyId, copy.statusId, statusId, { transaction })
+        if(updatedCopy === 0) throw badRequesError('No se actualizó el estado de la copia');
         await transaction.commit();
         return updatedLoan
     } catch (error) {
@@ -74,6 +73,6 @@ export const markLoanAsExpireOverdueService = async () => {
 };
 export const getActiveLoanByBarcodeService = async (barcode) => {
     const activeLoan = await findActiveLoanByBarcodeRepository(barcode);
-    if(!activeLoan) throw notFoundError();
+    if (!activeLoan) throw notFoundError();
     return activeLoan;
 };

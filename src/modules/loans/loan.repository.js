@@ -68,6 +68,43 @@ export const getAllLoansAndSearchRepository = async ({
     });
     return { count: items, rows: result };
 };
+
+export const findLoansOverDueRepository = async () => {
+    return await LoanModel.findAll({
+        where: {
+            loanStatusId: 3
+        },
+        include: [
+            {
+                model: UserModel,
+                as: 'user'
+            },
+            {
+                model: CopyModel,
+                as: 'copy',
+                include: [
+                    {
+                        model: EditionModel,
+                        as: 'edition',
+                        include: [
+                            {
+                                model: BookModel,
+                                as: 'book'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                model: LoanStatusModel,
+                as: 'loanStatus',
+                attributes: ['idLoanStatus', 'name']
+            }
+        ],
+        order: [['dueDate', 'ASC']]
+    });
+};
+
 export const getLoansOverDueByIdRepository = async (userId, dueDate) => {
     return await LoanModel.findOne({
         where: {
@@ -121,7 +158,7 @@ export const returnLoanByIdRepository = async (idLoan, options = {}) => {
             ...options, returning: true
         })
         console.log('count returnLoad: ', count)
-    return returnedLoad;
+    return {count, returnedLoad};
 };
 export const markLoanAsExpireOverdueRepository = async (options = {}) => {
     const [count, affectedRows] = await LoanModel.update(
@@ -226,4 +263,14 @@ export const findActiveLoanByCopyIdRepository = async (copyId) => {
             }
         ]
     })
+};
+
+export const markAsPickUpRepository= async (id, copyId, userId, dueDate, options = {}) => {
+        return await LoanModel.create({
+            userId: userId,
+            loanDate: new Date(),
+            dueDate: dueDate,
+            loanStatusId: 1,
+            copyId: copyId
+        }, options);
 };

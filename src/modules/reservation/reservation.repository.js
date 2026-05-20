@@ -67,45 +67,8 @@ export const getAllReservationWithSearchRepository = async ({
     });
     return { count: items, rows: result };
 };
-export const findAllReservationsRepository = async () => {
-    return await ReservationModel.findAll({
-        include: [
-            {
-                model: UserModel,
-                as: 'user',
-                attributes: ['idUser', 'username', 'userlastname', 'email']
-            },
-            {
-                model: CopyModel,
-                as: 'copy',
-                attributes: ['idCopy', 'barcode', 'signatureTopography', 'copyNumber', 'statusId'],
-                include: [
-                    {
-                        model: EditionModel,
-                        as: 'edition',
-                        attributes: ['idEdition', 'bookId'],
-                        include: [
-                            {
-                                model: BookModel,
-                                as: 'book',
-                                attributes: ['idBook', 'title']
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                model: ReservationStatusModel,
-                as: 'reservationStatus',
-                attributes: ['idStatus', 'name']
-            }
-        ],
-        order: [['reservationDate', 'DESC']]
-    });
-};
-export const findReservationByIdRepository= async (id) => {
-
-    const reserve = await ReservationModel.findByPk(id, {
+export const findReservationByIdRepository= async (id, options = {}) => {
+    return await ReservationModel.findByPk(id, {
         include: [
             {
                 model: UserModel,
@@ -139,11 +102,9 @@ export const findReservationByIdRepository= async (id) => {
                 attributes: ['idStatus', 'name']
             }
         ]
-    });
-
-    return reserve;
+    }, options);
 };
-export const findReservationsByUserIdRepository= async (userId) => {
+export const findReservationsByUserIdRepository= async (userId, options = {}) => {
     return await ReservationModel.findAll({
         where: {
             userId: userId
@@ -172,7 +133,7 @@ export const findReservationsByUserIdRepository= async (userId) => {
                 attributes: ['idStatus', 'name']
             }
         ]
-    })
+    }, options)
 };
 export const countActiveReservationsByUserRepository = async (userId) => {
      return await ReservationModel.count({
@@ -182,7 +143,7 @@ export const countActiveReservationsByUserRepository = async (userId) => {
                 }
             })
 };
-export const findActiveReservationByUserIdAndCopyRepository = async (userId, copyId) => {
+export const findActiveReservationByUserIdAndCopyRepository = async (userId, copyId, options = {}) => {
     return await ReservationModel.findOne({
         where: {
             userId: userId,
@@ -202,10 +163,10 @@ export const findActiveReservationByUserIdAndCopyRepository = async (userId, cop
                     }
                 ]
             }
-        ]
+        ], ...options
     });
 };
-export const findActiveReservationByCopyRepository = async (copyId) => {
+export const findActiveReservationByCopyRepository = async (copyId, options = {}) => {
     return await ReservationModel.findOne({
         where: {
             copyId: copyId,
@@ -224,13 +185,10 @@ export const findActiveReservationByCopyRepository = async (copyId) => {
                     }
                 ]
             }
-        ]
+        ], ...options
     });
 };
-export const createCopyReservationRepository = async (reservationData) => {
-    return await ReservationModel.create(reservationData);
-};
-export const findReservesExpireOverdueRepository = async () => {
+export const findReservesExpireOverdueRepository = async (options = {}) => {
     return await ReservationModel.findAll({
         where: {
             expirationDate: {
@@ -251,21 +209,23 @@ export const findReservesExpireOverdueRepository = async () => {
                 as: 'reservationStatus'
             }
         ]
-    });
+    }, options);
 
 
 };
-export const findReservationPendingByIdRepository = async (id) => {
+export const findReservationPendingByIdRepository = async (id, options = {}) => {
     return await ReservationModel.findOne({
         where: {
             idReservation: id,
             reservationStatusId: 1
-        }
+        }, ...options
     });
 };
-
-export const updateExpireOverdueReservationsRepository = async (today) => {
-    const [updatedStatusCount] = await ReservationModel.update(
+export const createReservationRepository = async (reservationData, options = {}) => {
+    return await ReservationModel.create(reservationData, options);
+};
+export const updateExpireOverdueReservationsRepository = async (today, options = {}) => {
+    const [count, updatedStatus] = await ReservationModel.update(
         { reservationStatusId: 4 },
         {
             where: {
@@ -273,13 +233,13 @@ export const updateExpireOverdueReservationsRepository = async (today) => {
                 expirationDate: {
                     [Op.lte]: today
                 }
-            }
+            }, ...options, returning: true
         })
-    return updatedStatusCount;
+    return updatedStatus;
 };
 
-export const updateStatusCancelReservationRepository = async (id) => {
-    const [updatedStatusCount] = await ReservationModel.update(
+export const updateStatusCancelReservationRepository = async (id, options = {}) => {
+    const [count, updated ] = await ReservationModel.update(
         {
             reservationStatusId: 3
         },
@@ -287,18 +247,24 @@ export const updateStatusCancelReservationRepository = async (id) => {
             where: {
                 idReservation: id,
                 reservationStatusId: 1,
-            }
+            }, ...options, returning: true
         });
 
-    return updatedStatusCount;
+    return updated;
 };
-export const markAsPickUpRepository= async (id, copyId, userId, dueDate) => {
-        
-        return await LoanModel.create({
-            userId: userId,
-            loanDate: new Date(),
-            dueDate: dueDate,
-            loanStatusId: 1,
-            copyId: copyId
-        });
-};
+
+export const markAsCompletedReservationRepository = async(id, options = {}) => {
+    const [count, updated ] = await ReservationModel.update(
+        {
+            reservationStatusId: 2
+        },
+        {
+            where: {
+                idReservation: id,
+                reservationStatusId: 1
+            }
+        }
+    )
+    return {count, updated};
+}
+

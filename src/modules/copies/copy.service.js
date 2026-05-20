@@ -1,6 +1,8 @@
 import { badRequesError, conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
 import { getEditionByIdService } from "../editions/edition.service.js";
 import { findEditionByIdRepository } from "../editions/editions.repository.js";
+import { findActiveLoanByCopyIdRepository } from "../loans/loan.repository.js";
+import { findActiveReservationByCopyRepository } from "../reservation/reservation.repository.js";
 import { copyByBookResponseDTO } from "./copy.dto.js";
 import { createCopyRepository, deleteCopyRepository, existingCopyRespository, existingSignatureRepository, findCopiesByBookAndStatusRepository, findCopiesByEditionIdRepository, findCopyByIdRepository, updateCopyRepository } from "./copy.repository.js";
 
@@ -61,11 +63,17 @@ export const createCopyService = async (copyData) => {
   return await createCopyRepository(copyData);
 };
 export const updateCopyService = async (id, copyData, options = {}) => {
-   const { editionId, copyNumber, signatureTopography } = copyData;
-console.log('copyNumber: ', copyNumber)
+   const { editionId, copyNumber, signatureTopography, statusId } = copyData;
+
   const copy = await findCopyByIdRepository(id);
   if(!copy) throw notFoundError();
 
+  const activeLoan = await findActiveLoanByCopyIdRepository(id);
+  if(activeLoan) throw conflictError('No puede modificar copia con préstamo activo');
+
+  const activeReservation = await findActiveReservationByCopyRepository(id);
+  if(activeReservation) throw conflictError('No puede modificar copia con reserva activa');
+  
   const existingCopy = await existingCopyRespository(copyNumber, editionId,  id);
   const existingSignature = await existingSignatureRepository(signatureTopography, id);
 
