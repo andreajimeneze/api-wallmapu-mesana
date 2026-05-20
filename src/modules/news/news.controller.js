@@ -16,7 +16,7 @@ import {
   updateNewsService,
 } from "./news.service.js";
 import { createNewsWithImagesService } from "./usecases/createNewsWithImages.usecase.js";
-import { deleteNewsAndImages } from "./usecases/deleteNewsAndImages.usecase.js";
+import { deleteNewsAndImagesService } from "./usecases/deleteNewsAndImages.usecase.js";
 
 export const getNewsPaginationAndSearch = async (req, res) => {
   try {
@@ -65,13 +65,13 @@ export const getNewsById = async (req, res) => {
       }),
     );
   } catch (error) {
-    if (error.code === "NOT_FOUND")
+    console.error(error);
+    if (error.status === 404)
       return res.status(404).json(
         notFoundResponse({
           message: error.message,
         }),
       );
-
     return res
       .status(500)
       .json(internalServerResponse({ message: error.message }));
@@ -82,13 +82,13 @@ export const createNews = async (req, res) => {
   try {
     const { title, subtitle, body } = req.body;
   
-    const dto = createNewsDTO({
+    const newsDto = createNewsDTO({
       title,
       subtitle,
       body,
     });
 
-    const createdNews = await createNewsService(dto);
+    const createdNews = await createNewsService(newsDto);
 
     res.status(201).json(
       successCreateResponse({
@@ -98,19 +98,17 @@ export const createNews = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    if (error.code === "CONFLICT") {
-      res.status(409).json(
+    if (error.status === 409)
+      return res.status(409).json(
         conflictResponse({
-          message: error.message || "Título de la noticia ya existe",
+          message: error.message,
         }),
-      );
-    } else {
+      )
       res.status(500).json(
         internalServerResponse({
           message: error.message || "Error al crear la noticia",
         }),
       );
-    }
   }
 };
 
@@ -127,19 +125,20 @@ export const updateNews = async (req, res) => {
 
     const updatedNews = await updateNewsService(id, updateDto);
 
-    if (!updatedNews) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "Noticia no encontrada" }));
-    }
-
     res.status(202).json(
       successUpdateResponse({
-        message: "Noticia editada correctamente",
+        message: "Noticia actualizada correctamente",
         data: newsResponseDTO(updatedNews),
       }),
     );
   } catch (error) {
+    console.error(error);
+    if (error.status === 404)
+      return res.status(404).json(
+        notFoundResponse({
+          message: error.message,
+        }),
+      );
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar editar la noticia",
@@ -152,14 +151,8 @@ export const deleteNews = async (req, res) => {
   try {
     const { id } = req.params;
     
-    const newsDeleted = await deleteNewsAndImages(id);
+    const newsDeleted = await deleteNewsAndImagesService(id);
    
-    if (!newsDeleted) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "Noticia no encontrada" }));
-    }
-
     res.status(202).json(
       successDeleteResponse({
         message: "Noticia eliminada correctamente",
@@ -167,6 +160,13 @@ export const deleteNews = async (req, res) => {
       }),
     );
   } catch (error) {
+    console.error(error);
+    if (error.status === 404)
+      return res.status(404).json(
+        notFoundResponse({
+          message: error.message,
+        }),
+      );
       return res.status(500).json(
         internalServerResponse({
           message:
@@ -201,6 +201,18 @@ export const createNewsWithImages = async (req, res) => {
     );
   } catch (error) {
 console.error(error);
+  if (error.status === 404)
+      return res.status(404).json(
+        notFoundResponse({
+          message: error.message,
+        }),
+      );
+      if (error.status === 409)
+      return res.status(409).json(
+        conflictResponse({
+          message: error.message,
+        }),
+      )
     return res.status(500).json({
       message: error.message
     });

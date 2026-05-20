@@ -1,4 +1,3 @@
-import { badRequesError, conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
 import { getEditionByIdService } from "../editions/edition.service.js";
 import { findEditionByIdRepository } from "../editions/editions.repository.js";
 import { findActiveLoanByCopyIdRepository } from "../loans/loan.repository.js";
@@ -73,7 +72,7 @@ export const updateCopyService = async (id, copyData, options = {}) => {
 
   const activeReservation = await findActiveReservationByCopyRepository(id);
   if(activeReservation) throw conflictError('No puede modificar copia con reserva activa');
-  
+
   const existingCopy = await existingCopyRespository(copyNumber, editionId,  id);
   const existingSignature = await existingSignatureRepository(signatureTopography, id);
 

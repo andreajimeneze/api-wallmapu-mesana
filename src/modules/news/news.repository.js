@@ -4,47 +4,44 @@ import { paginationResponseDTO } from "../../core/responses/paginationResponse.j
 import { newsResponseDTO } from "./news.dto.js";
 
 export const getAllNewsSearchRepository = async ({
-    page,
-    limit,
-    search,
-    filter
+  page,
+  limit,
+  search,
+  filter
 }) => {
 
- const include = [
-      {
-        model: NewsGalleryModel,
-        as: "images",
-        attributes: ["idNewsGallery", "url", "alt", "newsId"],
-      },
-    ];
+  const include = [
+    {
+      model: NewsGalleryModel,
+      as: "images",
+      attributes: ["idNewsGallery", "url", "alt", "newsId"],
+    },
+  ];
 
-      const where = search
+  const where = search
     ? {
-        [Op.or]: [
-          { title: { [Op.iLike]: `%${search}%` } },
-          { subtitle: { [Op.iLike]: `%${search}%` } },
-        ],
-      }
+      [Op.or]: [
+        { title: { [Op.iLike]: `%${search}%` } },
+        { subtitle: { [Op.iLike]: `%${search}%` } },
+      ],
+    }
     : {};
 
-    const offset = (page - 1) * limit;
+  const offset = (page - 1) * limit;
 
-    const items = await NewsModel.count({ include, distinct: true });
+  const items = await NewsModel.count({ where, include, distinct: true });
 
-    const result = await NewsModel.findAll({
-        where,
-        include,
-        limit,
-        offset,
-        distinct: true,
-        order: [['created_at', 'DESC']]
-    });
-    return { count: items, rows: result };
+  const result = await NewsModel.findAll({
+    where,
+    include,
+    limit,
+    offset,
+    distinct: true,
+    order: [['created_at', 'DESC']]
+  });
+  return { count: items, rows: result };
 };
-
 export const findNewsByIdRepository = async (id, options = {}) => {
-  //const { transaction } = options;
-
   return await NewsModel.findByPk(id, {
     order: [
       [{ model: NewsGalleryModel, as: "images" }, "idNewsGallery", "ASC"],
@@ -55,53 +52,38 @@ export const findNewsByIdRepository = async (id, options = {}) => {
         as: "images",
         attributes: ["idNewsGallery", "url", "alt", "newsId"],
       },
-    ],
-     
-  }, {transaction: options.transaction});
+    ], ...options
 
-//   if (!newsById) {
-//     throw { code: "NOT_FOUND", message: "Noticia no encontrada" };
-//   }
-//   return newsById;
-};
-
-export const findNewsByTitleRepository = async (title) => {
-    return await NewsModel.findOne({
-    where: { title: { [Op.iLike]: title } }
   });
 };
-export const createNewsRepository = async ({ title, subtitle, body}, options = {}) => {
-
-//   if (existingNews) {
-//     throw  new Error("Ya existe una noticia con ese título");
-//   }
-
-  const createdNews = await NewsModel.create({
-    title,
-    subtitle,
-    body    
-  }, { transaction: options.transaction });
-  
-  return createdNews
+export const findNewsByTitleRepository = async (title, options = {}) => {
+  return await NewsModel.findOne({
+    where: { title: { [Op.iLike]: title }, }, ...options
+  });
 };
-
+export const createNewsRepository = async (newsData, options = {}) => {
+  return await NewsModel.create(newsData, options);
+};
 export const updateNewsRepository = async (id, newsData, options = {}) => {
-  const newsSelected = await NewsModel.findByPk(id);
-
-  if (!newsSelected) return null;
-  return await newsSelected.update({
-    ...newsData
-  }, { transaction: options.transaction });
-};
+  const [count, updated ] = await NewsModel.update(
+    {
+      ...newsData
+    },
+    {
+      where: {
+        idNews: id
+      }, ...options, returning: true
+    }
+  )
+  return { count, updated}
+}
 
 export const deleteNewsRepository = async (id, options = {}) => {
-   const newsSelected = await NewsModel.findByPk(id);
-
-  if (!newsSelected) return null;
-
-  await newsSelected.destroy({ transaction: options.transaction });
-
-  return true;
+  return await NewsModel.destroy({
+    where: {
+      idNews: id
+    }, ...options
+  });
 };
 
 

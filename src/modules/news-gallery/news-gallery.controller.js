@@ -10,28 +10,13 @@ import {
 import {
   newsGalleryResponseDTO,
 } from "./news-gallery.dto.js";
-import {
-  createGalleryByNewsIdService,
-  getGalleryByNewsIdService,
-  getImageByIdGalleryService,
-  deleteImagebyIdGalleryService,
-  deleteGallerybyNewsIdService,
-} from "./news-gallery.service.js";
+import { createGalleryByNewsIdService, deleteGalleryByNewsService, deleteImagebyIdGalleryService, getAllGalleryByNewsService, getImageByIdGalleryService } from "./news-gallery.service.js";
+
 
 export const getGalleryByNewsId = async (req, res) => {
   try {
     const { newsId } = req.params;
-    const images = await getGalleryByNewsIdService(newsId);
-
-    if (images.length === 0) {
-      return res
-        .status(200)
-        .json(
-          succesGetResponse({
-            message: `No existen imágenes en la galería asociadas a la noticia ${newsId}`,
-          }),
-        );
-    }
+    const images = await getAllGalleryByNewsService(newsId);
 
     return res.status(200).json(
       succesGetResponse({
@@ -40,6 +25,7 @@ export const getGalleryByNewsId = async (req, res) => {
       }),
     );
   } catch (error) {
+    console.error(error);
     res.status(500).json(
       internalServerResponse({
         message: "Error al obtener las imágenes de la galería",
@@ -47,17 +33,11 @@ export const getGalleryByNewsId = async (req, res) => {
     );
   }
 };
-
 export const getImageByIdGallery = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const image = await getImageByIdGalleryService(id);
+  const { id } = req.params;
 
-    if (!image) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: `No existe la imagen ${id}` }));
-    }
+  try {
+    const image = await getImageByIdGalleryService(id);
 
     return res.status(200).json(
       succesGetResponse({
@@ -66,6 +46,12 @@ export const getImageByIdGallery = async (req, res) => {
       }),
     );
   } catch (error) {
+    console.error(error);
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(notFoundResponse({ message: error.message }));
+    }
     res.status(500).json(
       internalServerResponse({
         message: "Error al obtener la imagen de la galería",
@@ -73,47 +59,21 @@ export const getImageByIdGallery = async (req, res) => {
     );
   }
 };
-
 export const createGalleryByNewsId = async (req, res) => {
   const { id } = req.params;
   const files = req.files;
   let { alts } = req.body;
 
+  console.log('id', id);
+  console.log('files', req.files)
+  console.log('alts', alts)
   try {
-    if (!id || isNaN(Number(id))) {
-      return res.status(400).json(
-        badRequestResponse({
-          message: "Id de noticia inválido",
-        }),
-      );
-    }
-
-    if (!files || files.length < 1 || files.length > 3) {
-      return res.status(400).json(
-        badRequestResponse({
-          message: "Debe subir entre 1 y 3 imágenes",
-        }),
-      );
-    }
-
-
-    if (!Array.isArray(alts)) alts = [alts];
-    
-    if (alts.length !== files.length) {
-      return res.status(400).json(
-        badRequestResponse({
-          message:
-            "La cantidad de textos altsernativos de imágenes debe coincidir con la cantidad de imágenes",
-        }),
-      );
-    }
-    
-    const gallery = await createGalleryByNewsIdService( {
+    const gallery = await createGalleryByNewsIdService({
       alts,
       files,
       newsId: Number(id)
     });
-                
+
     res.status(201).json(
       successCreateResponse({
         message: "Imagen de galería creada exitosamente",
@@ -122,7 +82,16 @@ export const createGalleryByNewsId = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-
+    if (error.status === 400) {
+      return res
+        .status(400)
+        .json(badRequestResponse({ message: error.message }));
+    }
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(notFoundResponse({ message: error.message }));
+    }
     return res.status(500).json(
       internalServerResponse({
         message: error.message,
@@ -132,16 +101,10 @@ export const createGalleryByNewsId = async (req, res) => {
 };
 
 export const deleteImageByIdGallery = async (req, res) => {
-  const { id } = req.params;
+  const id = req.params.id;
 
   try {
     const deletedImage = await deleteImagebyIdGalleryService(id);
-
-    if (!deletedImage) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "Imagen no existe" }));
-    }
 
     return res
       .status(202)
@@ -149,6 +112,12 @@ export const deleteImageByIdGallery = async (req, res) => {
         successDeleteResponse({ message: "Imagen eliminada correctamente" }),
       );
   } catch (error) {
+    console.error(error);
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(notFoundResponse({ message: error.message }));
+    }
     return res
       .status(500)
       .json(
@@ -160,16 +129,10 @@ export const deleteImageByIdGallery = async (req, res) => {
 };
 
 export const deleteGalleryByNewsId = async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
 
   try {
-    const deletedImages = await deleteGallerybyNewsIdService(id);
-
-    if (!deletedImages) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "Imagen no existe" }));
-    }
+    const deletedImages = await deleteGalleryByNewsService(id);
 
     return res
       .status(202)
@@ -177,6 +140,12 @@ export const deleteGalleryByNewsId = async (req, res) => {
         successDeleteResponse({ message: `Galería de la noticia ${id} eliminada correctamente` }),
       );
   } catch (error) {
+    console.error(error);
+    if (error.status === 404) {
+      return res
+        .status(404)
+        .json(notFoundResponse({ message: error.message }));
+    }
     return res
       .status(500)
       .json(

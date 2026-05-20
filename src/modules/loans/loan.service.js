@@ -7,7 +7,7 @@ import { countLoansByUserRepository, createLoanRepository, findActiveLoanByBarco
 import { Op } from "sequelize";
 import { getAllPaginationService } from "../../core/services/basePagination.service.js";
 import { getCopyByIdService, updateCopyService } from "../copies/copy.service.js";
-import { badRequesError, conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
+import { badRequestError, conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
 import { findCopyByIdRepository, updateStatusCopyRepository } from "../copies/copy.repository.js";
 
 export const getLoansAndSearchService = async (params) => {

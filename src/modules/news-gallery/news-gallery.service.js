@@ -3,121 +3,120 @@ import {
   extractPublicId,
   uploadImageCloud169,
 } from "../../core/lib/cloudinary.service.js";
-import { NewsGalleryModel, NewsModel } from "../../config/dbSequelize.js";
+
+import { sequelize } from "../../config/dbSequelize.js";
+
 import { generateFileName } from "../../core/helpers/files/generateFileName.js";
+import { deleteNewsRepository, findNewsByIdRepository } from "../news/news.repository.js";
+import {
+  badRequestError,
+  conflictError,
+  notFoundError
+} from "../../core/helpers/errors/httpErrors.js";
+
+import {
+  createGalleryRepository,
+  deleteGalleryByIdRepository,
+  deleteGalleryByNewsIdRepository,
+  findImageByIdGalleryRepository,
+  findNewsGalleryByNewsRepository,
+} from "./news-gallery.repository.js";
 
 const path = "news";
 
+export const getAllGalleryByNewsService = async(idNews) => {
+  return findNewsGalleryByNewsRepository(idNews);
+};
+
+export const getImageByIdGalleryService = async(id) => {
+  const image = await findImageByIdGalleryRepository(id);
+  if(!image) throw notFoundError();
+  return image;
+}
 export const createGalleryByNewsIdService = async (
-  { alts, files, newsId },
-  options = {},
+  { alts = [], files = [], newsId },
+  options = {}
 ) => {
 
-  const { transaction } = options;
+  const transaction = await options.transaction;      
 
-  if (!Array.isArray(files) || files.length === 0) {
-    throw new Error("Debe subir al menos una imagen");
-  }
+    if (!files || files.length === 0) throw badRequestError("Debe subir al menos una imagen");
+    if (files.length !== alts.length) throw badRequestError("Cada imagen debe contar con texto alternativo");        
+    if (!files || files.length < 1 || files.length > 3) throw badRequestError("Debe subir entre 1 y 3 imágenes");
+      
+    const news = await findNewsByIdRepository(newsId, { transaction });
 
-  alts = Array.isArray(alts) ? alts : [alts];
-
-  if (files.length !== alts.length) {
-    throw new Error("Cada imagen debe contar con texto alternativo");
-  }
-
-  const existingNews = await NewsModel.findByPk(newsId, { transaction });
-
-  if (!existingNews) {
-    throw new Error("Imagen no puede ser asociada a una noticia inexistente");
-  }
-
-  const uploaddatas = await Promise.all(
-    files.map((file, index) =>
-      uploadImageCloud169(
-        file.buffer,
-        path,
-        generateFileName(path) + "_" + index
+    if (!news) throw notFoundError("Noticia no existe");
+    
+    const uploadData = await Promise.all(
+      files.map((file, index) =>
+        uploadImageCloud169(
+          file.buffer,
+          path,
+          generateFileName(path) + "_" + index
+        )
       )
-    )
-  );
+    );
 
-  const createdGallery = await Promise.all(
-    uploaddatas.map((file, index) =>
-      NewsGalleryModel.create(
-        {
-          alt: alts[index],
-          url: file.url,
-          newsId,
-        },
-        { transaction }
+    const createdGallery = await Promise.all(
+      uploadData.map((file, index) =>
+        createGalleryRepository(
+          {
+            alt: alts[index],
+            url: file.url,
+            newsId,
+          },
+          { transaction }
+        )
       )
-    )
-  );
+    );
 
-  return createdGallery;
+    return createdGallery;
 };
-
-export const getGalleryByNewsIdService = async (newsId, options = {}) => {
-  const { transaction } = options;
-  return await NewsGalleryModel.findAll({
-    where: { newsId },
-    attributes: ["idNewsGallery", "alt", "url", "newsId"],
-    order: [["idNewsGallery", "ASC"]],
-    transaction
-  });
-};
-
-export const getImageByIdGalleryService = async (id) => {
-  return await NewsGalleryModel.findByPk(id);
-};
-
 export const deleteImagebyIdGalleryService = async (id, options = {}) => {
-  const { transaction } = options;
-  const existingImage = await NewsGalleryModel.findByPk(id);
 
-  if (!existingImage) {
-    return false;
-  }
-
-  const publicId = await extractPublicId(existingImage.url);
+  const transaction = await sequelize.transaction();
 
   try {
+    const existingImage = await findImageByIdGalleryRepository(id, { transaction });
+    if (!existingImage) throw notFoundError();
+
+    const publicId = extractPublicId(existingImage.url);
+
     await deleteImageCloud(publicId);
 
-    await existingImage.destroy({transaction});
+    await deleteGalleryByIdRepository(id, { transaction });
 
+    await transaction.commit();
     return true;
+
   } catch (error) {
+    await transaction.rollback();
     throw error;
   }
 };
-
-export const deleteGallerybyNewsIdService = async (id, transaction = null) => {
-  const existingNews = await NewsModel.findByPk(id);
-
-  if (!existingNews) {
-    return false;
-  }
-
-  const existingImages = await NewsGalleryModel.findAll({
-    where: { newsId: id },
-    ...(transaction && { transaction }),
-  });
-
-  if (!existingImages || existingImages.length === 0) {
-    return true;
-  }
+export const deleteGalleryByNewsService = async (idNews, options = {}) => {
+  const transaction = await sequelize.transaction();
   try {
-    for (const image of existingImages) {
-      const publicId = await extractPublicId(image.url);
+    const news = await findNewsByIdRepository(idNews, {transaction});
+    if (!news) throw notFoundError();
 
-      if (publicId) {
-        await deleteImageCloud(publicId);
-      }
-      await image.destroy();
-    }
-    return true;
-  } catch (error) {
+    const gallery = await findNewsGalleryByNewsRepository(idNews, {transaction});
+
+    const publicIds = (gallery || [])
+      .map((image) => extractPublicId(image.url))
+      .filter(Boolean)
+  
+      await Promise.all(
+        publicIds.map((publicId) => deleteImageCloud(publicId))
+      )
+
+      await deleteGalleryByNewsIdRepository(idNews, {transaction});
+
+      await transaction.commit();
+      return true;
+  } catch(error) {
+    await transaction.rollback();
     throw error;
   }
-};
+}

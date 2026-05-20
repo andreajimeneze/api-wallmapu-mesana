@@ -1,42 +1,46 @@
-import { NewsGalleryModel, sequelize } from "../../../config/dbSequelize.js";
-import { getGalleryByNewsIdService } from "../../news-gallery/news-gallery.service.js";
-import { getNewsByIdService } from "../news.service.js";
+import { sequelize } from "../../../config/dbSequelize.js";
+
 import {
   deleteImageCloud,
   extractPublicId,
 } from "../../../core/lib/cloudinary.service.js";
 
-export const deleteNewsAndImages = async (id) => {
-  const transaction = await sequelize.transaction();
+import {
+  findNewsGalleryByNewsRepository,
+  deleteGalleryByNewsIdRepository,
+} from "../../news-gallery/news-gallery.repository.js";
+
+import { deleteNewsRepository, findNewsByIdRepository } from "../news.repository.js";
+
+import { notFoundError } from "../../../core/helpers/errors/httpErrors.js";
+
+export const deleteNewsAndImagesService = async (idNews, options = {}) => {
+
+  const transaction = options.transaction;
 
   try {
-    const news = await getNewsByIdService(id, { transaction });
-
-    if (!news) {
-      await transaction.rollback();
-      return null;
-    }
-
-    const gallery = await getGalleryByNewsIdService(id, { transaction });
+    const news = await findNewsByIdRepository(idNews, { transaction });
+    if (!news) throw notFoundError();
+    
+    const gallery = await findNewsGalleryByNewsRepository(idNews, {transaction});
 
     const publicIds = (gallery || [])
-      .map((img) => extractPublicId(img.url))
+      .map((image) => extractPublicId(image.url))
       .filter(Boolean);
 
-    await NewsGalleryModel.destroy({
-      where: { newsId: id },
-      transaction
-    });
+    await Promise.all(
+      publicIds.map((publicId) =>
+        deleteImageCloud(publicId)
+      )
+    );
 
-    await Promise.all(publicIds.map((id) => deleteImageCloud(id)));
+    await deleteGalleryByNewsIdRepository(idNews, { transaction });
 
-    await news.destroy({ transaction });
-
-    await transaction.commit();
+    await deleteNewsRepository(idNews, {transaction});
 
     return true;
+
   } catch (error) {
-    await transaction.rollback();
     throw error;
   }
 };

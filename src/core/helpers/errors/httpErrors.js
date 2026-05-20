@@ -10,7 +10,7 @@ export const notFoundError = (message) => {
     return error;
 }
 
-export const badRequesError = (message) => {
+export const badRequestError = (message) => {
     const error = new Error(message);
     error.status = 400;
     return error;

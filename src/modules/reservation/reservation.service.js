@@ -4,7 +4,7 @@ import { countActiveReservationsByUserRepository, createReservationRepository, f
 import { countLoansActiveByUserRepository, countLoansByUserRepository, countLoansOverDueByUserRepository, markAsPickUpRepository } from "../loans/loan.repository.js";
 import { getAllPaginationService } from "../../core/services/basePagination.service.js";
 import { findCopyByIdRepository, updateStatusCopyRepository } from "../copies/copy.repository.js";
-import { badRequesError, conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
+import { badRequestError, conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
 import { sequelize } from "../../config/dbSequelize.js";
 
 
