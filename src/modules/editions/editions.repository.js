@@ -3,7 +3,10 @@ import { EditionModel, BookModel, EditorialModel, GenreModel, AuthorModel, CopyM
 
 export const getAllEditionPaginationRepository = async ({ page, limit, search, filter }) => {
   const { idGenre, idAuthor, idEditorial } = filter;
-
+console.log('idGenre: ', idGenre)
+console.log('idAuthor: ', idAuthor)
+console.log('idEditorial: ', idEditorial)
+console.log(filter)
   const include = [
     {
       model: BookModel,
@@ -14,13 +17,13 @@ export const getAllEditionPaginationRepository = async ({ page, limit, search, f
         {
           model: GenreModel,
           as: "genre",
-           where: idGenre > 0 ? { idGenre: idGenre } : undefined,
+           where: idGenre > 0 ? { idGenre } : undefined,
         },
         {
           model: AuthorModel,
           as: "authors",
           attributes: ['idAuthor', 'name'],
-          required: true,
+          required: idAuthor > 0,
           where: idAuthor > 0 ? { idAuthor } : undefined,
         },
       ],
@@ -28,7 +31,9 @@ export const getAllEditionPaginationRepository = async ({ page, limit, search, f
     {
       model: EditorialModel,
       as: "editorial",
-      required: idEditorial > 0 ? true : false, 
+      required: idEditorial > 0, 
+      where: idEditorial > 0
+      ? { idEditorial } : undefined
     },
   ];
 

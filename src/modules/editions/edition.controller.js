@@ -6,7 +6,7 @@ import {
   successDeleteResponse,
   successUpdateResponse,
 } from "../../core/responses/apiResponse.js";
-import { editionResponseDTO, createEditionDTO, baseEditionDTO, editionDetailDTO, editionForBookResponseDTO, editionFilterRequestDTO } from "./edition.dto.js";
+import { editionResponseDTO, createEditionDTO, baseEditionDTO, editionDetailDTO, editionForBookResponseDTO, editionRequestDTO } from "./edition.dto.js";
 import {
   createEditionService,
   deleteEditionWithImageService,
@@ -18,14 +18,12 @@ import {
 
 export const getEditionPagination = async (req, res) => {
   try {
-    const filter = editionFilterRequestDTO(
-      req.query.id_author,
-      req.query.id_genre,
-      req.query.id_editorial
-    )
-
-    let page = parseInt(req.query.page ?? 1);
-    let limit = parseInt(req.query.limit ?? 10);
+    const { page, limit, id_author, id_genre, id_editorial } = req.query;
+    const filter = editionRequestDTO({
+      id_author,
+      id_genre,
+      id_editorial
+    })
 
     if (isNaN(page) || page < 1 || isNaN(limit) || limit < 1) {
       return res.status(400).json(

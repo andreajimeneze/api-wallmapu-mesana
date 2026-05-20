@@ -157,7 +157,6 @@ export const returnLoanByIdRepository = async (idLoan, options = {}) => {
             },
             ...options, returning: true
         })
-        console.log('count returnLoad: ', count)
     return {count, returnedLoad};
 };
 export const markLoanAsExpireOverdueRepository = async (options = {}) => {

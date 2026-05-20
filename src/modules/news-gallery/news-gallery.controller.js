@@ -64,9 +64,6 @@ export const createGalleryByNewsId = async (req, res) => {
   const files = req.files;
   let { alts } = req.body;
 
-  console.log('id', id);
-  console.log('files', req.files)
-  console.log('alts', alts)
   try {
     const gallery = await createGalleryByNewsIdService({
       alts,

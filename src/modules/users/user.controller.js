@@ -47,7 +47,7 @@ export const getUsersPaginationSearch = async (req, res) => {
 };
 export const getUserByIdUser = async (req, res) => {
   const { id } = req.params;
-  console.log('Ruta getUserByIdUser')
+ 
   try {
     const userSelected = await getUserByIdService(id);
     return res.status(200).json(

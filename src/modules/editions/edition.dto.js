@@ -129,10 +129,10 @@ export const basicResponseEditionWithCopies = (res) => ({
     })) : []
 });
 
-export const editionFilterRequestDTO = ({ id_author, id_genre, id_editorial } = {}) => {
-  return {
+export const editionRequestDTO = ({ id_author, id_genre, id_editorial } = {}) => ({
+ 
     idAuthor: Number(id_author) || 0,
     idGenre: Number(id_genre) || 0,
     idEditorial: Number(id_editorial) || 0
-  }
-};
+
+});

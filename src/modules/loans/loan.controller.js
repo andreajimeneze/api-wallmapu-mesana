@@ -93,7 +93,7 @@ export const getLoansPaginationAndSearchForUser = async (req, res) => {
     }
 };
 export const getLoansOverDue = async (req, res) => {
-    console.log('Ruta getLoansOverDue')
+   
     try {
         const overDueLoans = await getLoansOverDueService();
 
@@ -107,7 +107,7 @@ export const getLoansOverDue = async (req, res) => {
 export const createLoan = async (req, res) => {
     const data = req.body;
     const loanDto = createLoanDTO(data);
-    console.log('Ruta createLoan')
+    
     try {
         await createLoanService(loanDto);
 
@@ -119,7 +119,7 @@ export const createLoan = async (req, res) => {
 };
 export const returnLoan = async (req, res) => {
     const { copyId } = req.params;
-    console.log('Ruta returnLoan')
+    
     try {
         const returnedLoan = await returnLoanByCopyIdService(copyId);
 
@@ -136,7 +136,7 @@ export const returnLoan = async (req, res) => {
     }
 };
 export const markLoanAsExpireOverdue = async (req, res) => {
-    console.log('Ruta markLoanAsExpireOverdue')
+
     try {
         const markedAsExpireOverdue = await markLoanAsExpireOverdueService();
 
@@ -151,7 +151,7 @@ export const markLoanAsExpireOverdue = async (req, res) => {
 };
 export const getActiveLoanByBarcode = async (req, res) => {
     const { barcode } = req.params;
-    console.log('Ruta getActiveLoanByBarcode')
+    
     try {
         const loan = await getActiveLoanByBarcodeService(barcode);
 

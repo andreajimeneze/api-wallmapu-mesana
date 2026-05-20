@@ -11,6 +11,7 @@ import { existingCopiesByEditionRepository } from "../copies/copy.repository.js"
 import { sequelize } from "../../config/dbSequelize.js";
 
 export const getAllEditionPaginationService = async (params) => {
+  console.log(params)
   return await getAllPaginationService(params, getAllEditionPaginationRepository, editionForBookResponseDTO);
 };
 export const getEditionByIdService = async (id) => {
