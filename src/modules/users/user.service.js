@@ -17,14 +17,14 @@ export const getUsersPaginationSearchService = async (params) => {
 };
 
 export const getUserByIdService = async (id) => {
- const user = await findUserByIdRepository(id);
- if(!user) throw notFoundError();
- return user;
+  const user = await findUserByIdRepository(id);
+  if (!user) throw notFoundError();
+  return user;
 };
 
 export const getUserByEmailService = async (email) => {
   const userByEmail = await findUserByEmailRepository(email);
-  if(!userByEmail) throw notFoundError();
+  if (!userByEmail) throw notFoundError();
   return userByEmail;
 };
 
@@ -33,7 +33,8 @@ export const createUserService = async (user, options = {}) => {
 };
 
 export const updateUserService = async (id, userData, options = {}) => {
- const user = await findUserByIdRepository(id);
- if(!user) throw notFoundError();
- return await updateUserRepository(id, userData, options);   
+  const user = await findUserByIdRepository(id);
+  if (!user) throw notFoundError();
+
+  return await updateUserRepository(id, userData, options);
 };

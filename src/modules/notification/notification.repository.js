@@ -37,89 +37,46 @@ export const getAllNotificationPaginationRepository = async ({ page, limit, sear
     return { count: items, rows: result };
 
 };
-
-// export const getAllNotificationsService = async () => {
-//     return await NotificationModel.findAll();
-// };
-
 export const findNotificationByIdRepository = async (id) => {
     return await NotificationModel.findByPk(id);
 };
-
-// export const findNotificationByUserIdService = async (idUser) => {
-//     return await NotificationModel.findOne({
-//         where: { userId: idUser }
-//     });
-// };
-
-// export const findNotificationsByUnreadUserIdService = async (userId) => {
-//     return await NotificationModel.findAll({
-//         where: {
-//             userId: userId,
-//             isRead: false
-//         },
-//         order: [['created_at', 'DESC']]
-//     });
-// };
-
+export const findNotificationsByUnreadUserIdRepository = async (userId) => {
+    return await NotificationModel.findAll({
+        where: {
+            userId: userId,
+            isRead: false
+        },
+        order: [['created_at', 'DESC']]
+    });
+};
 export const createNotificationRepository = async (data) => {
     return await NotificationModel.create(data);
 };
-
-export const markAllAsReadNotificationByUserRepository = async (userId) => {
+export const markNotificationByUserRepository = async (userId, id) => {
     const [affectedRows] = await NotificationModel.update(
         { isRead: true },
         {
             where: {
                 userId: userId,
+                idNotification: id,
                 isRead: false
             }
         }
     )
     return affectedRows;
 };
-
-export const markAsReadByNotificationRepository = async (id) => {
+export const markAsReadAllNotificationRepository = async (userId) => {
     const [affectedRows] = await NotificationModel.update(
         { isRead: true },
         {
 
             where: {
-                idNotification: id,
+                userId: userId,
                 isRead: false
             }
         })
     return affectedRows;
 };
-
-// export const deleteNotificationByIdService = async (id) => {
-//     const notification = await NotificationModel.findByPk(id);
-
-//     if(!notification) {
-//         throw new Error('No existe la notificación buscada');
-//     };
-
-//     await notification.destroy();
-
-//     return true;
-// };
-
-export const deleteNotificationByUserIdService = async (userId) => {
-    const notification = await NotificationModel.findOne(
-        {
-            where: {
-                userId: userId
-            }
-        });
-
-    if (!notification) {
-        throw new Error('No existe la notificación buscada');
-    };
-
-    await notification.destroy();
-    return true;
-};
-
 export const countUnreadByUdserIdRepository = async(userId) => {
     return await NotificationModel.count({
         where: {

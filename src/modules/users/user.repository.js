@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { CommuneModel, UserModel, UserRoleModel, UserStatusModel } from "../../config/dbSequelize.js";
 
 export const getAllUsersPaginationWithSearchRepository = async ({ page, limit, search }) => {
@@ -23,7 +24,7 @@ export const getAllUsersPaginationWithSearchRepository = async ({ page, limit, s
         ? {
             [Op.or]: [
                 { username: { [Op.iLike]: `%${search}%` } },
-                { lastname: { [Op.iLike]: `%${search}%` } },
+                { userlastname: { [Op.iLike]: `%${search}%` } },
                 { email: { [Op.iLike]: `%${search}%` } }
             ],
         }
@@ -38,6 +39,7 @@ export const getAllUsersPaginationWithSearchRepository = async ({ page, limit, s
         limit,
         offset,
         distinct: true,
+        order: [['updated_at', 'DESC']]
     });
 
     return { count: items, rows: result };

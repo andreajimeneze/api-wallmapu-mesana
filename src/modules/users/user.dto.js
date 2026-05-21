@@ -58,10 +58,9 @@ export const updateUserByAdminDTO = (data) => ({
   rut: data.rut,
   address: data.address,
   phoneNumber: data.phone,
-  email: data.email,
   communeId: data.commune_id,
   userRoleId: data.user_role_id,
-  userStatusId: data.user_status_id
+  userStatusId: data.id
 });
 
 

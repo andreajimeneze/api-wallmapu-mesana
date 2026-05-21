@@ -8,9 +8,10 @@ import {
   badRequestResponse,
   internalServerResponse,
   notFoundResponse,
+  unauthorizedResponse,
 } from "../../core/responses/apiResponse.js";
-import { updateUserDTO, userResponseDTO } from "./user.dto.js";
-import { unauthorizedError } from "../../core/helpers/errors/httpErrors.js";
+import { updateUserByAdminDTO, updateUserDTO, userResponseDTO } from "./user.dto.js";
+import { conflictError, unauthorizedError } from "../../core/helpers/errors/httpErrors.js";
 
 export const getUsersPaginationSearch = async (req, res) => {
   try {
@@ -47,7 +48,7 @@ export const getUsersPaginationSearch = async (req, res) => {
 };
 export const getUserByIdUser = async (req, res) => {
   const { id } = req.params;
- 
+
   try {
     const userSelected = await getUserByIdService(id);
     return res.status(200).json(
@@ -74,49 +75,16 @@ export const getUserByIdUser = async (req, res) => {
     );
   }
 };
-// export const getUserByIdAdmin = async (req, res) => {
-//   const { id } = req.params;
-//  console.log('Ruta getUserByIdAdmin')
-//   try {
-//     const userSelected = await getUserByIdService(id);
-
-//     return res.status(200).json(
-//       succesGetResponse({
-//         message: "Usuario Admin encontrado con éxito",
-//         data: userResponseDTO(userSelected),
-//       }),
-//     );
-//   } catch (error) {
-//     console.error(error);
-//     if (error.status === 404) {
-//       return res
-//         .status(404)
-//         .json(
-//           notFoundResponse({
-//             message: error.message,
-//           }),
-//         );
-//     }
-//     return res.status(500).json(
-//       internalServerResponse({
-//         message: "Error al intentar obtener al usuario",
-//       }),
-//     );
-//   }
-// };
 export const updateUser = async (req, res) => {
-  const { id } = req.params;
-  const id_user = req.user.sub;
-  console.log(req.user.sub);
+  const targetUser = req.params.id;
+  const authenticatedUser = req.user.sub;
+
+  if(targetUser !== authenticatedUser) throw unauthorizedError();
   const data = req.body;
   const userDTO = updateUserDTO(data);
-  if(id !== id_user) throw unauthorizedError();
-  console.log('userDto: ', userDTO)
-   console.log('req.body update user: ', req.body);
- console.log('Ruta updateUser')
 
   try {
-    const updatedUser = await updateUserService(id, userDTO);
+    const updatedUser = await updateUserService(targetUser, userDTO);
 
     return res.status(200).json(
       succesGetResponse({
@@ -126,6 +94,15 @@ export const updateUser = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
+    if (error.status === 401) {
+      return res
+        .status(401)
+        .json(
+          unauthorizedResponse({
+            message: error.message,
+          }),
+        );
+    }
     if (error.status === 404) {
       return res
         .status(404)
@@ -144,18 +121,15 @@ export const updateUser = async (req, res) => {
 };
 
 export const updateUserByAdmin = async (req, res) => {
-  const { id } = req.params;
-
+  const targetUser = req.params.id;
+  console.log('body', req.body);
+  console.log('params', req.params);
+  console.log('user', req.user)
   const data = req.body;
-  const userDTO = updateUserByAdmin(data);
-   console.log('req.body update user: ', req.body);
- console.log('Ruta updateUser')
+  const userDTO = updateUserByAdminDTO(data);
+
   try {
-    const userSelected = await updateUserService(id, userDTO);
-
-    const dtoData = updateUserDTO(data, userSelected);
-
-    const updatedUser = await updateUserService(id, dtoData);
+    const updatedUser = await updateUserService(targetUser, userDTO);
 
     return res.status(200).json(
       succesGetResponse({
@@ -165,6 +139,15 @@ export const updateUserByAdmin = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
+        if (error.status === 401) {
+      return res
+        .status(401)
+        .json(
+          unauthorizedResponse({
+            message: error.message,
+          }),
+        );
+    }
     if (error.status === 404) {
       return res
         .status(404)

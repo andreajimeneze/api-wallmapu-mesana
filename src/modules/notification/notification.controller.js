@@ -1,6 +1,6 @@
 import { internalServerResponse, notFoundResponse, succesGetResponse, successDeleteResponse } from "../../core/responses/apiResponse.js"
 import { createNotificationDTO, notificationDTO } from "./notification.dto.js";
-import { createNotificationService, deleteNotificationByIdService, deleteNotificationByUserIdService, getAllNotificationsPaginationService, getAllNotificationsService, getNotificationByIdService, getNotificationsByUnreadUserIdService, getUnreadCountService } from "./notification.service.js";
+import { countUnreadNotificationsByUserService, createNotificationService, getAllNotificationsPaginationService, getNotificationByIdService, getNotificationsByUnreadUserIdService, markAllNotificationAsReadService, markOneNotificationAsReadService } from "./notification.service.js";
 
 export const getAllNotificationsPagination = async (req, res) => {
   try {
@@ -36,7 +36,6 @@ export const getAllNotificationsPagination = async (req, res) => {
     return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener las notificaciones' }));
   }
 };
-
 export const getAllNotificationsUserPagination = async (req, res) => {
 
   try {
@@ -44,7 +43,7 @@ export const getAllNotificationsUserPagination = async (req, res) => {
     let limit = parseInt(req.query.limit ?? 10);
     let { is_read } = req.query;
     const userId = req.user?.sub;
-    
+
 
     if (isNaN(page) || page < 1 || isNaN(limit) || limit < 1) {
       return res.status(400).json(
@@ -75,109 +74,99 @@ export const getAllNotificationsUserPagination = async (req, res) => {
     return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener las notificaciones' }));
   }
 };
-
-export const getAllNotifications = async (req, res) => {
-    try {
-        const notifications = await getAllNotificationsService();
-
-        if (!notifications || notifications.length === 0) {
-            return res.status(200).json(succesGetResponse({ message: 'No existen notificaciones' }));
-        };
-
-        return res.status(200).json(succesGetResponse({ message: 'Notificaciones obtenidas exitosamente', data: notifications.map(notificationDTO) }));
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener las notificaciones' }));
-    };
-};
-
 export const getNotificationById = async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        const notification = await getNotificationByIdService(id);
+  try {
+    const notification = await getNotificationByIdService(id);
 
-        if (!notification) {
-            return res.status(404).json(notFoundResponse({ message: 'No existe la notificación buscada' }));
-        };
-
-        return res.status(200).json(succesGetResponse({ message: 'Notificación obtenida exitosamente', data: notificationDTO(notification) }));
-    } catch (error) {
-        return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener la notificación' }));
-    };
+    return res.status(200).json(succesGetResponse({ message: 'Notificación obtenida exitosamente', data: notificationDTO(notification) }));
+  } catch (error) {
+    console.error(error);
+    if (error.status === 404) {
+      return res.status(404).json(notFoundResponse({ message: error.message }));
+    }
+    return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener la notificación' }));
+  };
 };
 
-// export const getNotificationsUnreadByUserId = async (req, res) => {
-//     const { userId } = req.params;
+export const getNotificationsUnreadByUserId = async (req, res) => {
+  const { userId } = req.params;
 
-//     try {
+  try {
+    const unreadNotifications = await getNotificationsByUnreadUserIdService(userId);
 
-//         const unreadNotifications = await getNotificationsByUnreadUserIdService(userId);
+    return res.status(200).json(succesGetResponse({ message: 'Notificación obtenida exitosamente', data: unreadNotifications.map(notificationDTO) }));
 
-//         if (!unreadNotifications) {
-//             return res.status(404).json(notFoundResponse({ message: 'No existen notificaciones no leídas' }));
-//         };
-
-//         return res.status(200).json(succesGetResponse({ message: 'Notificación obtenida exitosamente', data: unreadNotifications.map(notificationDTO) }));
-
-//     } catch (error) {
-//         console.error(error);
-//         return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener la notificación' }));
-//     };
-// };
+  } catch (error) {
+    console.error(error);
+    if (error.status === 404) {
+      return res.status(404).json(notFoundResponse({ message: error.message }));
+    }
+    return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener la notificación' }));
+  };
+};
 
 export const createNotification = async (req, res) => {
-    const dtoNotification = createNotificationDTO(req.body);
+  const dtoNotification = createNotificationDTO(req.body);
+console.log('req.body: ', req.body)
+  try {
 
-    try {
+    const newNotification = await createNotificationService(dtoNotification);
 
-        const newNotification = await createNotificationService(dtoNotification);
+    return res.status(201).json({ message: 'Notificación creada con éxito', data: notificationDTO(newNotification) });
 
-        return res.status(201).json({ message: 'Notificación creada con éxito', data: notificationDTO(newNotification) });
-
-    } catch (error) {
-        return res.status(500).json(internalServerResponse({ message: 'Error al intentar crear la notificación' }));
-    };
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(internalServerResponse({ message: 'Error al intentar crear la notificación' }));
+  };
 };
+export const getUnreadCount = async (req, res) => {
+  try {
+    const userId = req.user.sub;
 
-export const deleteNotificationById = async (req, res) => {
-    const { id } = req.params;
+    const countUnread = await countUnreadNotificationsByUserService(userId);
 
-    try {
-        const notification = await deleteNotificationByIdService(id);
+    return res.status(200).json(succesGetResponse({ message: 'Recurso obtenido con éxito', data: countUnread }))
+  } catch (error) {
+    console.error(error);
+    if (error.status === 404) {
+      return res.status(404).json(notFoundResponse({ message: error.message }));
+    }
+    return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener las UNREAD notificaciones' }));
+  };
+}
 
-        return res.status(202).json(successDeleteResponse({ message: 'Notificación eliminada exitosamente', data: notification }));
+export const markOneNotificationAsRead = async (req, res) => {
+  const idUser = req.user.sub;
+  const { id } = req.params;
 
-    } catch (error) {
-        return res.status(500).json(internalServerResponse({ message: 'Error al intentar eliminar la notificación' }));
-    };
-};
+  try {
+    const OneasRead = await markOneNotificationAsReadService(idUser, id);
 
-export const deleteNotificationByUserId = async (req, res) => {
-    const { userId } = req.params;
+    return res.status(200).json(succesGetResponse({ message: 'Mensaje marcado como leído con éxito', data: OneasRead }))
+  } catch (error) {
+    console.error(error);
+    if (error.status === 404) {n
+      return res.status(404).json(notFoundResponse({ message: error.message }));
+    }
+    return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener las UNREAD notificaciones' }));
+  };
+}
 
-    try {
-        const notification = await deleteNotificationByUserIdService(userId);
+export const markAllNotificationsAsRead = async (req, res) => {
+  const  idUser = req.user.sub;
+console.log('req.user: ', req.user);
 
-        return res.status(202).json(successDeleteResponse({ message: 'Notificación eliminada exitosamente', data: notification }));
+  try {
+    const allASRead = await markAllNotificationAsReadService(idUser);
 
+  return res.status(200).json(succesGetResponse({message: 'Recurso obtenido con éxito', data: allASRead}))
     } catch (error) {
         console.error(error);
-        return res.status(500).json(internalServerResponse({ message: 'Error al intentar eliminar la notificación' }));
-    };
-};
-
-export const getUnreadCount = async(req, res) => {
-    try {
-        const userId = req.user.sub;
-        
-        const count = await getUnreadCountService(userId);
-
-        return res.status(200).json(succesGetResponse({message: 'Recurso obtenido con éxito', data: count}))
-    } catch (error) {
-        console.error(error);
+         if(error.status === 404) {
+        return res.status(404).json(notFoundResponse({ message: error.message}));
+      }
         return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener las UNREAD notificaciones' }));
     };
 }
-
