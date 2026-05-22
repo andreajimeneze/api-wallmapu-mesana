@@ -11,7 +11,7 @@ import { deleteBookAuthorByIdBookRepository } from "../book_authors/book_author.
 import { deleteBookSubjectByIdBookRepository } from "../book_subjects/book_subject.respository.js";
 import { getAllPaginationService } from "../../core/services/basePagination.service.js";
 import { updateGenreService } from "../genres/genre.service.js";
-import { conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
+import { badRequestError, conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
 import { findEditionByBookIdRepository } from "../editions/editions.repository.js";
 
 
@@ -27,6 +27,9 @@ export const createBookService = async (bookData) => {
   const book = await findBookByTitleRepository(bookData.title);
   if (book) throw conflictError("Ya existe un libro con ese título");
 
+  if(!bookData?.title) throw badRequestError('Libro debe tener tírulo');
+  if(!bookData?.summary || bookData?.summary.length < 10) throw badRequestError('Texto debe tener al menos 10 caracteres');
+  if(!bookData.genreId) throw badRequestError('Debe incluir género al libro');
   const transaction = await sequelize.transaction();
 
   try {

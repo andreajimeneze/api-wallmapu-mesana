@@ -14,6 +14,7 @@ import {
   successUpdateResponse,
   successDeleteResponse,
   conflictResponse,
+  badRequestResponse,
 } from "../../core/responses/apiResponse.js";
 
 export const getBooksPaginationAndSearch = async (req, res) => {
@@ -115,6 +116,15 @@ export const createBook = async (req, res) => {
         .status(404)
         .json(
           notFoundResponse({
+            message: error.message,
+          }),
+        );
+    }
+        if (error.status === 400) {
+      return res
+        .status(400)
+        .json(
+          badRequestResponse({
             message: error.message,
           }),
         );

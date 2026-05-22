@@ -1,6 +1,7 @@
 import {
   getUserByIdService,
   getUsersPaginationSearchService,
+  updateUserByAdminService,
   updateUserService,
 } from "./user.service.js";
 import {
@@ -12,6 +13,7 @@ import {
 } from "../../core/responses/apiResponse.js";
 import { updateUserByAdminDTO, updateUserDTO, userResponseDTO } from "./user.dto.js";
 import { conflictError, unauthorizedError } from "../../core/helpers/errors/httpErrors.js";
+import { auth } from "google-auth-library";
 
 export const getUsersPaginationSearch = async (req, res) => {
   try {
@@ -77,14 +79,13 @@ export const getUserByIdUser = async (req, res) => {
 };
 export const updateUser = async (req, res) => {
   const targetUser = req.params.id;
-  const authenticatedUser = req.user.sub;
+  const authenticatedUser = req.user;
 
-  if(targetUser !== authenticatedUser) throw unauthorizedError();
   const data = req.body;
   const userDTO = updateUserDTO(data);
 
   try {
-    const updatedUser = await updateUserService(targetUser, userDTO);
+    const updatedUser = await updateUserService(targetUser, authenticatedUser, userDTO);
 
     return res.status(200).json(
       succesGetResponse({
@@ -94,11 +95,11 @@ export const updateUser = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    if (error.status === 401) {
+    if (error.status === 409) {
       return res
-        .status(401)
+        .status(409)
         .json(
-          unauthorizedResponse({
+          conflictError({
             message: error.message,
           }),
         );
@@ -122,15 +123,15 @@ export const updateUser = async (req, res) => {
 
 export const updateUserByAdmin = async (req, res) => {
   const targetUser = req.params.id;
-  console.log('body', req.body);
-  console.log('params', req.params);
-  console.log('user', req.user)
-  const data = req.body;
-  const userDTO = updateUserByAdminDTO(data);
+  const authenticateUser = req.user;
+  const updateData = req.body;
+  console.log(updateData),
+  console.log(req.body)
+  const userDTO = updateUserByAdminDTO(updateData)
 
   try {
-    const updatedUser = await updateUserService(targetUser, userDTO);
-
+    const updatedUser = await updateUserByAdminService(targetUser, authenticateUser, userDTO);
+console.log(updatedUser)
     return res.status(200).json(
       succesGetResponse({
         message: "Usuario editado exitosamente",

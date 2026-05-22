@@ -12,15 +12,9 @@ export const subjectResponseDTO = (subj) => ({
   updated_at: subj.updated_at,
 });
 
-export const createSubjectDTO = ({ name }) => {
-  if (!name?.trim()) {
-    throw new Error("Nombre del descriptor es obligatorio");
-  }
-
-  return {
-    name: name.trim(),
-  };
-};
+export const createSubjectDTO = ({ name }) => ({
+    name: name.trim()
+});
 
 export const updateSubjectDTO = (data) => ({
     idSubject: data.id_subject,

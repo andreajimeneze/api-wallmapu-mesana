@@ -108,7 +108,7 @@ export const createReservation = async (req, res) => {
 
         return res.status(201).json(successCreateResponse({ resource: 'Reserva' }));
     } catch (error) {
-        console.error(error)
+        console.error(error);
         if (error.status === 404) {
             return res.status(404).json(notFoundResponse({ message: error.message }));
         }

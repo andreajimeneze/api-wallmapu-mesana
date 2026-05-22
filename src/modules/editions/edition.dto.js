@@ -65,10 +65,9 @@ export const createEditionDTO = ({
   cover_image,
   book_id,
   editorial_id,
-}) => {
-  return {
-    edition,
-    isbn,
+}) => ({
+    edition: edition.trim(),
+    isbn: isbn.trim(),
     publicationYear: publication_year,
     pages: pages,
     coverImage:
@@ -77,8 +76,8 @@ export const createEditionDTO = ({
         : cover_image,
     bookId: Number(book_id),
     editorialId: Number(editorial_id),
-  };
-};
+
+});
 
 export const updateEditionDTO = ({
   id_edition,
@@ -91,7 +90,7 @@ export const updateEditionDTO = ({
   editorial_id
 }) => {
   return {
-    idEdition: id_edition,
+    idEdition: id_edition.trim(),
     edition: edition.trim(),
     isbn: isbn.trim(),
     publicationYear: Number(publication_year),

@@ -53,6 +53,7 @@ export const updateUserDTO = (data) => ({
 });
 
 export const updateUserByAdminDTO = (data) => ({
+  idUser: data.idUser,
   username: data.name,
   userlastname: data.lastname,
   rut: data.rut,
@@ -60,7 +61,7 @@ export const updateUserByAdminDTO = (data) => ({
   phoneNumber: data.phone,
   communeId: data.commune_id,
   userRoleId: data.user_role_id,
-  userStatusId: data.id
+  userStatusId: data.user_status_id
 });
 
 

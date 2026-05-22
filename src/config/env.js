@@ -21,5 +21,8 @@ export const env = {
     jwt: {
         jwt_secret: process.env.JWT_SECRET,
         jwt_refresh_token: process.env.JWT_REFRESH_TOKEN
+    },
+    brevo: {
+        api_key: process.env.BREVO_API_KEY
     }
 }
