@@ -55,13 +55,9 @@ export const initializeSocket = (server) => {
 
     activeConnections.set(userId, socket.id);
 
-    console.log(`Socket conectado user ${userId}`);
-
     socket.on("disconnect", () => {
 
       activeConnections.delete(userId);
-
-      console.log(`Socket desconectado user ${userId}`);
     });
   });
 };

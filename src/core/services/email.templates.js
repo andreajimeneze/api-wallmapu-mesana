@@ -54,7 +54,6 @@ export const sendEmail = async (
 };
 
 const formatDate = (date) => {
-
     return new Date(date)
         .toLocaleDateString("es-CL");
 };
@@ -79,9 +78,9 @@ export const sendWelcomeEmail = async (data) => {
                     Hola ${data.name},
                 </p>
 
-                <p>
+                <h4>
                     Tu cuenta ha sido creada exitosamente.
-                </p>
+                </h4>
 
                 <div style="
                     background: #f8f9fa;
@@ -89,9 +88,19 @@ export const sendWelcomeEmail = async (data) => {
                     border-radius: 5px;
                     margin: 20px 0;
                 ">
+                <p>
+                    Desde ahora podrás:
+                </p>
                     <p>✅ Reservar libros</p>
                     <p>✅ Solicitar préstamos</p>
                     <p>✅ Recibir notificaciones</p>
+                    <div>
+                         <h4 style="color: #4A148C;">
+                            Recuerda que cuando vayas por tu primer libro deberás llevar:
+                        </h4>
+                        <p>✅ Carné de identidad</p>
+                        <p>✅ Comprobante de domicilio (boleta de servicios básicos o certificado de residencia)</p>
+                    </div>
                 </div>
 
             </div>
@@ -182,7 +191,6 @@ export const sendAdminEmail = async (data) => {
 // --------------------------------------------------
 
 export const sendReservationCreatedEmail = async (data) => {
-
     const html = `
     <html>
 
@@ -200,10 +208,13 @@ export const sendReservationCreatedEmail = async (data) => {
                     border-radius: 5px;
                     margin: 20px 0;
                 ">
+                <h4 style="color: #4A148C;">
+                   Los datos de tu libro son:
+                </h4>
                     <p><strong>Reserva #:</strong> ${data.id}</p>
                     <p><strong>Libro:</strong> ${data.book_title}</p>
-                    <p><strong>CodBarra:</strong> ${data.book_barcode}</p>
-                    <p><strong>Vence:</strong> ${formatDate(data.expiration_date)}</p>
+                    <p><strong>Código:</strong> ${data.book_barcode}</p>
+                    <p><strong>Fecha máximo de retiro: </strong>${formatDate(data.expirationDate)}</p>
                 </div>
 
             </div>
@@ -234,9 +245,9 @@ export const sendReservationCancelledEmail = async (data) => {
             <div style="max-width: 600px; margin:0 auto; padding: 20px;">
 
                 <h2 style="color: #D81B60;">
-                    Reserva Cancelada
+                    Reserva Cancelada del libro ${data.book_title}
                 </h2>
-
+                
                 <div style="
                     background: #f8f9fa;
                     padding: 15px;
@@ -276,7 +287,7 @@ export const sendLoanCreatedEmail = async (data) => {
             <div style="max-width: 600px; margin:0 auto; padding: 20px;">
 
                 <h2 style="color: #4A148C;">
-                    ¡Tu préstamo se ha realizado!
+                    ¡Felicitaciones, has retirado el libro ${data.book_title}! ¡Disfrútalo!
                 </h2>
 
                 <div style="
@@ -287,8 +298,8 @@ export const sendLoanCreatedEmail = async (data) => {
                 ">
                     <p><strong>Préstamo #:</strong> ${data.id}</p>
                     <p><strong>Libro:</strong> ${data.book_title}</p>
-                    <p><strong>CodBarra:</strong> ${data.book_barcode}</p>
-                    <p><strong>Devolución:</strong> ${formatDate(data.expiration_date)}</p>
+                    <p><strong>Código:</strong> ${data.book_barcode}</p>
+                    <p><strong>La fecha de devolución del libro es:</strong> ${formatDate(data.expirationDate)}</p>
                 </div>
 
             </div>
@@ -319,7 +330,7 @@ export const sendLoanReturnedEmail = async (data) => {
             <div style="max-width: 600px; margin:0 auto; padding: 20px;">
 
                 <h2 style="color: #4A148C;">
-                    ¡Tu préstamo ha sido devuelto!
+                    ¡Has devuelto el libro ${data.book_title}!
                 </h2>
 
                 <div style="
@@ -329,20 +340,20 @@ export const sendLoanReturnedEmail = async (data) => {
                     margin: 20px 0;
                 ">
                     <p>
-                        <strong>Préstamo #:</strong>
-                        ${data.id}
+                        <strong>Préstamo #:</strong> ${data.id}
                     </p>
 
                     <p>
-                        <strong>Libro:</strong>
-                        ${data.book_title}
+                        <strong>Libro:</strong> ${data.book_title}
                     </p>
 
                     <p>
-                        <strong>CodBarra:</strong>
-                        ${data.book_barcode}
+                        <strong>Código:</strong> ${data.book_barcode}
                     </p>
                 </div>
+                 <h3 style="color: #4A148C;">
+                    ¡Muchas gracias, te esperamos pronto!
+                </h3>
 
             </div>
 
@@ -353,7 +364,7 @@ export const sendLoanReturnedEmail = async (data) => {
 
     return await sendEmail(
         data.email,
-        `PRÉSTAMO DEVUELTO - #${data.id}`,
+        `LIBRO DEVUELTO - #${data.id}`,
         html
     );
 };
