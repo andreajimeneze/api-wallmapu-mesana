@@ -1,16 +1,10 @@
-import { now } from "sequelize/lib/utils";
-import {
-  CommuneModel,
-  UserModel,
-  UserRoleModel,
-  UserStatusModel,
-} from "../../config/dbSequelize.js";
 import { paginationResponseDTO } from "../../core/responses/paginationResponse.js";
 import { userCompleteResponseDTO, userResponseDTO } from "./user.dto.js";
 import { isProfileComplete } from '../auth/utils/profileComplete.js';
 import { getAllPaginationService } from "../../core/services/basePagination.service.js";
 import { createUserRepository, findUserByEmailRepository, findUserByIdRepository, getAllUsersPaginationWithSearchRepository, updateUserRepository } from "./user.repository.js";
 import { conflictError, notFoundError, unauthorizedError } from "../../core/helpers/errors/httpErrors.js";
+import { eventEmitter } from "../../core/events/eventEmitter.js";
 
 export const getUsersPaginationSearchService = async (params) => {
   return await getAllPaginationService(params, getAllUsersPaginationWithSearchRepository, userCompleteResponseDTO);
@@ -24,12 +18,14 @@ export const getUserByIdService = async (id) => {
 
 export const getUserByEmailService = async (email) => {
   const userByEmail = await findUserByEmailRepository(email);
-  if (!userByEmail) throw notFoundError();
+  //if (!userByEmail) throw notFoundError();
   return userByEmail;
 };
 
 export const createUserService = async (user, options = {}) => {
-  return await createUserRepository(user, options);
+  const createdUser = await createUserRepository(user, options);
+  eventEmitter.emit('CREATED_USER', createdUser);
+  return createdUser;
 };
 
 export const updateUserService = async (targetUser, authenticatedUser, userData, options = {}) => {
@@ -38,9 +34,6 @@ export const updateUserService = async (targetUser, authenticatedUser, userData,
   
   const { sub, role } = authenticatedUser;
   const currentUser = sub;
-  console.log('usuario actual: ', currentUser)
-  console.log('sub', sub, 'role', role)
-  console.log('authenticadeUser', authenticatedUser)
 
   const isSelfUser = targetUser === currentUser;
 

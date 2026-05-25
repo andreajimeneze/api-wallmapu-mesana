@@ -18,7 +18,7 @@ main();
 //   "relay": {
 //     "enabled": true,
 //     "data": {
-//       "userName": "ac1e39001@smtp-brevo.com",
+//       "name": "ac1e39001@smtp-brevo.com",
 //       "relay": "smtp-relay.brevo.com",
 //       "port": 587
 //     }

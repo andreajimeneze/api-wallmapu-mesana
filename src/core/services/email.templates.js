@@ -33,7 +33,14 @@ export const sendEmail = async (
             }
         );
 
-        return await response.json();
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(JSON.stringify(data));
+        }
+
+        return data;
 
     } catch (error) {
 
@@ -46,9 +53,6 @@ export const sendEmail = async (
     }
 };
 
-
-import { sendEmail } from "./email.service.js";
-
 const formatDate = (date) => {
 
     return new Date(date)
@@ -60,8 +64,7 @@ const formatDate = (date) => {
 // WELCOME EMAIL
 // --------------------------------------------------
 
-export const sendWelcomeEmail = async(data) => {
-
+export const sendWelcomeEmail = async (data) => {
     const html = `
     <html>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
@@ -73,7 +76,7 @@ export const sendWelcomeEmail = async(data) => {
                 </h2>
 
                 <p style="color: #00897B;">
-                    Hola ${data.user_name},
+                    Hola ${data.name},
                 </p>
 
                 <p>
@@ -98,7 +101,7 @@ export const sendWelcomeEmail = async(data) => {
     `;
 
     return await sendEmail(
-        data.user_email,
+        data.email,
         "¡Bienvenido/a a Biblioteca Wallmapu!",
         html
     );
@@ -109,9 +112,9 @@ export const sendWelcomeEmail = async(data) => {
 // ADMIN EMAIL
 // --------------------------------------------------
 
-export const sendAdminEmail = async(data) => {
-
-    const priorityBanner = data.is_priority
+export const sendAdminEmail = async (data) => {
+    const name = data.name || data.user_name || data.email?.split("@")[0];
+    const priorityBanner = data.isPriority
         ? `
         <div style="
             background: #D32F2F;
@@ -167,7 +170,7 @@ export const sendAdminEmail = async(data) => {
         : data.title;
 
     return await sendEmail(
-        data.user_email,
+        data.email,
         subject,
         html
     );
@@ -178,7 +181,7 @@ export const sendAdminEmail = async(data) => {
 // RESERVATION CREATED
 // --------------------------------------------------
 
-export const sendReservationCreatedEmail = async(data) => {
+export const sendReservationCreatedEmail = async (data) => {
 
     const html = `
     <html>
@@ -211,7 +214,7 @@ export const sendReservationCreatedEmail = async(data) => {
     `;
 
     return await sendEmail(
-        data.user_email,
+        data.email,
         `RESERVA CREADA - #${data.id}`,
         html
     );
@@ -222,8 +225,7 @@ export const sendReservationCreatedEmail = async(data) => {
 // RESERVATION CANCELLED
 // --------------------------------------------------
 
-export const sendReservationCancelledEmail = async(data) => {
-
+export const sendReservationCancelledEmail = async (data) => {
     const html = `
     <html>
 
@@ -254,7 +256,7 @@ export const sendReservationCancelledEmail = async(data) => {
     `;
 
     return await sendEmail(
-        data.user_email,
+        data.email,
         `RESERVA CANCELADA - #${data.id}`,
         html
     );
@@ -265,8 +267,7 @@ export const sendReservationCancelledEmail = async(data) => {
 // LOAN CREATED
 // --------------------------------------------------
 
-export const sendLoanCreatedEmail = async(data) => {
-
+export const sendLoanCreatedEmail = async (data) => {
     const html = `
     <html>
 
@@ -298,7 +299,7 @@ export const sendLoanCreatedEmail = async(data) => {
     `;
 
     return await sendEmail(
-        data.user_email,
+        data.email,
         `PRÉSTAMO REALIZADO - #${data.id}`,
         html
     );
@@ -309,8 +310,7 @@ export const sendLoanCreatedEmail = async(data) => {
 // LOAN RETURNED
 // --------------------------------------------------
 
-export const sendLoanReturnedEmail = async(data) => {
-
+export const sendLoanReturnedEmail = async (data) => {
     const html = `
     <html>
 
@@ -352,7 +352,7 @@ export const sendLoanReturnedEmail = async(data) => {
     `;
 
     return await sendEmail(
-        data.user_email,
+        data.email,
         `PRÉSTAMO DEVUELTO - #${data.id}`,
         html
     );

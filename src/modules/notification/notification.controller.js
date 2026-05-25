@@ -1,4 +1,5 @@
 import { internalServerResponse, notFoundResponse, succesGetResponse, successDeleteResponse } from "../../core/responses/apiResponse.js"
+import { dispatchNotification } from "./notification.dispatcher.js";
 import { createNotificationDTO, notificationDTO } from "./notification.dto.js";
 import { countUnreadNotificationsByUserService, createNotificationService, getAllNotificationsPaginationService, getNotificationByIdService, getNotificationsByUnreadUserIdService, markAllNotificationAsReadService, markOneNotificationAsReadService } from "./notification.service.js";
 
@@ -109,10 +110,9 @@ export const getNotificationsUnreadByUserId = async (req, res) => {
 
 export const createNotification = async (req, res) => {
   const dtoNotification = createNotificationDTO(req.body);
-console.log('req.body: ', req.body)
-  try {
 
-    const newNotification = await createNotificationService(dtoNotification);
+  try {
+    const newNotification = await dispatchNotification(dtoNotification);
 
     return res.status(201).json({ message: 'Notificación creada con éxito', data: notificationDTO(newNotification) });
 
@@ -147,7 +147,7 @@ export const markOneNotificationAsRead = async (req, res) => {
     return res.status(200).json(succesGetResponse({ message: 'Mensaje marcado como leído con éxito', data: OneasRead }))
   } catch (error) {
     console.error(error);
-    if (error.status === 404) {n
+    if (error.status === 404) {
       return res.status(404).json(notFoundResponse({ message: error.message }));
     }
     return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener las UNREAD notificaciones' }));
@@ -155,18 +155,17 @@ export const markOneNotificationAsRead = async (req, res) => {
 }
 
 export const markAllNotificationsAsRead = async (req, res) => {
-  const  idUser = req.user.sub;
-console.log('req.user: ', req.user);
+  const idUser = req.user.sub;
 
   try {
     const allASRead = await markAllNotificationAsReadService(idUser);
 
-  return res.status(200).json(succesGetResponse({message: 'Recurso obtenido con éxito', data: allASRead}))
-    } catch (error) {
-        console.error(error);
-         if(error.status === 404) {
-        return res.status(404).json(notFoundResponse({ message: error.message}));
-      }
-        return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener las UNREAD notificaciones' }));
-    };
+    return res.status(200).json(succesGetResponse({ message: 'Recurso obtenido con éxito', data: allASRead }))
+  } catch (error) {
+    console.error(error);
+    if (error.status === 404) {
+      return res.status(404).json(notFoundResponse({ message: error.message }));
+    }
+    return res.status(500).json(internalServerResponse({ message: 'Error al intentar obtener las UNREAD notificaciones' }));
+  };
 }

@@ -8,7 +8,7 @@ export const LoanStatus = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-        field: "id_loan_status",
+        field: "id_status",
       },
 
       name: {

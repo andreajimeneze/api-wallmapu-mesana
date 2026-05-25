@@ -13,7 +13,7 @@ export const getAllReservationWithSearchRepository = async ({
         {
             model: UserModel,
             as: 'user',
-            attributes: ['idUser', 'username', 'userlastname', 'email']
+            attributes: ['idUser', 'name', 'lastname', 'email']
         },
         {
             model: CopyModel,
@@ -73,7 +73,7 @@ export const findReservationByIdRepository= async (id, options = {}) => {
             {
                 model: UserModel,
                 as: 'user',
-                attributes: ['idUser', 'username', 'userlastname', 'email']
+                attributes: ['idUser', 'name', 'lastname', 'email']
             },
             {
                 model: CopyModel,
@@ -113,7 +113,7 @@ export const findReservationsByUserIdRepository= async (userId, options = {}) =>
             {
                 model: UserModel,
                 as: 'user',
-                attributes: ['idUser', 'username', 'userlastname', 'email']
+                attributes: ['idUser', 'name', 'lastname', 'email']
             },
             {
                 model: CopyModel,

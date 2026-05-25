@@ -10,7 +10,7 @@ export const UserStatus = (sequelize, DataTypes) => {
         autoIncrement: true,
         field: "id_user_status",
       },
-      status: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false,
       }

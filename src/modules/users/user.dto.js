@@ -4,15 +4,15 @@ import { responseUserStatusDTO } from "../user-status/user-status.dto.js";
 
 export const baseUserDTO = (user) => ({
     id_user: user.idUser,
-    name: user.username,
-    lastname: user.userlastname,
+    name: user.name,
+    lastname: user.lastname,
     email: user.email
 });
 
 export const userResponseDTO = (user) => ({
     id_user: user.idUser,
-    name: user.username ?? '',
-    lastname: user.userlastname ?? '',
+    name: user.name ?? '',
+    lastname: user.lastname ?? '',
     email: user.email ?? '',
     rut: user.rut ?? '',
     address: user.address ?? '',
@@ -26,8 +26,8 @@ export const userResponseDTO = (user) => ({
 
 export const userCompleteResponseDTO = (user) => ({
     id_user: user.idUser,
-    name: user.username ?? '',
-    lastname: user.userlastname ?? '',
+    name: user.name ?? '',
+    lastname: user.lastname ?? '',
     email: user.email ?? '',
     rut: user.rut ?? '',
     address: user.address ?? '',
@@ -37,14 +37,14 @@ export const userCompleteResponseDTO = (user) => ({
     user_status_id: user.userStatusId,
     created_at: user.createdAt,
     updated_at: user.updatedAt,
-    user_role_name: user.userRole?.role ?? '',
-    user_status_name: user.userStatus?.status ?? ''
+    user_role_name: user.userRole?.name ?? '',
+    user_status_name: user.userStatus?.name ?? ''
 });
 
 
 export const updateUserDTO = (data) => ({
-  username: data.name,
-  userlastname: data.lastname,
+  name: data.name,
+  lastname: data.lastname,
   rut: data.rut,
   address: data.address,
   phoneNumber: data.phone,
@@ -53,9 +53,9 @@ export const updateUserDTO = (data) => ({
 });
 
 export const updateUserByAdminDTO = (data) => ({
-  idUser: data.idUser,
-  username: data.name,
-  userlastname: data.lastname,
+  idUser: data.id_user,
+  name: data.name,
+  lastname: data.lastname,
   rut: data.rut,
   address: data.address,
   phoneNumber: data.phone,

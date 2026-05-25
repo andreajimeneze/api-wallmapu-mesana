@@ -1,15 +1,37 @@
+import { Op } from "sequelize";
 import { EditorialModel } from "../../config/dbSequelize.js";
 
+export const getAllEditorialsPaginationRepository = async ({ page, limit, search }) => {
+
+    const where = search
+        ? {
+            [Op.or]: [{ name: { [Op.iLike]: `%${search}%` } }],
+        }
+        : {};
+
+
+    const offset = (page - 1) * limit;
+
+    const items = await EditorialModel.count({ where });
+    const result = await EditorialModel.findAll({
+        where,
+        limit,
+        offset,
+        raw: true,
+        order: [['updated_at', 'DESC']]
+    });
+
+    return { count: items, rows: result };
+
+};
 export const findAllEditorialsRepository = async () => {
   return EditorialModel.findAll({
     order: [['name', 'ASC']]
   })
 };
-
 export const findEditorialByIdRepository = async (id) => {
   return await EditorialModel.findByPk(id);
 };
-
 export const existingEditorial = async (name) => {
   await EditorialModel.findOne({
     where: {
@@ -22,7 +44,6 @@ export const createEditorialRepository = async (name, options) => {
     name: name,
   });
 };
-
 export const updateEditorialRepository = async (id, name, options = {}) => {
   const [count, [updatedEditorial]] = await editorialSelected.update(
     { name: name },
@@ -33,7 +54,6 @@ export const updateEditorialRepository = async (id, name, options = {}) => {
     }
   )
 };
-
 export const deleteEditorialRepository = async (id) => {
   return await EditorialModel.destroy({
     where:

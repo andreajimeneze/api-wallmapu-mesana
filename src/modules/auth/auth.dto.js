@@ -4,10 +4,10 @@ export const authResponseDTO = (auth) => ({
     user: {
         id_user: auth.user.id_user,
         email: auth.user.email,
-        name: auth.user.username,
+        name: auth.user.name,
         picture: auth.user.picture,
         profileComplete: auth.user.profileComplete,
-        role: auth.user.role
+        role: auth.user?.role
     }
 
 })

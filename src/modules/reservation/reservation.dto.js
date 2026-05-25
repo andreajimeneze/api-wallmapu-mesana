@@ -23,8 +23,8 @@ export const reservationResponseDTO = (res) => {
         expiration_date: res.expirationDate,
 
         user_id: res.userId,
-        user_name: res.user?.username,
-        user_lastname: res.user?.userlastname,
+        user_name: res.user?.name,
+        user_lastname: res.user?.lastname,
         user_email: res.user?.email,
 
         copy_id: copy?.idCopy ?? null,

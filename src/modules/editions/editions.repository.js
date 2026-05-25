@@ -3,10 +3,7 @@ import { EditionModel, BookModel, EditorialModel, GenreModel, AuthorModel, CopyM
 
 export const getAllEditionPaginationRepository = async ({ page, limit, search, filter }) => {
   const { idGenre, idAuthor, idEditorial } = filter;
-console.log('idGenre: ', idGenre)
-console.log('idAuthor: ', idAuthor)
-console.log('idEditorial: ', idEditorial)
-console.log(filter)
+
   const include = [
     {
       model: BookModel,

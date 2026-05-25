@@ -14,15 +14,15 @@ export const loginWithGoogleService = async (googleToken) => {
   if (!user) {
     user = await createUserService({
       email: googleUser.email,
-      username: googleUser.name,
+      name: googleUser.name,
       userRoleId: 3,
       userStatusId: 1
     });
     user = await getUserByEmailService(googleUser.email);
 
   } else {
-    if(!user.username) {
-      user.username = googleUser.name;
+    if(!user.name) {
+      user.name = googleUser.name;
       await user.save();
     }
   }
@@ -30,7 +30,7 @@ export const loginWithGoogleService = async (googleToken) => {
   const token = jwt.sign(
     {
       sub: user.idUser,
-      role: user.userRole?.role,
+      role: user.userRole?.name,
     },
     env.jwt.jwt_secret,
     {
@@ -45,10 +45,10 @@ export const loginWithGoogleService = async (googleToken) => {
     user: {
       id_user: user.idUser,
       email: user.email,
-      username: user.username,
+      name: user.name,
       picture: googleUser.picture,
       profileComplete,
-      role: user.userRole?.role,
+      role: user.userRole?.name,
     },
   });
 };

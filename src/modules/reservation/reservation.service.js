@@ -6,6 +6,8 @@ import { getAllPaginationService } from "../../core/services/basePagination.serv
 import { findCopyByIdRepository, updateStatusCopyRepository } from "../copies/copy.repository.js";
 import { badRequestError, conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
 import { sequelize } from "../../config/dbSequelize.js";
+import { sendReservationCreatedEmail } from "../../core/services/email.templates.js";
+import { eventEmitter } from '../../core/events/eventEmitter.js';
 
 
 export const getReservationsWithSearchService = async (params) => {
@@ -13,7 +15,7 @@ export const getReservationsWithSearchService = async (params) => {
 };
 export const getReservationByIdService = async (id) => {
     const reservation = await findReservationByIdRepository(id);
-    if(!reservation) throw notFoundError();
+    if (!reservation) throw notFoundError();
     return reservation;
 };
 export const createCopyReservationService = async (userId, copyId) => {
@@ -28,8 +30,8 @@ export const createCopyReservationService = async (userId, copyId) => {
 
     if (existingReserve) throw conflictError('Ya tienes una reserva activa de este ejemplar');
 
-    if(overdueLoans > 0) throw conflictError('No puede realizar reserva con préstamos vencidos');
-    
+    if (overdueLoans > 0) throw conflictError('No puede realizar reserva con préstamos vencidos');
+
     const reservationDays = policy?.reservationDays ?? 3;
 
     const expirationDate = new Date();
@@ -52,7 +54,10 @@ export const createCopyReservationService = async (userId, copyId) => {
         reservationStatusId: 1
     });
 
-    return await createReservationRepository(reservation);
+    const createdReservation = await createReservationRepository(reservation);
+    eventEmitter.emit('RESERVATION_CREATED', createdReservation);
+
+    return createdReservation;
 };
 export const updateStatusExpireOverdueReservationsService = async () => {
     const today = new Date();
@@ -70,13 +75,17 @@ export const updateStatusCancelReservationService = async (id, user) => {
 
     if (!isAdmin && !isOwner) throw conflictError('No tiene autorización para cancelar la reserva');
 
-    return await updateStatusCancelReservationRepository(id);
+    const cancelatedReservation = await updateStatusCancelReservationRepository(id);
+
+    eventEmitter.emit('CANCELED_RESERVATION', cancelatedReservation);
+
+    return cancelatedReservation;
 };
 export const markAsPickUpService = async (id, copyId) => {
     const transaction = await sequelize.transaction();
 
     try {
-        const reserve = await findReservationByIdRepository(id, {transaction});
+        const reserve = await findReservationByIdRepository(id, { transaction });
 
         if (!reserve) throw notFoundError();
 
@@ -88,7 +97,7 @@ export const markAsPickUpService = async (id, copyId) => {
 
         if (reserve.expirationDate < new Date()) throw conflictError('No puede entregarse una reserva vencida. Debe reservar nuevamente');
 
-        const copy = await findCopyByIdRepository(copyId, {transaction});
+        const copy = await findCopyByIdRepository(copyId, { transaction });
 
         if (!copy) throw notFoundError('Copia no asociada a la reserva');
 
@@ -104,21 +113,23 @@ export const markAsPickUpService = async (id, copyId) => {
 
         const dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + loanDate);
-        
+
         if (maxBooks >= policy.maxBooks) throw conflictError('Usuario excede el máximo de préstamos permitidos');
 
-        const loan = await markAsPickUpRepository(id, copy.idCopy, reserve.userId, dueDate, {transaction});
-        if(loan.count === 0) throw badRequesError('No se actualizó el estado del préstamo');
-        const completedReserve = await markAsCompletedReservationRepository(reserve.idReservation, {transaction});
-        if(completedReserve.count === 0) throw badRequesError('No se actualizó el estado de la reserva');
+        const loan = await markAsPickUpRepository(id, copy.idCopy, reserve.userId, dueDate, { transaction });
+        if (loan.count === 0) throw badRequesError('No se actualizó el estado del préstamo');
+        const completedReserve = await markAsCompletedReservationRepository(reserve.idReservation, { transaction });
+        if (completedReserve.count === 0) throw badRequesError('No se actualizó el estado de la reserva');
         const statusId = 2;
-       
-        const updatedStatusCopy =await updateStatusCopyRepository(copy.idCopy, copy.statusId, statusId, {transaction});
-        if(updatedStatusCopy.count === 0) throw badRequesError('No se actualizó el estado de la copia');
+
+        const updatedStatusCopy = await updateStatusCopyRepository(copy.idCopy, copy.statusId, statusId, { transaction });
+        if (updatedStatusCopy.count === 0) throw badRequesError('No se actualizó el estado de la copia');
+
+        eventEmitter.emit('CREATED_LOAN', loan);
 
         await transaction.commit();
 
-        return {loan, completedReserve};
+        return { loan, completedReserve };
 
     } catch (error) {
         console.error(error);

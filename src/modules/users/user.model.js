@@ -10,10 +10,10 @@ export const User = (sequelize, DataTypes) => {
         primaryKey: true,
         field: "id_user",
       },
-      username: {
+      name: {
         type: DataTypes.STRING
       },
-      userlastname: {
+      lastname: {
         type: DataTypes.STRING
       },
       rut: {
@@ -28,7 +28,7 @@ export const User = (sequelize, DataTypes) => {
       },
       phoneNumber: {
         type: DataTypes.STRING,
-        field: "phone_number"
+        field: "phone"
       },
       email: {
         type: DataTypes.STRING,

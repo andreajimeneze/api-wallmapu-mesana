@@ -6,25 +6,25 @@ export const getAllUsersPaginationWithSearchRepository = async ({ page, limit, s
         {
             model: CommuneModel,
             as: "commune",
-            attributes: ["idCommune", "commune", "provinceId"],
+            attributes: ["idCommune", "name", "provinceId"],
         },
         {
             model: UserStatusModel,
             as: "userStatus",
-            attributes: ["idUserStatus", "status"],
+            attributes: ["idUserStatus", "name"],
         },
         {
             model: UserRoleModel,
             as: "userRole",
-            attributes: ["idUserRole", "role"],
+            attributes: ["idUserRole", "name"],
         },
     ];
 
     const where = search
         ? {
             [Op.or]: [
-                { username: { [Op.iLike]: `%${search}%` } },
-                { userlastname: { [Op.iLike]: `%${search}%` } },
+                { name: { [Op.iLike]: `%${search}%` } },
+                { lastname: { [Op.iLike]: `%${search}%` } },
                 { email: { [Op.iLike]: `%${search}%` } }
             ],
         }
@@ -50,39 +50,39 @@ export const findUserByIdRepository = async (id) => {
             {
                 model: CommuneModel,
                 as: "commune",
-                attributes: ["idCommune", "commune"],
+                attributes: ["idCommune", "name"],
             },
             {
                 model: UserStatusModel,
                 as: "userStatus",
-                attributes: ["idUserStatus", "status"],
+                attributes: ["idUserStatus", "name"],
             },
             {
                 model: UserRoleModel,
                 as: "userRole",
-                attributes: ["idUserRole", "role"],
+                attributes: ["idUserRole", "name"],
             },
         ],
     });
 };
 export const findUserByEmailRepository = async (email) => {
     return await UserModel.findOne({
-        where: { email },
+        where: { email: email },
         include: [
             {
                 model: CommuneModel,
                 as: "commune",
-                attributes: ["idCommune", "commune", "provinceId"],
+                attributes: ["idCommune", "name", "provinceId"],
             },
             {
                 model: UserStatusModel,
                 as: "userStatus",
-                attributes: ["idUserStatus", "status"],
+                attributes: ["idUserStatus", "name"],
             },
             {
                 model: UserRoleModel,
                 as: "userRole",
-                attributes: ["idUserRole", "role"],
+                attributes: ["idUserRole", "name"],
             },
         ],
     });
@@ -90,23 +90,28 @@ export const findUserByEmailRepository = async (email) => {
 export const createUserRepository = async (user, options = {}) => {
     return await UserModel.create({
         email: user.email,
+        name: user.name,
         userRoleId: 3,
         userStatusId: 1
     }, options);
 };
+// export const updateUserRepository = async (id, userData, options = {}) => {
+//     return await UserModel.update(
+//         userData ,
+//         {
+//             where: {
+//                 idUser: id
+//             }, ...options
+//         }
+//     );
+//     //return updatedUser;
+// };
+
 export const updateUserRepository = async (id, userData, options = {}) => {
-    const [count, updatedUsers] = await UserModel.update(
-        userData ,
-        {
-            where: {
-                idUser: id
-            }, ...options, returning: true
-        }
-    );
-    if (count === 0) return null;
+  await UserModel.update(userData, {
+    where: { idUser: id },
+    ...options,
+  });
 
-    console.log('updatedUsers: ', updatedUsers)
-    return updatedUsers[0];
-
-    //return updatedUser;
+  return await UserModel.findByPk(id);
 };

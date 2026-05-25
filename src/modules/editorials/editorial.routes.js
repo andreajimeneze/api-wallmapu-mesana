@@ -1,8 +1,10 @@
 import express from 'express';
-import { createEditorial, getAllEditorials, getEditorialById, updateEditorial } from './editorial.controller.js';
+import { createEditorial, getAllEditorials, getAllEditorialsWithPagination, getEditorialById, updateEditorial } from './editorial.controller.js';
 import { jwtMiddleware, checkRole } from '../auth/auth.middleware.js';
 
 const router = express.Router();
+
+router.get('/pagination', getAllEditorialsWithPagination);
 
 router.get('/', getAllEditorials);
 

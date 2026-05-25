@@ -9,9 +9,10 @@ import { getAllPaginationService } from "../../core/services/basePagination.serv
 import { conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
 import { existingCopiesByEditionRepository } from "../copies/copy.repository.js";
 import { sequelize } from "../../config/dbSequelize.js";
+import { foreignKeyError, uniqueConstraintError, validationError } from "../../core/helpers/errors/databaseErrors.js";
 
 export const getAllEditionPaginationService = async (params) => {
-  console.log(params)
+
   return await getAllPaginationService(params, getAllEditionPaginationRepository, editionForBookResponseDTO);
 };
 export const getEditionByIdService = async (id) => {

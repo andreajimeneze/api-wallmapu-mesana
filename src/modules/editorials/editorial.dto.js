@@ -11,9 +11,3 @@ export const editorialResponseDTO = (res) => ({
   created_at: res.created_at,
   updated_at: res.updated_at,
 });
-
-export const createEditorialResponseDTO = ({ name }) => {
-  return {
-    name: name.trim(),
-  };
-};

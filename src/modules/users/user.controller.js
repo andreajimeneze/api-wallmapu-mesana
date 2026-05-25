@@ -125,13 +125,12 @@ export const updateUserByAdmin = async (req, res) => {
   const targetUser = req.params.id;
   const authenticateUser = req.user;
   const updateData = req.body;
-  console.log(updateData),
-  console.log(req.body)
+
   const userDTO = updateUserByAdminDTO(updateData)
 
   try {
     const updatedUser = await updateUserByAdminService(targetUser, authenticateUser, userDTO);
-console.log(updatedUser)
+
     return res.status(200).json(
       succesGetResponse({
         message: "Usuario editado exitosamente",

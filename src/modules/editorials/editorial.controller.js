@@ -5,34 +5,43 @@ import {
 } from "../../core/responses/apiResponse.js";
 import {
   editorialResponseDTO,
-  createEditorialResponseDTO,
   baseEditorialDTO,
 } from "./editorial.dto.js";
 import {
   createEditorialService,
   getAllEditorialsService,
+  getAllEditorialsWithPaginationService,
   getEditorialByIdService,
   updateEditorialService,
 } from "./editorial.service.js";
 
-export const getAllEditorials = async (req, res) => {
-  try {
-    const editorials = await getAllEditorialsService();
-   
-    if (!editorials || editorials.length === 0) {
-      return res
-        .status(200)
-        .json(succesGetResponse({ message: "No hay editoriales cargadas" }));
+export const getAllEditorialsWithPagination = async (req, res) => {
+  let page = parseInt(req.query.page ?? 1);
+    let limit = parseInt(req.query.limit ?? 10);
+
+    if (isNaN(page) || page < 1 || isNaN(limit) || limit < 1) {
+      return res.status(400).json(
+        badRequestResponse({
+          message: "El número de página o items debe ser mayor a 0",
+        }),
+      );
     }
 
-    return res.status(200).json(
+  try {
+    const editorials = await getAllEditorialsWithPaginationService({
+      page,
+      limit,
+      search: req.query.search ?? "",
+    });
+   
+      return res.status(200).json(
       succesGetResponse({
         resource: "Editoriales",
-        data: editorials.map(editorialResponseDTO),
+        data: editorials.data,
       }),
     );
   } catch (error) {
-    console.error(error)
+    console.error(error);
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar obtener las editoriales",
@@ -41,25 +50,39 @@ export const getAllEditorials = async (req, res) => {
   }
 };
 
+export const getAllEditorials = async (req, res) => {
+  try {
+    const editorial = await getAllEditorialsService();
+
+    return res
+      .status(200)
+      .json(succesGetResponse({ resource: "Editorial", data: editorial.map(editorialResponseDTO) }));
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(
+      internalServerResponse({
+        message: "Error al intentar obtener la editorial",
+      }),
+    );
+  }
+};
 export const getEditorialById = async (req, res) => {
   const { id } = req.params;
 
   try {
     const editorial = await getEditorialByIdService(id);
 
-    if (!editorial) {
-      return res
-        .status(404)
-        .json(notFoundResponse({ message: "Editorial no encontrada" }));
-    }
-
     return res
       .status(200)
       .json(succesGetResponse({ resource: "Editorial", data: baseEditorialDTO(editorial) }));
   } catch (error) {
+    console.error(error);
+    if(error.status = 404) {
+      return res.status(404).json(notFoundResponse({message: error.message}));
+    }
     return res.status(500).json(
       internalServerResponse({
-        message: "Error al intentar obtener la editorial",
+        message: "Error al intentar obtener las editoriales",
       }),
     );
   }
@@ -89,6 +112,7 @@ export const updateEditorial = async (req, res) => {
       }),
     );
   } catch (error) {
+    console.error(error);
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar editar editorial",
@@ -101,18 +125,18 @@ export const createEditorial = async (req, res) => {
   const { name } = req.body;
 
   try {
-    const dto = createEditorialResponseDTO(name);
-    const createdEditorial = await createEditorialService({ dto });
+    const createdEditorial = await createEditorialService( name );
 
     return res
       .status(201)
       .json(
         succesGetResponse({
           resource: "Editorial",
-          data: createdEditorial,
+          data: editorialResponseDTO(createdEditorial),
         }),
       );
   } catch (error) {
+    console.error(error);
     return res.status(500).json(
       internalServerResponse({
         message: "Error al intentar crear una editorial",

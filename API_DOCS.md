@@ -369,11 +369,11 @@ search=string
     "data": [
       {
         "id_user": 0,
-        "username": "string",
-        "userlastname": "string",
+        "name": "string",
+        "lastname": "string",
         "rut": "string",
         "address": "string",
-        "phone_number": "string",
+        "phone": "string",
         "email": "string",
         "commune_id": 0,
         "user_role_id": 0,
@@ -397,11 +397,11 @@ search=string
   "message": "string",
   "data": {
     "id_user": 0,
-    "username": "string",
-    "userlastname": "string",
+    "name": "string",
+    "lastname": "string",
     "rut": "string",
     "address": "string",
-    "phone_number": "string",
+    "phone": "string",
     "email": "string",
     "commune_id": 0,
     "user_role_id": 0,
@@ -418,11 +418,11 @@ search=string
 
 ```json
 {
-  "username": "string",
-  "userlastname": "string",
+  "name": "string",
+  "lastname": "string",
   "rut": "string",
   "address": "string",
-  "phone_number": "string",
+  "phone": "string",
   "commune_id": 0,
   "user_role_id": 0,
   "user_status_id": 0

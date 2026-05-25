@@ -10,7 +10,7 @@ export const Commune = (sequelize, DataTypes) => {
         autoIncrement: true,
         field: "id_commune",
       },
-      commune: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false,
       },

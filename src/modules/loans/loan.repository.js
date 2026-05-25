@@ -13,7 +13,7 @@ export const getAllLoansAndSearchRepository = async ({
         {
             model: UserModel,
             as: 'user',
-            attributes: ['idUser', 'username', 'userlastname', 'email']
+            attributes: ['idUser', 'name', 'lastname', 'email']
         },
         {
             model: CopyModel,
@@ -69,6 +69,28 @@ export const getAllLoansAndSearchRepository = async ({
     return { count: items, rows: result };
 };
 
+export const findLoanByIdRepository = async(id) => {
+    return await LoanModel.findByPk(id, {
+        include: [
+            {
+                model: CopyModel,
+                as: 'copy',
+                include: [
+                    {
+                        model: EditionModel,
+                        as: 'edition',
+                        include: [
+                            {
+                                model: BookModel,
+                                as: 'book'
+                            }
+                        ]
+                    }
+                ]
+            },
+        ],
+    })
+}
 export const findLoansOverDueRepository = async () => {
     return await LoanModel.findAll({
         where: {
@@ -104,7 +126,6 @@ export const findLoansOverDueRepository = async () => {
         order: [['dueDate', 'ASC']]
     });
 };
-
 export const getLoansOverDueByIdRepository = async (userId, dueDate) => {
     return await LoanModel.findOne({
         where: {
@@ -141,12 +162,11 @@ export const getLoansOverDueByIdRepository = async (userId, dueDate) => {
             }
         ]
     })
-};
-export const createLoanRepository = async (loanData, options = {}) => {
+};export const createLoanRepository = async (loanData, options = {}) => {
     return await LoanModel.create(loanData, options);
 };
 export const returnLoanByIdRepository = async (idLoan, options = {}) => {
-    const[count, returnedLoad] =  await LoanModel.update(
+    const[count, updatedLoan] =  await LoanModel.update(
         {
             loanStatusId: 2,
             returnDate: new Date()
@@ -157,7 +177,7 @@ export const returnLoanByIdRepository = async (idLoan, options = {}) => {
             },
             ...options, returning: true
         })
-    return {count, returnedLoad};
+    return {count, updatedLoan};
 };
 export const markLoanAsExpireOverdueRepository = async (options = {}) => {
     const [count, affectedRows] = await LoanModel.update(

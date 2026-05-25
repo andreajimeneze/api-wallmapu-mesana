@@ -10,7 +10,7 @@ export const UserRole = (sequelize, DataTypes) => {
         autoIncrement: true,
         field: "id_user_role",
       },
-      role: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false,
       }

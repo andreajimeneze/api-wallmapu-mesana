@@ -9,6 +9,7 @@ import { getAllPaginationService } from "../../core/services/basePagination.serv
 import { getCopyByIdService, updateCopyService } from "../copies/copy.service.js";
 import { badRequestError, conflictError, notFoundError } from "../../core/helpers/errors/httpErrors.js";
 import { findCopyByIdRepository, updateStatusCopyRepository } from "../copies/copy.repository.js";
+import { eventEmitter } from "../../core/events/eventEmitter.js";
 
 export const getLoansAndSearchService = async (params) => {
     return await getAllPaginationService(params, getAllLoansAndSearchRepository, loanBasicResponseDTO);
@@ -36,13 +37,15 @@ export const createLoanService = async (loanData) => {
         throw new Error('Usuario tiene un préstamo vencido');
     };
 
-    return await createLoanRepository({
+    const createdLoan = await createLoanRepository({
         userId: loanData.userId,
         copyId: loanData.copyId,
         loanDate: loanDate,
         dueDate: dueDate,
         loanStatusId: 1
     });
+
+    return createdLoan;
 };
 export const returnLoanByCopyIdService = async (copyId, options = {}) => {
     const transaction = await sequelize.transaction();
@@ -62,6 +65,9 @@ export const returnLoanByCopyIdService = async (copyId, options = {}) => {
         const updatedCopy = await updateStatusCopyRepository(copyId, copy.statusId, statusId, { transaction })
         if(updatedCopy === 0) throw badRequesError('No se actualizó el estado de la copia');
         await transaction.commit();
+
+        eventEmitter.emit('RETURN_LOAN', updatedLoan);
+        
         return updatedLoan
     } catch (error) {
         await transaction.rollback();

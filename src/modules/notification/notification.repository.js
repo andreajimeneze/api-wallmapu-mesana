@@ -7,14 +7,20 @@ export const getAllNotificationPaginationRepository = async ({ page, limit, sear
 
     const where = {};
 
-    if (search) {
-        where[Op.or] = [
-            [{ title: { [Op.iLike]: `%${search}%` } }],
-            [{ message: { [Op.iLike]: `%${search}%` } }],
-        ]
-    }
+    where[Op.or] = [
+        {
+            title: {
+                [Op.iLike]: `%${search}%`
+            }
+        },
+        {
+            message: {
+                [Op.iLike]: `%${search}%`
+            }
+        }
+    ];
 
-     if (userId) {
+    if (userId) {
         where.userId = userId
     }
 
@@ -77,7 +83,7 @@ export const markAsReadAllNotificationRepository = async (userId) => {
         })
     return affectedRows;
 };
-export const countUnreadByUdserIdRepository = async(userId) => {
+export const countUnreadByUserIdRepository = async (userId) => {
     return await NotificationModel.count({
         where: {
             userId,

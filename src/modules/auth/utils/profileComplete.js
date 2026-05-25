@@ -1,7 +1,7 @@
 export const isProfileComplete = (user) => {
     return Boolean(
-        user.username &&
-        user.userlastname &&
+        user.name &&
+        user.lastname &&
         user.rut &&
         user.address &&
         user.communeId &&
