@@ -1,8 +1,8 @@
 import { conflictError } from "../../core/helpers/errors/httpErrors.js";
 import { getEditionByIdService } from "../editions/edition.service.js";
 import { findEditionByIdRepository } from "../editions/editions.repository.js";
-import { findActiveLoanByCopyIdRepository } from "../loans/loan.repository.js";
-import { findActiveReservationByCopyRepository } from "../reservation/reservation.repository.js";
+import { countLoanByCopyRepository, findActiveLoanByCopyIdRepository } from "../loans/loan.repository.js";
+import { countReservationByCopyRepository, findActiveReservationByCopyRepository } from "../reservation/reservation.repository.js";
 import { copyByBookResponseDTO } from "./copy.dto.js";
 import { createCopyRepository, deleteCopyRepository, existingCopyRespository, existingSignatureRepository, findCopiesByBookAndStatusRepository, findCopiesByEditionIdRepository, findCopyByIdRepository, updateCopyRepository } from "./copy.repository.js";
 
@@ -53,8 +53,8 @@ export const createCopyService = async (copyData) => {
   if (!editionId || copyNumber == null || !signatureTopography) throw badRequesError('Datos incompletos');
     const edition = await findEditionByIdRepository(editionId);
 
-  const existingCopy = await existingCopyRespository(copyNumber, editionId, edition.bookId, idCopy);
-  const existingSignature = await existingSignatureRepository(signatureTopography, idCopy);
+  const existingCopy = await existingCopyRespository(copyNumber, editionId, edition.copyId);
+  const existingSignature = await existingSignatureRepository(signatureTopography, edition.copyId);
 
   if (existingCopy) throw conflictError('Número de copia ya existe');
   if (existingSignature) throw conflictError("Signatura ya existe");
@@ -87,6 +87,13 @@ export const deleteCopyService = async (id) => {
   const selectedCopy = await findCopyByIdRepository(id);
 
   if (!selectedCopy) throw notFoundError("Copia no encontrada");
+
+  const [ countHistoryReserv, countHistoryLoan ] = await Promise.all([
+      countReservationByCopyRepository(id),
+      countLoanByCopyRepository(id)
+  ])
+
+ if(countHistoryReserv > 0 || countHistoryLoan > 0) throw conflictError('No puede eliminar copia con historial de reserva o de préstamo');
   
   await deleteCopyRepository(id);
   return true;

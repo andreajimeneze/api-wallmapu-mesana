@@ -266,5 +266,13 @@ export const markAsCompletedReservationRepository = async(id, options = {}) => {
         }
     )
     return {count, updated};
-}
+};
+
+export const countReservationByCopyRepository = async(idCopy, options = {}) => {
+    return await ReservationModel.count({
+        where: {
+            copyId: idCopy
+        }
+    })
+};
 

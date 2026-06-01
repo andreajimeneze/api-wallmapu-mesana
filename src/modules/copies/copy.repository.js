@@ -104,7 +104,6 @@ export const updateCopyRepository = async (id, data, options = {}) => {
 
     return updatedCopy;
 };
-
 export const updateStatusCopyRepository = async (idCopy, currentStatusId, statusId, options = {}) => {
     return await CopyModel.update(
         { 

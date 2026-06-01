@@ -68,7 +68,6 @@ export const getAllLoansAndSearchRepository = async ({
     });
     return { count: items, rows: result };
 };
-
 export const findLoanByIdRepository = async(id) => {
     return await LoanModel.findByPk(id, {
         include: [
@@ -292,4 +291,12 @@ export const markAsPickUpRepository= async (id, copyId, userId, dueDate, options
             loanStatusId: 1,
             copyId: copyId
         }, options);
+};
+
+export const countLoanByCopyRepository = async(idCopy, options = {}) => {
+    return await LoanModel.count({
+        where: {
+            copyId: idCopy
+        }
+    })
 };
