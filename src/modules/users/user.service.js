@@ -18,7 +18,6 @@ export const getUserByIdService = async (id) => {
 
 export const getUserByEmailService = async (email) => {
   const userByEmail = await findUserByEmailRepository(email);
-  //if (!userByEmail) throw notFoundError();
   return userByEmail;
 };
 

@@ -1,11 +1,5 @@
-//import { BookAuthorModel } from "../../config/dbSequelize.js";
-
 import { sequelize } from "../../config/dbSequelize.js";
 import { bulkCreateBookAuthorRepository, deleteBookAuthorByIdBookRepository, deleteBookAuthorRepository } from "./book_author.repository.js";
-
-// export const getAllBookAuthorService = async () => {
-//   return await findAllBookAuthorRepository();
-// }
 
 export const createBookAuthorService = async (
   idBook,

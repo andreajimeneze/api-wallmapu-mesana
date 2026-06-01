@@ -26,6 +26,8 @@ import { Reservation } from "../modules/reservation/reservation.model.js";
 import { ReservationStatus } from "../modules/reservation_status/reservation_status.model.js";
 import { Notification } from "../modules/notification/notification.model.js";
 import { LoanPolicy } from "../modules/loan_policy/loan_policy.model.js";
+import { Format } from "../modules/format/format.model.js";
+import { EditionFormat } from "../modules/edition_format/edition_format.model.js";
 
 
 
@@ -47,6 +49,20 @@ let sequelize = new Sequelize(
     },
   }
 );
+
+// Para base de datos local postgres
+// let sequelize = new Sequelize(
+//   env.database.name,
+//   env.database.user,
+//   env.database.password,
+//   {
+//     host: env.database.host,
+//     port: env.database.port,
+//     dialect: "postgres",
+//     dialectModule: pg,
+//     logging: false
+//   }
+// );
 
 let initialized = false;
 let models = {};
@@ -78,7 +94,9 @@ export const getModels = () => {
       ReservationModel: Reservation(sequelize, DataTypes),
       ReservationStatusModel: ReservationStatus(sequelize, DataTypes),
       NotificationModel: Notification(sequelize, DataTypes),
-      LoanPolicyModel: LoanPolicy(sequelize, DataTypes)
+      LoanPolicyModel: LoanPolicy(sequelize, DataTypes),
+      FormatModel: Format(sequelize, DataTypes),
+      EditionFormatModel: EditionFormat(sequelize, DataTypes)
     };
 
     // Asociaciones
@@ -117,7 +135,9 @@ export const {
   ReservationModel,
   ReservationStatusModel,
   NotificationModel,
-  LoanPolicyModel
+  LoanPolicyModel,
+  FormatModel,
+  EditionFormatModel
 } = getModels();
 
 export { sequelize };

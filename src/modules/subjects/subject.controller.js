@@ -105,7 +105,7 @@ export const getSubjectById = async (req, res) => {
       .status(500)
       .json(
         internalServerResponse({
-          message: "Error al intentar obtener al autor",
+          message: "Error al intentar obtener el descriptor",
         }),
       );
   }
@@ -135,7 +135,7 @@ export const createSubject = async (req, res) => {
         );
     }
     res.status(500).json(internalServerResponse({
-      message: "Error al crear al autor",
+      message: "Error al crear el descriptor",
     }),
     );
   }
@@ -175,7 +175,7 @@ export const updateSubject = async (req, res) => {
         );
     }
     res.status(500).json(internalServerResponse({
-      message: "Error al actualizar al autor",
+      message: "Error al actualizar el descriptor",
     }),
     );
   }
@@ -215,7 +215,7 @@ export const deleteSubject = async (req, res) => {
         );
     }
     res.status(500).json(internalServerResponse({
-      message: "Error al actualizar al autor",
+      message: "Error al actualizar el descriptor",
     }),
     );
   }

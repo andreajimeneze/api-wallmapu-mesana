@@ -26,6 +26,7 @@ import reservation_routes from './modules/reservation/reservation.routes.js';
 import loanPolicy_routes from './modules/loan_policy/loan.policy.routes.js';
 import loanStatus_routes from './modules/loans-status/loan_status.routes.js';
 import loans_routes from './modules/loans/loan.routes.js';
+import format_routes from './modules/format/format.routes.js';
 
 const router = Router();
 
@@ -56,6 +57,7 @@ router.use('/api/reservations', reservation_routes);
 router.use('/api/loan-policies', loanPolicy_routes);
 router.use('/api/loan-status', loanStatus_routes);
 router.use('/api/loans', loans_routes);
+router.use('/api/format/', format_routes);
 
 
 export default router;

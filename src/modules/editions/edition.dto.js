@@ -31,8 +31,6 @@ export const editionDetailDTO = (res) => {
     book_id: res.bookId,
     created_at: res.created_at,
     updated_at: res.updated_at,
-    //editorial: res.editorial ? baseEditorialDTO(res.editorial) : null,
-    //book: res.book ? bookBasicDTO(res.book) : null,
   };
 };
 
@@ -43,6 +41,8 @@ export const editionForBookResponseDTO = (res) => ({
   publication_year: res.publicationYear,
   pages: res.pages,
   cover_image: res.coverImage,
+  format_id: res.formats?.[0]?.idFormat,
+  format_name: res.formats?.[0]?.name,
   created_at: res.created_at,
   updated_at: res.updated_at,
   editorial_id: res.editorialId,
@@ -53,7 +53,7 @@ export const editionForBookResponseDTO = (res) => ({
   genre_name: res.book.genre.name,
   author_id: res.book.authors?.[0]?.idAuthor,
   author_name: res.book.authors?.[0]?.name,
-  copy_count: Number(res.dataValues.copy_count) || 0
+  copy_count: res.copies?.length ?? 0
 });
 
 
@@ -87,10 +87,11 @@ export const updateEditionDTO = ({
   pages,
   cover_image,
   book_id,
-  editorial_id
+  editorial_id,
+  format_ids
 }) => {
   return {
-    idEdition: id_edition.trim(),
+    idEdition: Number(id_edition),
     edition: edition.trim(),
     isbn: isbn.trim(),
     publicationYear: Number(publication_year),
@@ -100,6 +101,7 @@ export const updateEditionDTO = ({
       : cover_image,
     bookId: Number(book_id),
     editorialId: Number(editorial_id),
+    formatIds: format_ids
   };
 };
 
@@ -128,10 +130,10 @@ export const basicResponseEditionWithCopies = (res) => ({
     })) : []
 });
 
-export const editionRequestDTO = ({ id_author, id_genre, id_editorial } = {}) => ({
+export const editionRequestDTO = ({ id_author, id_genre, id_editorial, id_format} = {}) => ({
  
     idAuthor: Number(id_author) || 0,
     idGenre: Number(id_genre) || 0,
-    idEditorial: Number(id_editorial) || 0
-
+    idEditorial: Number(id_editorial) || 0,
+    idFormat: Number(id_format) || 0
 });

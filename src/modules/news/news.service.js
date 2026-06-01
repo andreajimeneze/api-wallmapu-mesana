@@ -27,6 +27,7 @@ export const createNewsService = async ({ title, subtitle, body}, options = {}) 
 export const updateNewsService = async (id, newsData) => {
   const { count, updated } = await updateNewsRepository(id, newsData);
   if(count === 0) throw notFoundError();
+  console.log('updated news: ', updated);
   return updated 
 };
 

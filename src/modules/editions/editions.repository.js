@@ -1,8 +1,8 @@
 import { literal, Op, Sequelize } from "sequelize";
-import { EditionModel, BookModel, EditorialModel, GenreModel, AuthorModel, CopyModel, CopyStatusModel } from "../../config/dbSequelize.js";
+import { EditionModel, BookModel, EditorialModel, GenreModel, AuthorModel, CopyModel, CopyStatusModel, EditionFormatModel, FormatModel } from "../../config/dbSequelize.js";
 
 export const getAllEditionPaginationRepository = async ({ page, limit, search, filter }) => {
-  const { idGenre, idAuthor, idEditorial } = filter;
+  const { idGenre, idAuthor, idEditorial, idFormat} = filter;
 
   const include = [
     {
@@ -32,6 +32,13 @@ export const getAllEditionPaginationRepository = async ({ page, limit, search, f
       where: idEditorial > 0
       ? { idEditorial } : undefined
     },
+    {
+      model: FormatModel,
+      as: 'formats',
+      required: idFormat > 0,
+      where: idFormat > 0
+      ? {idFormat} : undefined
+    }
   ];
 
   const where = {};
@@ -46,12 +53,8 @@ export const getAllEditionPaginationRepository = async ({ page, limit, search, f
     ];
   }
 
-  if (idEditorial > 0) {
-    where.editorialId = idEditorial;
-  }
-
-  // if (idGenre > 0) {
-  //   where["$book.genreId$"] = idGenre;
+  // if (idEditorial > 0) {
+  //   where.editorialId = idEditorial;
   // }
 
   const offset = (page - 1) * limit;
@@ -112,7 +115,7 @@ export const findEditionByBookIdRepository = async (idBook) => {
 };
 
 export const findEditionsByBookIdDetailRepository = async (idBook) => {
-  return await EditionModel.findAll({
+  const editions = await EditionModel.findAll({
     where: { bookId: idBook },
     include: [
       {
@@ -141,9 +144,22 @@ export const findEditionsByBookIdDetailRepository = async (idBook) => {
             },
           }
         ]
+      },
+      {
+        model: CopyModel,
+        as: 'copies'
+      },
+      {
+        model: FormatModel,
+        as: 'formats'
       }
     ]
   });
+
+  return editions.map(edition => ({
+  ...edition.toJSON(),
+  count_copies: edition.copies?.length ?? 0
+  }))
 };
 
 export const createEditionRepository = async (editionData, options = {}) => {

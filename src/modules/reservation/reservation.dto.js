@@ -56,9 +56,7 @@ export const createReservationDTO = ({
 };
 
 export const updateReservationDTO = (id_reservation) => ({
-   
         idReservation: id_reservation,
-        //reservationStatusId: reservation_status_id
 });
 
 export const ReservationWhereRequestDTO = ({ id_status } = {}) => {

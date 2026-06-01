@@ -71,6 +71,7 @@ export const createGalleryByNewsIdService = async (
       )
     );
 
+    console.log('galería news: ', createdGallery);
     return createdGallery;
 };
 export const deleteImagebyIdGalleryService = async (id, options = {}) => {

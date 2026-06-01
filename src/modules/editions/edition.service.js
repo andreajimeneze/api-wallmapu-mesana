@@ -10,6 +10,7 @@ import { conflictError, notFoundError } from "../../core/helpers/errors/httpErro
 import { existingCopiesByEditionRepository } from "../copies/copy.repository.js";
 import { sequelize } from "../../config/dbSequelize.js";
 import { foreignKeyError, uniqueConstraintError, validationError } from "../../core/helpers/errors/databaseErrors.js";
+import { updateEditionFormatService } from "../edition_format/edition_format.service.js";
 
 export const getAllEditionPaginationService = async (params) => {
 
@@ -24,6 +25,7 @@ export const getEditionsByBookIdDetailService = async (idBook) => {
   return await findEditionsByBookIdDetailRepository(idBook);
 };
 export const createEditionService = async (editionData) => {
+  
   try {
     return await createEditionRepository(editionData);
 
@@ -40,23 +42,22 @@ export const createEditionService = async (editionData) => {
     throw error;
   }
 };
-export const updateEditionService = async (id, editionData) => {
+export const updateEditionService = async (id, editionData, options = {}) => {
+
+  const transaction = await sequelize.transaction();
   try {
-    const updated  = await updateEditionRepository(id, editionData);
+    const { idEdition, formatIds, ...editionFields} = editionData;
+    
+    const updated  = await updateEditionRepository(id, editionFields, { transaction });
     if (!updated) throw notFoundError();
 
+    const editonFormat = await updateEditionFormatService(id, formatIds, { transaction });
+    
+    await transaction.commit();
     return updated;
 
   } catch (error) {
-    if (error.name === "SequelizeValidationError") {
-      throw validationError();
-    }
-    if (error.name === "SequelizeUniqueConstraintError") {
-      throw uniqueConstraintError();
-    }
-    if (error.name === "SequelizeForeignKeyConstraintError") {
-      throw foreignKeyError();
-    }
+    await transaction.rollback();
     throw error;
   }
 };

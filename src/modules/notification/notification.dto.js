@@ -1,9 +1,12 @@
 export const notificationDTO = (notif) => ({
     id_notification: notif.idNotification,
+    is_read: notif.isRead,
     title: notif.title,
     message: notif.message,
-    is_read: notif.isRead,
-    user_id: notif.userId
+    is_priority: notif.isPriority,
+    user_id: notif.userId,
+    created_at: notif.created_at,
+    email: notif['user.email'],
 });
 
 export const createNotificationDTO = (data) => ({
@@ -12,5 +15,5 @@ export const createNotificationDTO = (data) => ({
         title: data.title.trim() || '',
         message: data.message || '',
         isPriority: data.is_priority,
-         sendEmail: data.send_email ?? true,
+        sendEmail: data.send_email ?? true,
 });

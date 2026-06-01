@@ -1,12 +1,6 @@
 import { sequelize } from "../../config/dbSequelize.js";
 import { deleteBookSubjectRepository, bulkCreateBookSubjectRepository, deleteBookSubjectByIdBookRepository } from "./book_subject.respository.js";
 
-// export const getBookSubjectsByIdService = async (id) => {
-//   return await findOneRepository({
-//     where: { idBook: id },
-//   });
-// };
-
 export const createBookSubjectsService = async (
   idBook,
   subjects = [],

@@ -214,7 +214,7 @@ export const sendReservationCreatedEmail = async (data) => {
                     <p><strong>Reserva #:</strong> ${data.id}</p>
                     <p><strong>Libro:</strong> ${data.book_title}</p>
                     <p><strong>Código:</strong> ${data.book_barcode}</p>
-                    <p><strong>Fecha máximo de retiro: </strong>${formatDate(data.expirationDate)}</p>
+                    <p><strong>Fecha máximo de retiro: </strong>${formatDate(data.expiration_date)}</p>
                 </div>
 
             </div>
@@ -299,7 +299,7 @@ export const sendLoanCreatedEmail = async (data) => {
                     <p><strong>Préstamo #:</strong> ${data.id}</p>
                     <p><strong>Libro:</strong> ${data.book_title}</p>
                     <p><strong>Código:</strong> ${data.book_barcode}</p>
-                    <p><strong>La fecha de devolución del libro es:</strong> ${formatDate(data.expirationDate)}</p>
+                    <p><strong>La fecha de devolución del libro es:</strong> ${formatDate(data.expiration_date)}</p>
                 </div>
 
             </div>

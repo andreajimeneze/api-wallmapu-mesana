@@ -15,8 +15,7 @@ export const Edition = (sequelize, DataTypes) => {
       },
       isbn: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+        allowNull: false
       },
       publicationYear: {
         type: DataTypes.STRING,
@@ -65,6 +64,12 @@ export const Edition = (sequelize, DataTypes) => {
       foreignKey: 'editorialId',
       targetKey: 'idEditorial',
       as: 'editorial'
+    })
+    Edition.belongsToMany(models.FormatModel, {
+      through: models.EditionFormatModel,
+      foreignKey: 'idEdition',
+      otherKey: 'idFormat',
+      as: 'formats'
     })
 
   }

@@ -51,7 +51,6 @@ export const createCopyService = async (copyData) => {
 
   if (!editionId || copyNumber == null || !signatureTopography) throw badRequesError('Datos incompletos');
     const edition = await findEditionByIdRepository(editionId);
-  //if(!edition) throw notFoundError();
 
   const existingCopy = await existingCopyRespository(copyNumber, editionId, edition.bookId, idCopy);
   const existingSignature = await existingSignatureRepository(signatureTopography, idCopy);

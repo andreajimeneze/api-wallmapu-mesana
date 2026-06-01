@@ -2,7 +2,7 @@ import { notFoundError } from "../../core/helpers/errors/httpErrors.js";
 import { paginationRequestDTO } from "../../core/responses/paginationResponse.js";
 import { getAllPaginationService } from "../../core/services/basePagination.service.js";
 import { notificationDTO } from "./notification.dto.js";
-import { countUnreadByUserIdRepository, createNotificationRepository, findNotificationByIdRepository, getAllNotificationPaginationRepository } from "./notification.repository.js";
+import { countUnreadByUserIdRepository, createNotificationRepository, findNotificationByIdRepository, getAllNotificationPaginationRepository, markNotificationByUserRepository } from "./notification.repository.js";
 
 export const getAllNotificationsPaginationService = async(params) => {
     return await getAllPaginationService(params, getAllNotificationPaginationRepository, notificationDTO);
@@ -31,7 +31,5 @@ export const markOneNotificationAsReadService = async(userId, id) => {
 };
 
 export const markAllNotificationAsReadService = async(userId) => {
-    // const count = await countUnreadByUserIdRepository(userId);
-    // if(count === 0) throw notFoundError();
     return await markAsReadAllNotificationRepository(userId);
 };

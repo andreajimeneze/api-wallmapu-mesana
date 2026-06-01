@@ -15,9 +15,21 @@ router.get("/:id", getImageByIdGallery);
 
 router.get("/news/:newsId", getGalleryByNewsId);
 
+// router.post(
+//   "/news/:id",
+//   (req, res, next) => {
+//     console.log("AFTER ROUTE");
+//     next();
+//   },
+//   jwtMiddleware,
+//   checkRole("Admin"),
+//   upload.array("files", 3),
+//   createGalleryByNewsId
+// );
 router.post(
   "/news/:id",
-  upload.array("files", 3), jwtMiddleware, checkRole('Admin'),
+  jwtMiddleware, checkRole('Admin'),
+  upload.array("files", 3), 
   createGalleryByNewsId,
 );
 

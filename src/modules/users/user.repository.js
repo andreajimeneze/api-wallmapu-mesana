@@ -95,18 +95,6 @@ export const createUserRepository = async (user, options = {}) => {
         userStatusId: 1
     }, options);
 };
-// export const updateUserRepository = async (id, userData, options = {}) => {
-//     return await UserModel.update(
-//         userData ,
-//         {
-//             where: {
-//                 idUser: id
-//             }, ...options
-//         }
-//     );
-//     //return updatedUser;
-// };
-
 export const updateUserRepository = async (id, userData, options = {}) => {
   await UserModel.update(userData, {
     where: { idUser: id },

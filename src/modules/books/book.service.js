@@ -71,6 +71,7 @@ export const updateBookService = async (idBook, bookData) => {
     await updateBookSubjectService(exists.idBook, bookData.subjects, { transaction });
     await updateBookAuthorService(exists.idBook, bookData.authors, { transaction });
     const updated = await updateBookRepository(exists.idBook, bookData, { transaction });
+
     await transaction.commit();
     return updated;
   } catch (error) {

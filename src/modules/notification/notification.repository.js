@@ -1,47 +1,40 @@
 import { Op } from "sequelize";
-import { NotificationModel } from "../../config/dbSequelize.js";
+import { NotificationModel, UserModel } from "../../config/dbSequelize.js";
+import { notificationDTO } from "./notification.dto.js";
 
 export const getAllNotificationPaginationRepository = async ({ page, limit, search, filter }) => {
-
     const { isRead, userId } = filter || {};
+
+    const include = [
+        {
+            model: UserModel,
+            as: 'user',
+            attributes: ['email']
+        }
+    ]
 
     const where = {};
 
-    where[Op.or] = [
-        {
-            title: {
-                [Op.iLike]: `%${search}%`
-            }
-        },
-        {
-            message: {
-                [Op.iLike]: `%${search}%`
-            }
-        }
-    ];
-
-    if (userId) {
-        where.userId = userId
+      if (userId !== undefined) {
+        where.userId = userId;
     }
 
     if (isRead !== undefined) {
         where.isRead = isRead;
     }
 
-
     const offset = (page - 1) * limit;
 
     const items = await NotificationModel.count({ where });
     const result = await NotificationModel.findAll({
         where,
+        include,
         limit,
         offset,
         raw: true,
-        //order: [['updated_at', 'DESC']]
     });
 
     return { count: items, rows: result };
-
 };
 export const findNotificationByIdRepository = async (id) => {
     return await NotificationModel.findByPk(id);
