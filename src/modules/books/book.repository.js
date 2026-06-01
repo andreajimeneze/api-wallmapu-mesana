@@ -40,23 +40,21 @@ export const getBookPaginationRepository = async ({ page, limit, search }) => {
             "created_at",
             "updated_at",
             [
-                Sequelize.fn(
-                    "COUNT",
-                    Sequelize.fn(
-                        "DISTINCT",
-                        Sequelize.col("editions.id_edition")
-                    )
-                ),
+                Sequelize.literal(`(
+                    SELECT COUNT(id_edition) 
+                    FROM wm_editions e 
+                    WHERE e.book_id = "Book"."id_book"
+                    )`),
                 "edition_count"
             ],
             [
-                Sequelize.fn(
-                    "COUNT",
-                    Sequelize.fn(
-                        "DISTINCT",
-                        Sequelize.col("editions->copies.id_copy")
-                    )
-                ),
+                Sequelize.literal(`(
+                    SELECT COUNT(id_copy)
+                    FROM wm_copies c
+                    INNER JOIN wm_editions e
+                    ON e.id_edition = c.edition_id
+                    WHERE e.book_id = "Book"."id_book"
+                    )`),
                 "copy_count"
             ],
         ],
@@ -99,23 +97,14 @@ export const getBookPaginationRepository = async ({ page, limit, search }) => {
                         attributes: [],
                         required: false,
                     }
-                ]
+                ],
+                required: false
             }
         ],
 
-        group: [
-            "Book.id_book",
-
-            "genre.id_genre",
-
-            "authors.id_author",
-
-            "editions.id_edition",
-        ],
-
-        subQuery: false,
-
+    
         distinct: true,
+        subQuery: false,
 
         limit,
         offset,

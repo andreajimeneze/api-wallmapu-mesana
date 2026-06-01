@@ -2,6 +2,7 @@ import { bookBasicDTO, bookDetailDTO } from "../books/book.dto.js";
 import { baseCopyDTO } from "../copies/copy.dto.js";
 import { baseStatusCopyDTO } from "../copy_status/copy_status.dto.js";
 import { baseEditorialDTO } from "../editorials/editorial.dto.js";
+import { formatResponseDTO } from "../format/format.dto.js";
 
 export const baseEditionDTO = (res) => ({
 
@@ -14,6 +15,7 @@ export const baseEditionDTO = (res) => ({
   book_id: res.bookId,
   editorial_id: res.editorialId,
   editorial_name: res.editorial.name,
+  formats: res.formats ? res.formats.map(formatResponseDTO) : [],
   created_at: res.created_at,
   updated_at: res.updated_at,
 });

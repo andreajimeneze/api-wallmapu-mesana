@@ -64,6 +64,7 @@ export const getEditionById = async (req, res) => {
   try {
     const edition = await getEditionByIdService(id);
 
+    console.log('edition con dto controller. ', baseEditionDTO(edition))
     return res.status(200).json(
       succesGetResponse({
         resource: "Edición",

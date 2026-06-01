@@ -19,6 +19,7 @@ export const getAllEditionPaginationService = async (params) => {
 export const getEditionByIdService = async (id) => {
   const edition = await findEditionByIdRepository(id);
   if (!edition) throw notFoundError();
+  console.log('edition by id service: ', edition)
   return edition;
 };
 export const getEditionsByBookIdDetailService = async (idBook) => {

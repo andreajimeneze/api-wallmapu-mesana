@@ -101,6 +101,10 @@ export const findEditionByIdRepository = async (id) => {
         model: EditorialModel,
         as: "editorial",
         attributes: ['name']
+      },
+      {
+        model: FormatModel,
+        as: 'formats'
       }
     ]
   });
