@@ -21,6 +21,7 @@ import {
   findImageByIdGalleryRepository,
   findNewsGalleryByNewsRepository,
 } from "./news-gallery.repository.js";
+import { NotesClient } from "@getbrevo/brevo/notes";
 
 const path = "news";
 
@@ -33,46 +34,108 @@ export const getImageByIdGalleryService = async(id) => {
   if(!image) throw notFoundError();
   return image;
 }
+// export const createGalleryByNewsIdService = async (
+//   { alts = [], files = [], newsId },
+//   options = {}
+// ) => {
+
+//   const transaction = await options.transaction;      
+
+//     if (!files || files.length === 0) throw badRequestError("Debe subir al menos una imagen");
+//     if (files.length !== alts.length) throw badRequestError("Cada imagen debe contar con texto alternativo");        
+//     if (!files || files.length < 1 || files.length > 3) throw badRequestError("Debe subir entre 1 y 3 imágenes");
+      
+//     const news = await findNewsByIdRepository(newsId, { transaction });
+
+//     if (!news) throw notFoundError("Noticia no existe");
+    
+//     const uploadData = await Promise.all(
+//       files.map((file, index) =>
+//         uploadImageCloud169(
+//           file.buffer,
+//           path,
+//           generateFileName(path) + "_" + index
+//         )
+//       )
+//     );
+
+//     const createdGallery = await Promise.all(
+//       uploadData.map((file, index) =>
+//         createGalleryRepository(
+//           {
+//             alt: alts[index],
+//             url: file.url,
+//             newsId,
+//           },
+//           { transaction }
+//         )
+//       )
+//     );
+
+//     console.log('galería news: ', createdGallery);
+//     return createdGallery;
+// };
+
 export const createGalleryByNewsIdService = async (
   { alts = [], files = [], newsId },
   options = {}
 ) => {
 
-  const transaction = await options.transaction;      
-
-    if (!files || files.length === 0) throw badRequestError("Debe subir al menos una imagen");
-    if (files.length !== alts.length) throw badRequestError("Cada imagen debe contar con texto alternativo");        
-    if (!files || files.length < 1 || files.length > 3) throw badRequestError("Debe subir entre 1 y 3 imágenes");
-      
-    const news = await findNewsByIdRepository(newsId, { transaction });
-
-    if (!news) throw notFoundError("Noticia no existe");
+  const transaction = options.transaction;
+  
+    alts = Array.isArray(alts)
+    ? alts
+    : [alts];
     
-    const uploadData = await Promise.all(
-      files.map((file, index) =>
-        uploadImageCloud169(
-          file.buffer,
-          path,
-          generateFileName(path) + "_" + index
-        )
-      )
-    );
+  if (!files || files.length === 0) {
+    throw badRequestError("Debe subir al menos una imagen");
+  }
 
-    const createdGallery = await Promise.all(
-      uploadData.map((file, index) =>
-        createGalleryRepository(
-          {
-            alt: alts[index],
-            url: file.url,
-            newsId,
-          },
-          { transaction }
-        )
-      )
+  if (files.length !== alts.length) {
+    throw badRequestError(
+      "Cada imagen debe contar con texto alternativo"
     );
+  }
 
-    console.log('galería news: ', createdGallery);
-    return createdGallery;
+  if (files.length < 1 || files.length > 3) {
+    throw badRequestError(
+      "Debe subir entre 1 y 3 imágenes"
+    );
+  }
+
+  const news = await findNewsByIdRepository(
+    newsId,
+    { transaction }
+  );
+
+  if (!news) {
+    throw notFoundError("Noticia no existe");
+  }
+
+  const uploadData = await Promise.all(
+    files.map((file, index) =>
+      uploadImageCloud169(
+        file.buffer,
+        path,
+        generateFileName(path) + "_" + index
+      )
+    )
+  );
+
+  const createdGallery = await Promise.all(
+    uploadData.map((file, index) =>
+      createGalleryRepository(
+        {
+          alt: alts[index],
+          url: file.url,
+          newsId,
+        },
+        { transaction }
+      )
+    )
+  );
+
+  return createdGallery;
 };
 export const deleteImagebyIdGalleryService = async (id, options = {}) => {
 

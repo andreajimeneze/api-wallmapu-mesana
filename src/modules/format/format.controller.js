@@ -93,7 +93,7 @@ export const createFormat = async (req, res) => {
 
   try {
     const format = await createFormatService(name);
-console.log('format create: ', format)
+
     res.status(201).json(
       successCreateResponse({
         message: "Formato creado exitosamente",

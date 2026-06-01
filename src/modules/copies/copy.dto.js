@@ -71,11 +71,13 @@ export const createCopyDTO = ({
 });
 
 export const updateCopyDTO = ({
+  id_copy,
   signature_topography,
   copy_number,
   edition_id,
   status_id
 }) => ({
+  idCopy: Number(id_copy),
  signatureTopography: signature_topography.trim(),
  barcode: signature_topography.trim(),
  copyNumber:  Number(copy_number),

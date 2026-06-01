@@ -179,8 +179,7 @@ export const createEdition = async (req, res) => {
 export const updateEdition = async (req, res) => {
   const { id } = req.params;
   const editionData = req.body;
-  console.log('id: ', id);
-  console.log('req.body: ', req.body);
+
  const editionDTO = updateEditionDTO(editionData);
   try {
     const editedEdition = await updateEditionService(id, editionDTO);

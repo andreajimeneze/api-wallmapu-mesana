@@ -44,7 +44,7 @@ export const findFormatByNameRepository = async (name) => {
 };
 
 export const createFormatRepository = async (name, options = {}) => {
-console.log('format create repository: ', name)
+
   return await FormatModel.create(name, options);
 };
 

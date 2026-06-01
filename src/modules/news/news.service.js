@@ -24,16 +24,34 @@ export const createNewsService = async ({ title, subtitle, body}, options = {}) 
   return await createNewsRepository({title, subtitle, body}, options);
 };
 
-export const updateNewsService = async (id, newsData) => {
-  const { count, updated } = await updateNewsRepository(id, newsData);
-  if(count === 0) throw notFoundError();
-  console.log('updated news: ', updated);
-  return updated 
+// export const updateNewsService = async (id, newsData) => {
+//   const { count, updated } = await updateNewsRepository(id, newsData);
+//   if(count === 0) throw notFoundError();
+//   console.log('updated news: ', updated);
+//   return updated 
+// };
+
+
+export const updateNewsService = async (
+  id,
+  newsData,
+  options = {}
+) => {
+
+  const { count, updated } = await updateNewsRepository(
+    id,
+    newsData,
+    options
+  );
+
+  if (count === 0) {
+    throw notFoundError();
+  }
+
+  return updated[0];
 };
 
 export const deleteNewsService = async (id, options = {}) => {
-  const news = await findNewsByIdRepository(id, options);
-  if(!news) throw notFoundError();
      await deleteNewsRepository(id, options);
     return true;
 };

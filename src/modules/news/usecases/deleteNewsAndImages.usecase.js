@@ -14,33 +14,52 @@ import { deleteNewsRepository, findNewsByIdRepository } from "../news.repository
 
 import { notFoundError } from "../../../core/helpers/errors/httpErrors.js";
 
-export const deleteNewsAndImagesService = async (idNews, options = {}) => {
+export const deleteNewsAndImagesService = async (
+  idNews,
+  options = {}
+) => {
 
   const transaction = options.transaction;
 
   try {
-    const news = await findNewsByIdRepository(idNews, { transaction });
-    if (!news) throw notFoundError();
-    
-    const gallery = await findNewsGalleryByNewsRepository(idNews, {transaction});
+    const news = await findNewsByIdRepository(
+      idNews,
+      { transaction }
+    );
 
-    const publicIds = (gallery || [])
-      .map((image) => extractPublicId(image.url))
+    if (!news)
+      throw notFoundError("Noticia no encontrada");
+
+    const gallery =
+      await findNewsGalleryByNewsRepository(
+        idNews,
+        { transaction }
+      );
+
+    const publicIds = gallery
+      .map(img => extractPublicId(img.url))
       .filter(Boolean);
 
     await Promise.all(
-      publicIds.map((publicId) =>
-        deleteImageCloud(publicId)
+      publicIds.map(id =>
+        deleteImageCloud(id)
       )
     );
 
-    await deleteGalleryByNewsIdRepository(idNews, { transaction });
+    await deleteGalleryByNewsIdRepository(
+      idNews,
+      { transaction }
+    );
 
-    await deleteNewsRepository(idNews, {transaction});
+    await deleteNewsRepository(
+      idNews,
+      { transaction }
+    );
 
     return true;
 
   } catch (error) {
+    console.error("ERROR DELETE NEWS:", error);
     throw error;
   }
 };

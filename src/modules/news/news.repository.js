@@ -64,20 +64,43 @@ export const findNewsByTitleRepository = async (title, options = {}) => {
 export const createNewsRepository = async (newsData, options = {}) => {
   return await NewsModel.create(newsData, options);
 };
-export const updateNewsRepository = async (id, newsData, options = {}) => {
-  const [count, updated ] = await NewsModel.update(
+// export const updateNewsRepository = async (id, newsData, options = {}) => {
+//   const [count, updated ] = await NewsModel.update(
+//     {
+//       ...newsData
+//     },
+//     {
+//       where: {
+//         idNews: id
+//       }, ...options, returning: true
+//     }
+//   )
+//   return { count: count, updated: updated}
+// }
+
+export const updateNewsRepository = async (
+  id,
+  newsData,
+  options = {}
+) => {
+  const [count, updated] = await NewsModel.update(
     {
-      ...newsData
+      ...newsData,
     },
     {
       where: {
-        idNews: id
-      }, ...options, returning: true
+        idNews: id,
+      },
+      returning: true,
+      ...options,
     }
-  )
-  return { count, updated}
-}
+  );
 
+  return {
+    count,
+    updated,
+  };
+};
 export const deleteNewsRepository = async (id, options = {}) => {
   return await NewsModel.destroy({
     where: {

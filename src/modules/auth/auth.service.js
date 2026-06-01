@@ -10,7 +10,7 @@ export const loginWithGoogleService = async (googleToken) => {
   const googleUser = await verifyToken(googleToken);
 
   let user = await getUserByEmailService(googleUser.email);
- console.log('user googleUser: ', user);
+
   if (!user) {
     user = await createUserService({
       email: googleUser.email,

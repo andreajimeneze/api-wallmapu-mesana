@@ -15,7 +15,7 @@ import {
   getNewsByIdService,
   updateNewsService,
 } from "./news.service.js";
-import { createNewsWithImagesService } from "./usecases/createNewsWithImages.usecase.js";
+import { createNewsWithImagesService, updateNewsWithImagesService } from "./usecases/createNewsWithImages.usecase.js";
 import { deleteNewsAndImagesService } from "./usecases/deleteNewsAndImages.usecase.js";
 
 export const getNewsPaginationAndSearch = async (req, res) => {
@@ -116,7 +116,7 @@ export const updateNews = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, subtitle, body } = req.body;
-
+    
     const updateDto = updateNewsDTO({
       title,
       subtitle,
@@ -147,6 +147,67 @@ export const updateNews = async (req, res) => {
   }
 };
 
+
+export const updateNewsWithImage = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+    const { title, subtitle, body } = req.body;
+
+    let { alts } = req.body;
+
+    if (alts && !Array.isArray(alts)) {
+      alts = [alts];
+    }
+
+    const updateDto = updateNewsDTO({
+      title,
+      subtitle,
+      body,
+    });
+
+    const updatedNews =
+      await updateNewsWithImagesService({
+        id,
+        newsData: updateDto,
+        alts,
+        files: req.files
+      });
+
+    return res.status(202).json(
+      successUpdateResponse({
+        message: "Noticia actualizada correctamente",
+        data: newsResponseDTO(updatedNews),
+      })
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    if (error.status === 404) {
+      return res.status(404).json(
+        notFoundResponse({
+          message: error.message,
+        })
+      );
+    }
+
+    if (error.status === 400) {
+      return res.status(400).json(
+        badRequestResponse({
+          message: error.message,
+        })
+      );
+    }
+
+    return res.status(500).json(
+      internalServerResponse({
+        message: error.message,
+      })
+    );
+  }
+};
 export const deleteNews = async (req, res) => {
   try {
     const { id } = req.params;

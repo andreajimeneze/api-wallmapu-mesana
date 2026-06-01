@@ -9,7 +9,6 @@ export const getAllNotificationsPagination = async (req, res) => {
     let limit = parseInt(req.query.limit ?? 10);
     let { is_read } = req.query;
 
-    console.log('req.query: ', req.query)
     if (isNaN(page) || page < 1 || isNaN(limit) || limit < 1) {
       return res.status(400).json(
         badRequestResponse({
@@ -26,7 +25,7 @@ export const getAllNotificationsPagination = async (req, res) => {
       is_read
       }
     });
-console.log('result: ', result)
+
     return res.status(200).json(
       succesGetResponse({
         message: "Notificaciones obtenidas exitosamente",
@@ -141,11 +140,6 @@ export const getUnreadCount = async (req, res) => {
 export const markOneNotificationAsRead = async (req, res) => {
   const idUser = req.user.sub;
   const { userId } = req.params;
-
-  console.log('req.user: ', req.user.sub);
-  console.log('idUser: ', idUser)
-  console.log('id: ', userId)
-  console.log('req.params: ', req.params)
 
   try {
     const OneasRead = await markOneNotificationAsReadService(idUser, userId);

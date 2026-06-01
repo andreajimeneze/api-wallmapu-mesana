@@ -6,7 +6,8 @@ import {
   createNews,
   updateNews,
   deleteNews,
-  createNewsWithImages
+  createNewsWithImages,
+  updateNewsWithImage
 } from './news.controller.js';
 import { jwtMiddleware, checkRole } from '../auth/auth.middleware.js';
 
@@ -25,7 +26,7 @@ router.post(
   createNewsWithImages
 );
 
-router.put('/:id', jwtMiddleware, checkRole('Admin'), updateNews);
+router.put('/:id',  upload.array('files', 3), jwtMiddleware, checkRole('Admin'), updateNewsWithImage);
 
 router.delete('/:id', jwtMiddleware, checkRole('Admin'), deleteNews);
 

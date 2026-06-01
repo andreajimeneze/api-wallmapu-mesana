@@ -8,7 +8,7 @@ export const findOneEditionFormatByFormatIdRepository = async (idFormat) => {
 };
 
 export const bulkCreateEditionFormatRepository = async (data, options = {}) => {
-    console.log(data)
+
     return await EditionFormatModel.bulkCreate(data, options);
 };
 

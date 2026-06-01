@@ -1,11 +1,4 @@
 export const createNewsGalleryDTO = ({ alts, files, newsId }) => {
-    if(!newsId) {
-         throw new Error('news_id es obligatorio');
-    }
-    if(!alts && !files ) {
-        throw new Error('Campos de la imagen son obligatorios');
-    }
-
     return {
         alts,
         url: files,

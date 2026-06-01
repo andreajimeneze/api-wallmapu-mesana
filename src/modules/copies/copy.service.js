@@ -1,3 +1,4 @@
+import { conflictError } from "../../core/helpers/errors/httpErrors.js";
 import { getEditionByIdService } from "../editions/edition.service.js";
 import { findEditionByIdRepository } from "../editions/editions.repository.js";
 import { findActiveLoanByCopyIdRepository } from "../loans/loan.repository.js";
@@ -9,7 +10,7 @@ export const getCopiesByEditionIdService = async (editionId) => {
   return await findCopiesByEditionIdRepository(editionId);
 };
 export const getAllCopiesAvailableByBookService = async (bookId, statusId) => {
-  const activeCopies = await findCopiesByBookAndStatusRepository(bookId, [1,2]);
+  const activeCopies = await findCopiesByBookAndStatusRepository(bookId, [1]);
 
   const data = activeCopies.map(copy => {
     const loans = copy.loan || [];
@@ -47,7 +48,7 @@ export const getCopyByIdService = async (id) => {
   return copy;
 };
 export const createCopyService = async (copyData) => {
-  const { idCopy, editionId, copyNumber, signatureTopography } = copyData;
+  const { editionId, copyNumber, signatureTopography, statusId } = copyData;
 
   if (!editionId || copyNumber == null || !signatureTopography) throw badRequesError('Datos incompletos');
     const edition = await findEditionByIdRepository(editionId);
@@ -61,8 +62,10 @@ export const createCopyService = async (copyData) => {
   return await createCopyRepository(copyData);
 };
 export const updateCopyService = async (id, copyData, options = {}) => {
-   const { editionId, copyNumber, signatureTopography, statusId } = copyData;
+   const { idCopy, ...copyFields} = copyData;
 
+  if(id != idCopy) throw conflictError('Copia no coincide con id');
+  
   const copy = await findCopyByIdRepository(id);
   if(!copy) throw notFoundError();
 
@@ -72,13 +75,13 @@ export const updateCopyService = async (id, copyData, options = {}) => {
   const activeReservation = await findActiveReservationByCopyRepository(id);
   if(activeReservation) throw conflictError('No puede modificar copia con reserva activa');
 
-  const existingCopy = await existingCopyRespository(copyNumber, editionId,  id);
-  const existingSignature = await existingSignatureRepository(signatureTopography, id);
+  const existingCopy = await existingCopyRespository(copyFields.copyNumber, copyFields.editionId,  id);
+  const existingSignature = await existingSignatureRepository(copyFields.signatureTopography, id);
 
   if (existingCopy) throw conflictError('Número de copia ya existe');
   if (existingSignature) throw conflictError("Signatura ya existe");
   
-  return await updateCopyRepository(id, copyData);
+  return await updateCopyRepository(id, copyFields);
 };
 export const deleteCopyService = async (id) => {
   const selectedCopy = await findCopyByIdRepository(id);

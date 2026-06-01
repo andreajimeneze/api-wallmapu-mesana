@@ -62,7 +62,7 @@ export const createCopy = async (req, res) => {
     const createdCopy = await createCopyService(copyDTO);
 
     return res.status(201).json(
-      successDeleteResponse({
+      succesGetResponse({
         message: "Copia creada exitosamente",
         data: baseCopyDTO(createdCopy),
       }),
@@ -86,6 +86,8 @@ export const updateCopy = async (req, res) => {
 
   const copyData = req.body;
   const copyDto = updateCopyDTO(copyData);
+  console.log('dto: ',copyDto);
+  console.log('body: ', req.body);
   
   try {
     const updatedCopy = await updateCopyService(id, copyDto);

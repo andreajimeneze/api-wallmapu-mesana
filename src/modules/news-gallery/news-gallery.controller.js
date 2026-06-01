@@ -63,8 +63,6 @@ export const createGalleryByNewsId = async (req, res) => {
   const { id } = req.params;
   const files = req.files;
   let { alts } = req.body;
-  console.log(req.body)
-  console.log('alts: ', alts)
 
   try {
     const gallery = await createGalleryByNewsIdService({
@@ -128,15 +126,15 @@ export const deleteImageByIdGallery = async (req, res) => {
 };
 
 export const deleteGalleryByNewsId = async (req, res) => {
-  const {id} = req.params;
+  const {newsId} = req.params;
 
   try {
-    const deletedImages = await deleteGalleryByNewsService(id);
+    const deletedImages = await deleteGalleryByNewsService(newsId);
 
     return res
       .status(202)
       .json(
-        successDeleteResponse({ message: `Galería de la noticia ${id} eliminada correctamente` }),
+        successDeleteResponse({ message: `Galería de la noticia ${newsId} eliminada correctamente` }),
       );
   } catch (error) {
     console.error(error);
