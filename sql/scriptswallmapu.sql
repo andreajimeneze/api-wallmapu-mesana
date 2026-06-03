@@ -17,13 +17,15 @@ wm_loan_policies,
 wm_loan_status,
 wm_reservation_status,
 wm_copy_status,
-wm_user_roles,
+wm_user_role,
 wm_user_status,
 wm_communes,
 wm_provinces,
 wm_regions,
-wm_genres
-CASCADE;
+wm_genres;
+
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
 
 CREATE TABLE IF NOT EXISTS wm_regions (
   id_region INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -57,9 +59,79 @@ CREATE TABLE IF NOT EXISTS wm_user_status (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  
 );
 
-CREATE TABLE IF NOT EXISTS wm_user_roles (
+CREATE TABLE IF NOT EXISTS wm_user_role (
   id_user_role INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name VARCHAR(45) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS wm_users (
+  id_user UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(100),
+  name VARCHAR(45),
+  lastname VARCHAR(45),
+  rut VARCHAR(12),
+  address VARCHAR(256),
+  phone VARCHAR(10),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
+  commune_id INTEGER,
+  user_role_id INTEGER NOT NULL,
+  user_status_id INTEGER NOT NULL,
+  CONSTRAINT users_commune_fk FOREIGN KEY (commune_id) REFERENCES wm_communes(id_commune),
+  CONSTRAINT users_types_fk FOREIGN KEY (user_role_id) REFERENCES wm_user_role(id_user_role),
+  CONSTRAINT users_status_fk FOREIGN KEY (user_status_id) REFERENCES wm_user_status(id_user_status)
+);
+
+CREATE TABLE IF NOT EXISTS wm_news (
+  id_news INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY (INCREMENT 1),
+  title VARCHAR(100) NOT NULL,
+  subtitle VARCHAR(256) NOT NULL,
+  body TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS wm_news_gallery (
+  id_news_gallery INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY (INCREMENT 1),
+  alt VARCHAR(100) NOT NULL,
+  url VARCHAR(256) NOT NULL,
+  news_id INTEGER NOT NULL,
+  CONSTRAINT news_gallery_fk FOREIGN KEY (news_id) REFERENCES wm_news(id_news)
+);
+
+CREATE TABLE IF NOT EXISTS wm_authors (
+  id_author INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR(200) NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS wm_editorials (
+  id_editorial INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR(200) NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS wm_subjects (
+  id_subject INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR(200) NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS wm_genres (
+  id_genre INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR(200) NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS wm_formats (
+  id_format INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR(200) NOT NULL UNIQUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -68,53 +140,6 @@ CREATE TABLE IF NOT EXISTS wm_copy_status (
   id_status INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name VARCHAR(30) UNIQUE NOT NULL
 );
-
-CREATE TABLE IF NOT EXISTS wm_reservation_status (
-  id_status INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name VARCHAR(30) UNIQUE NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS wm_loan_status (
-  id_status INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name VARCHAR(30) UNIQUE NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS wm_loan_policies (
-  id_policy INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name VARCHAR(100),
-  max_books INTEGER,
-  max_days INTEGER,
-  reservation_days INTEGER DEFAULT 3
-);
-
-CREATE TABLE IF NOT EXISTS wm_authors (
-  id_author INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name VARCHAR(200) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS wm_editorials (
-  id_editorial INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name VARCHAR(200) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS wm_genres (
-  id_genre INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name VARCHAR(200) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS wm_subjects (
-  id_subject INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name VARCHAR(200) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 
 CREATE TABLE IF NOT EXISTS wm_books (
   id_book INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -128,26 +153,10 @@ CREATE TABLE IF NOT EXISTS wm_books (
   CONSTRAINT wm_genres_wm_books_fk FOREIGN KEY (genre_id) REFERENCES wm_genres(id_genre)
 );
 
-CREATE TABLE IF NOT EXISTS wm_formats (
-  id_format INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name VARCHAR(200) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS wm_edition_format (
-  id_format INTEGER NOT NULL,
-  id_edition INTEGER NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT pk_edition_format PRIMARY KEY (id_edition, id_format),
-  CONSTRAINT fk_ef_format FOREIGN KEY (id_format) REFERENCES wm_formats(id_format),
-  CONSTRAINT fk_ef_edition FOREIGN KEY (id_edition) REFERENCES wm_editions(id_edition)
-);
-
 CREATE TABLE IF NOT EXISTS wm_editions (
   id_edition INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   edition VARCHAR(50),
-  isbn VARCHAR(20) NOT NULL,
+  isbn VARCHAR(20),
   publication_year INTEGER NOT NULL,
   pages INTEGER NOT NULL,
   cover_image VARCHAR(255),
@@ -159,6 +168,15 @@ CREATE TABLE IF NOT EXISTS wm_editions (
   
   CONSTRAINT wm_editions_wm_books_fk FOREIGN KEY (book_id) REFERENCES wm_books(id_book),
   CONSTRAINT wm_editions_wm_editorials_fk FOREIGN KEY (editorial_id) REFERENCES wm_editorials(id_editorial)
+);
+
+CREATE TABLE IF NOT EXISTS wm_edition_format (
+  id_format INTEGER NOT NULL,
+  id_edition INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT pk_edition_format PRIMARY KEY (id_edition, id_format),
+  CONSTRAINT fk_ef_format FOREIGN KEY (id_format) REFERENCES wm_formats(id_format),
+  CONSTRAINT fk_ef_edition FOREIGN KEY (id_edition) REFERENCES wm_editions(id_edition)
 );
 
 CREATE TABLE IF NOT EXISTS wm_copies (
@@ -194,39 +212,9 @@ CREATE TABLE IF NOT EXISTS wm_book_subject (
   CONSTRAINT fk_bs_subject FOREIGN KEY (id_subject) REFERENCES wm_subjects(id_subject)
 );
 
-CREATE TABLE IF NOT EXISTS wm_news (
-  id_news INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY (INCREMENT 1),
-  title VARCHAR(100) NOT NULL,
-  subtitle VARCHAR(256) NOT NULL,
-  body TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS wm_news_gallery (
-  id_news_gallery INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY (INCREMENT 1),
-  alt VARCHAR(100) NOT NULL,
-  url VARCHAR(256) NOT NULL,
-  news_id INTEGER NOT NULL,
-  CONSTRAINT news_gallery_fk FOREIGN KEY (news_id) REFERENCES wm_news(id_news)
-);
-
-CREATE TABLE IF NOT EXISTS wm_users (
-  id_user UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email VARCHAR(100),
-  name VARCHAR(45),
-  lastname VARCHAR(45),
-  rut VARCHAR(12),
-  address VARCHAR(256),
-  phone VARCHAR(10),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
-  commune_id INTEGER,
-  user_role_id INTEGER NOT NULL,
-  user_status_id INTEGER NOT NULL,
-  CONSTRAINT users_commune_fk FOREIGN KEY (commune_id) REFERENCES wm_communes(id_commune),
-  CONSTRAINT users_types_fk FOREIGN KEY (user_role_id) REFERENCES wm_user_roles(id_user_role),
-  CONSTRAINT users_status_fk FOREIGN KEY (user_status_id) REFERENCES wm_user_status(id_user_status)
+CREATE TABLE IF NOT EXISTS wm_reservation_status (
+  id_status INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR(30) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS wm_reservations (
@@ -241,6 +229,11 @@ CREATE TABLE IF NOT EXISTS wm_reservations (
   CONSTRAINT fk_res_user FOREIGN KEY (user_id) REFERENCES wm_users(id_user),
   CONSTRAINT fk_res_copy FOREIGN KEY (copy_id) REFERENCES wm_copies(id_copy),
   CONSTRAINT fk_res_status FOREIGN KEY (reservation_status_id) REFERENCES wm_reservation_status(id_status)
+);
+
+CREATE TABLE IF NOT EXISTS wm_loan_status (
+  id_status INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR(30) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS wm_loans (
@@ -258,6 +251,14 @@ CREATE TABLE IF NOT EXISTS wm_loans (
   CONSTRAINT loans_copies_fk FOREIGN KEY (copy_id) REFERENCES wm_copies(id_copy),
   CONSTRAINT loans_users_fk FOREIGN KEY (user_id) REFERENCES wm_users(id_user),
   CONSTRAINT loans_status_fk FOREIGN KEY (loan_status_id) REFERENCES wm_loan_status(id_status)
+);
+
+CREATE TABLE IF NOT EXISTS wm_loan_policies (
+  id_policy INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR(100),
+  max_books INTEGER,
+  max_days INTEGER,
+  reservation_days INTEGER DEFAULT 3
 );
 
 CREATE TABLE IF NOT EXISTS wm_notifications (
@@ -503,7 +504,7 @@ VALUES
 ('Bloqueado/a');
 
 
-INSERT INTO wm_user_roles (name)
+INSERT INTO wm_user_role (name)
 VALUES 
 ('Super Admin'),
 ('Admin'),
@@ -520,9 +521,9 @@ INSERT INTO wm_reservation_status (name) VALUES
 
 INSERT INTO wm_copy_status (name) VALUES
 ('Disponible'),
-('Extraviada'),
 ('En reparación'),
-('Prestada');
+('Extraviada'),
+('Dada de baja');
 
 INSERT INTO wm_loan_status (name) VALUES
 ('En préstamo'),

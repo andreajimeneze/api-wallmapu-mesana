@@ -20,8 +20,8 @@ export const userResponseDTO = (user) => ({
     phone: user.phoneNumber ?? '',
     user_role_id: user.userRoleId,
     user_status_id: user.userStatusId,
-    created_at: user.createdAt,
-    updated_at: user.updatedAt
+    created_at: user.created_at,
+    updated_at: user.updated_at
 });
 
 export const userCompleteResponseDTO = (user) => ({

@@ -16,7 +16,7 @@ export const UserRole = (sequelize, DataTypes) => {
       }
     },
     {
-      tableName: "wm_user_roles",
+      tableName: "wm_user_role",
       timestamps: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at'

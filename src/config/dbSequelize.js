@@ -30,27 +30,7 @@ import { Format } from "../modules/format/format.model.js";
 import { EditionFormat } from "../modules/edition_format/edition_format.model.js";
 
 
-
-let sequelize = new Sequelize(
-  env.database.name,
-  env.database.user,
-  env.database.password,
-  {
-    host: env.database.host,
-    port: env.database.port,
-    dialect: "postgres",
-    dialectModule: pg,
-    logging: false,
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
-  }
-);
-
-// Para base de datos local postgres
+// Para conexión en vercel
 // let sequelize = new Sequelize(
 //   env.database.name,
 //   env.database.user,
@@ -60,9 +40,29 @@ let sequelize = new Sequelize(
 //     port: env.database.port,
 //     dialect: "postgres",
 //     dialectModule: pg,
-//     logging: false
+//     logging: false,
+//     dialectOptions: {
+//       ssl: {
+//         require: true,
+//         rejectUnauthorized: false,
+//       },
+//     },
 //   }
 // );
+
+//Para base de datos local postgres
+let sequelize = new Sequelize(
+  env.database.name,
+  env.database.user,
+  env.database.password,
+  {
+    host: env.database.host,
+    port: env.database.port,
+    dialect: "postgres",
+    dialectModule: pg,
+    logging: false
+  }
+);
 
 let initialized = false;
 let models = {};

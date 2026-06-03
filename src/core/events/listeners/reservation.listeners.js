@@ -1,43 +1,64 @@
 import { eventEmitter } from "../eventEmitter.js";
 import { sendToUser } from "../../lib/socketManager.js";
-import { sendReservationCancelledEmail, sendReservationCreatedEmail } from "../../services/email.templates.js";
+import {
+  sendReservationCancelledEmail,
+  sendReservationCreatedEmail,
+} from "../../services/email.templates.js";
 import { findUserByIdRepository } from "../../../modules/users/user.repository.js";
 import { findCopyByIdRepository } from "../../../modules/copies/copy.repository.js";
 import { findReservationByIdRepository } from "../../../modules/reservation/reservation.repository.js";
+import { dispatchNotification } from "../../../modules/notification/notification.dispatcher.js";
 
-eventEmitter.on('RESERVATION_CREATED', async (reservation) => {
-  sendToUser(reservation.userId, 'notification', {
-    type: 'reservation_created',
-    data: reservation
+eventEmitter.on("RESERVATION_CREATED", async (reservation) => {
+  sendToUser(reservation.userId, "notification", {
+    type: "reservation_created",
+    data: reservation,
   });
 
   const user = await findUserByIdRepository(reservation.userId);
-  const fullReservation = await findReservationByIdRepository(reservation.idReservation);
+  const fullReservation = await findReservationByIdRepository(
+    reservation.idReservation,
+  );
+
+  await dispatchNotification({
+    email: user.email,
+    title: `"Reserva creada libro ${fullReservation.copy.edition.book.title}"`,
+    message: `Se ha registrado la reserva id #${fullReservation.idLoan} del libro "${fullReservation.copy.edition.book.title}".`,
+    sendEmail: false,
+  });
 
   await sendReservationCreatedEmail({
     email: user.email,
     id: fullReservation.idReservation,
     book_title: fullReservation.copy.edition.book.title,
     book_barcode: fullReservation.copy.barcode,
-    expiration_date: fullReservation.expirationDate
-
+    expiration_date: fullReservation.expirationDate,
   });
 });
 
-eventEmitter.on('CANCELED_RESERVATION', async (reservation) => {
-  sendToUser(reservation.userId, 'notification', {
-    type: 'canceled_reservation',
-    data: reservation
+eventEmitter.on("CANCELED_RESERVATION", async (reservation) => {
+  sendToUser(reservation.userId, "notification", {
+    type: "canceled_reservation",
+    data: reservation,
   });
 
   const currentReservation = reservation[0].dataValues;
   const user = await findUserByIdRepository(currentReservation.userId);
-  const fullReservation = await findReservationByIdRepository(currentReservation.idReservation);
+  const fullReservation = await findReservationByIdRepository(
+    currentReservation.idReservation,
+  );
+
+  await dispatchNotification({
+    email: user.email,
+    title: `"Reserva cancelada libro ${fullReservation.copy.edition.book.title}"`,
+    message: `Se ha cancelado la reserva id #${fullReservation.idLoan} del libro "${fullReservation.copy.edition.book.title}".`,
+    sendEmail: false,
+  });
 
   await sendReservationCancelledEmail({
     email: user.email,
     id: fullReservation.idReservation,
     book_title: fullReservation.copy.edition.book.title,
-    book_barcode: fullReservation.copy.barcode
+    book_barcode: fullReservation.copy.barcode,
   });
-})
+});
